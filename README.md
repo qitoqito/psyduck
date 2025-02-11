@@ -4,7 +4,7 @@
 定时类型: crontab
 定时规则: 自定(23 23 * * *)
 白名单: psyduck
-执行后:  task qitoqito_psyduck/qlCreate.js now
+执行后: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
 ```
 
 # Bug龙初始化
