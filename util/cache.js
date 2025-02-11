@@ -8,7 +8,7 @@ export class Cache {
 
     constructor(p = {}) {
         this._db = p.db
-        this._type = p.db.type || 'redis'
+        this._type = p.db.type || 'json'
         this._category = p.category || 'config'
     }
 
