@@ -4,16 +4,18 @@
 定时类型: crontab
 定时规则: 自定(23 23 * * *)
 白名单: psyduck
-执行后: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
+执行后: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck
 ```
 
 # Bug龙初始化
 
 ```
 1. 打开config文件夹,将demo.ini重命名为config.ini,按需修改config.ini字段
-2. QINGLONG_ClientId  QINGLONG_ClientSecret 两个字段必须填写
+2. QINGLONG_ClientId  QINGLONG_ClientSecret 两个字段必须填写,注意去掉前面的;符号
 3. 进入bug龙终端安装依赖,执行以下命令: cd /ql/data/scripts/qitoqito_psyduck/ && npm install
 4. 重新执行task qitoqito_psyduck/qlCreate.js now
+5. 将Bug龙订阅的执行后改为: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
+
 ```
 # INI配置文件
 	以JD为例:
