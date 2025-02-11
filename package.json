@@ -1,0 +1,39 @@
+{
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "crypto-js": "^4.2.0",
+    "fs": "^0.0.1-security",
+    "gm": "^1.25.0",
+    "happy-dom": "^17.0.0",
+    "https": "^1.0.0",
+    "ini": "^5.0.0",
+    "jsdom": "^26.0.0",
+    "lodash": "^4.17.21",
+    "node-jsencrypt": "^1.0.0",
+    "node-schedule": "^2.1.1",
+    "os": "^0.1.2",
+    "qs": "^6.14.0",
+    "readline-sync": "^1.4.10",
+    "redis": "^4.7.0",
+    "socks-proxy-agent": "^6.1.1",
+    "ttl-file-cache": "^1.0.5",
+    "vm": "^0.1.0"
+  },
+  "type": "module",
+  "name": "psyduck",
+  "version": "1.0.0",
+  "main": "main.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node main.js",
+    "test": "node create.js"
+  },
+  "config": {
+    "NODE_OPTIONS": "--no-deprecation"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
