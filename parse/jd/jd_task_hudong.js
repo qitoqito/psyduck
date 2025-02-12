@@ -7,8 +7,7 @@ export class Main extends Template {
             title: '京东互动整合',
             crontab: 4,
             sync: 1,
-            verify: 1,
-            task:1
+            verify: 1
         }
     }
 
@@ -63,117 +62,79 @@ export class Main extends Template {
                             p.log("任务完成...")
                         }
                     case 'ORDER_MARK':
-                    case 'SUBSCRIBE_WITH_RECEIVE':
                         break
                     case 'BROWSE_CHANNEL':
                     case  'BROWSE_PRODUCT':
                     case 'FOLLOW_SHOP':
-                        if (i.taskSourceUrl) {
-                            var doTask = await this.curl({
-                                    'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
-                                    'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)},"taskInsert":false,"itemId":"${encodeURIComponent(i.taskSourceUrl)}"}&t=1738480908001&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                    algo: {'appId': '54ed7'},
-                                    user
-                                }
-                            )
-                            if (this.haskey(doTask, 'success')) {
-                                p.log("任务完成")
+                        let apTaskDetail = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=apTaskDetail`,
+                                'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480907628&appid=activities_platform&client=ios&clientVersion=15.0.11&`,
+                                user
                             }
-                            else {
-                                p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
-                            }
-                            if (i.canDrawAwardNum) {
-                                let award = await this.curl({
-                                        'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
-                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                        user,
-                                        algo: {
-                                            appId: 'f0f3f'
-                                        }
-                                    }
-                                )
-                                if (this.haskey(award, 'data')) {
-                                    p.log(`抽奖次数+1`)
-                                }
-                                else {
-                                    p.err("抽奖领取失败")
-                                }
-                            }
-                        }
-                        else {
-                            let apTaskDetail = await this.curl({
-                                    'url': `https://api.m.jd.com/api?functionId=apTaskDetail`,
-                                    'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480907628&appid=activities_platform&client=ios&clientVersion=15.0.11&`,
-                                    user
-                                }
-                            )
-                            let taskItemList = this.haskey(apTaskDetail, 'data.taskItemList')
-                            if (taskItemList) {
-                                for (let j in Array.from(Array(i.taskLimitTimes - i.taskDoTimes), (_val, index) => index)) {
-                                    if (taskItemList[j] && taskItemList[j].itemId) {
-                                        if (i.timeLimitPeriod) {
-                                            let start = await this.curl({
-                                                    'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
-                                                    'form': `functionId=apStartTaskTime&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
-                                                        ...i.pipeExt, ...taskItemList[j].pipeExt
-                                                    })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
-                                                    user,
-                                                    algo: {
-                                                        appId: 'acb1e'
-                                                    }
-                                                }
-                                            )
-                                            if (this.haskey(start, 'code', 1)) {
-                                                p.log("失败了")
-                                                break
-                                            }
-                                            p.log(`等待${i.timeLimitPeriod}秒...`)
-                                            await this.wait(i.timeLimitPeriod * 1000)
-                                            var doTask = await this.curl({
-                                                'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
-                                                'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                        )
+                        let taskItemList = this.haskey(apTaskDetail, 'data.taskItemList')
+                        if (taskItemList) {
+                            for (let j in Array.from(Array(i.taskLimitTimes - i.taskDoTimes), (_val, index) => index)) {
+                                if (taskItemList[j] && taskItemList[j].itemId) {
+                                    if (i.timeLimitPeriod) {
+                                        let start = await this.curl({
+                                                'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
+                                                'form': `functionId=apStartTaskTime&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
+                                                    ...i.pipeExt, ...taskItemList[j].pipeExt
+                                                })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
                                                 user,
                                                 algo: {
-                                                    appId: 'ebecc'
+                                                    appId: 'acb1e'
                                                 }
-                                            })
-                                        }
-                                        else {
-                                            var doTask = await this.curl({
-                                                    'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
-                                                    'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
-                                                        ...i.pipeExt, ...taskItemList[j].pipeExt
-                                                    })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738480908001&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                                    algo: {'appId': '54ed7'},
-                                                    user
-                                                }
-                                            )
-                                        }
-                                        if (this.haskey(doTask, 'success')) {
-                                            p.log("任务完成", `[${parseInt(j) + 1}/${i.taskLimitTimes - i.taskDoTimes}]`)
-                                        }
-                                        else {
-                                            p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
-                                        }
-                                        if (i.canDrawAwardNum) {
-                                            let award = await this.curl({
-                                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
-                                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                                    user,
-                                                    algo: {
-                                                        appId: 'f0f3f'
-                                                    }
-                                                }
-                                            )
-                                            if (this.haskey(award, 'data')) {
-                                                p.log(`抽奖次数+1`)
                                             }
-                                            else {
-                                                p.err("抽奖领取失败")
-                                            }
+                                        )
+                                        if (this.haskey(start, 'code', 1)) {
+                                            p.log("失败了")
+                                            break
                                         }
-                                        await this.wait(3000)
+                                        p.log(`等待${i.timeLimitPeriod}秒...`)
+                                        await this.wait(i.timeLimitPeriod * 1000)
+                                        var doTask = await this.curl({
+                                            'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
+                                            'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                            user,
+                                            algo: {
+                                                appId: 'ebecc'
+                                            }
+                                        })
                                     }
+                                    else {
+                                        var doTask = await this.curl({
+                                                'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
+                                                'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
+                                                    ...i.pipeExt, ...taskItemList[j].pipeExt
+                                                })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738480908001&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                algo: {'appId': '54ed7'},
+                                                user
+                                            }
+                                        )
+                                    }
+                                    if (this.haskey(doTask, 'success')) {
+                                        p.log("任务完成", `[${parseInt(j) + 1}/${i.taskLimitTimes - i.taskDoTimes}]`)
+                                    }
+                                    else {
+                                        p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
+                                    }
+                                    if (i.canDrawAwardNum) {
+                                        let award = await this.curl({
+                                                'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                                'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                user
+                                            }
+                                        )
+                                        if (this.haskey(award, 'data')) {
+                                            p.log(`抽奖次数+1`)
+                                        }
+                                        else {
+                                            p.err("抽奖领取失败")
+                                        }
+                                    }
+                                    await this.wait(3000)
                                 }
                             }
                         }
@@ -196,10 +157,7 @@ export class Main extends Template {
                         let award = await this.curl({
                                 'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
                                 'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                user,
-                                algo: {
-                                    appId: 'f0f3f'
-                                }
+                                user
                             }
                         )
                         if (this.haskey(award, 'data')) {
@@ -215,7 +173,6 @@ export class Main extends Template {
                     switch (i.taskType) {
                         case'ORDER_MARK':
                         case 'SHARE_INVITE':
-                        case 'SUBSCRIBE_WITH_RECEIVE':
                             break
                         default:
                             isOk = 0
