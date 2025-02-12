@@ -7,6 +7,7 @@ export class Main extends Template {
             title: '京东互动整合',
             crontab: 4,
             sync: 1,
+            verify: 1
         }
     }
 
@@ -119,6 +120,20 @@ export class Main extends Template {
                                     else {
                                         p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
                                     }
+                                    if (i.canDrawAwardNum) {
+                                        let award = await this.curl({
+                                                'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                                'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                user
+                                            }
+                                        )
+                                        if (this.haskey(award, 'data')) {
+                                            p.log(`抽奖次数+1`)
+                                        }
+                                        else {
+                                            p.err("抽奖领取失败")
+                                        }
+                                    }
                                     await this.wait(3000)
                                 }
                             }
@@ -131,12 +146,28 @@ export class Main extends Template {
             isOk = 1
             apTask = await this.curl({
                     'url': `https://api.m.jd.com/api`,
-                    'form': `functionId=apTaskList&body={"linkId":"${context.linkId}","channel":4}&t=1738479849113&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                    'form':
+                        `functionId=apTaskList&body={"linkId":"${context.linkId}","channel":4}&t=1738479849113&appid=activities_platform&client=ios&clientVersion=15.0.11`,
                     user
                 }
             )
             for (let i of this.haskey(apTask, 'data')) {
                 if (i.taskLimitTimes == i.taskDoTimes) {
+                    if (i.canDrawAwardNum) {
+                        let award = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                user
+                            }
+                        )
+                        if (this.haskey(award, 'data')) {
+                            p.log(`抽奖次数+1`)
+                        }
+                        else {
+                            p.err("抽奖领取失败")
+                        }
+                        await this.wait(2000)
+                    }
                 }
                 else {
                     switch (i.taskType) {
@@ -159,6 +190,86 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         let doIt = await this.doTask(p)
+    }
+
+    async _inviteFission(p) {
+        let user = p.data.user;
+        let context = p.context;
+        let doIt = await this.doTask(p)
+        let home = await this.curl({
+                'url': `https://api.m.jd.com/api`,
+                'form': `functionId=inviteFissionHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                user,
+                algo: {'appId': 'eb67b', status: true},
+            }
+        )
+        let drawNum = this.haskey(home, 'data.prizeNum') || 0
+        p.log("可抽奖次数:", drawNum)
+        for (let i of Array(drawNum)) {
+            try {
+                let lottery = await this.curl({
+                    url: 'https://api.m.jd.com/api',
+                    form: `functionId=inviteFissionDrawPrize&body={"linkId":"${context.linkId}"}&t=1739359908592&appid=activities_platform&client=ios&clientVersion=15.0.11&loginType=2&loginWQBiz=wegame`,
+                    algo: {
+                        'appId': 'c02c6',
+                        expire: {
+                            code: 1000
+                        }
+                    },
+                    user
+                })
+                if (this.haskey(lottery, 'code', 18002)) {
+                    p.log('抽奖机会用完啦')
+                    break
+                }
+                if (this.haskey(lottery, 'data')) {
+                    drawNum--
+                    let data = lottery.data
+                    let prizeType = data.prizeType
+                    if (prizeType == 1) {
+                        p.log('优惠券:', data.prizeDesc, data.amount)
+                    }
+                    else if (prizeType == 2) {
+                        p.draw(`红包: ${data.amount}`)
+                    }
+                    else if (prizeType == 3) {
+                        p.draw(`京豆: ${data.amount}`)
+                    }
+                    else if (prizeType == 22) {
+                        p.draw(`超市卡: ${data.amount}`)
+                    }
+                    else if (prizeType == 0) {
+                        p.log('没抽到奖品')
+                    }
+                    else if (prizeType == 17) {
+                        p.log('谢谢参与')
+                    }
+                    else {
+                        p.draw(`抽到类型: ${prizeType} ${data.codeDesc} ${data.prizeDesc}`)
+                    }
+                }
+                else {
+                    p.err("抽奖错误")
+                    break
+                }
+                await this.wait(2000)
+            } catch (e) {
+                p.log(e)
+            }
+        }
+        if (drawNum != 0) {
+            home = await this.curl({
+                    'url': `https://api.m.jd.com/api`,
+                    'form': `functionId=inviteFissionHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                    user,
+                    algo: {'appId': 'eb67b', status: true},
+                }
+            )
+            drawNum = this.haskey(home, 'data.prizeNum')
+        }
+        if (doIt.finish && drawNum == 0) {
+            p.info.work = true
+        }
     }
 
     async _superLeague(p) {
