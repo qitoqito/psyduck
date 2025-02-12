@@ -7,8 +7,7 @@ export class Main extends Template {
             title: '京东互动整合',
             crontab: 4,
             sync: 1,
-            verify: 1,
-            task:1
+            verify: 1
         }
     }
 
