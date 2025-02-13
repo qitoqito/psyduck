@@ -13,7 +13,7 @@ export class Main extends Template {
             prompt: {
                 appId: '活动id'
             },
-            crontab: 4,
+            crontab: 3,
             verify: 1,
             tempExpire: 3600
         }
@@ -82,21 +82,21 @@ export class Main extends Template {
         }
         let data = await this.getTemp(context.appId)
         if (!data) {
-            let device2 = {
-                appId: p.appId,
-                "nodeId": p.nodeId,
-                "origin": "jindian",
-                deviceInfo: `{"jsToken":"","fp":"${this.md5(new Date().getTime().toString())}","sdkToken":"jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567","eid":"FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U","appType":1}`,
-                "isLoadMore": false, "pageNum": 1, "pageSize": 10, "channel": "5", "modelPreviewType": "1"
-            }
             let list = await this.curl({
-                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/selectJdActivityReceiveList`,
-                    form: `reqData=${this.dumps(device2)}`,
-                    cookie: this.tester()
+                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/queryFundPositionArray`,
+                    form: `reqData=${this.dumps({
+                        appId: context.appId,
+                        "nodeId": context.nodeId,
+                        "origin": "jindian",
+                        source: 0,
+                        deviceInfo: `{"jsToken":"","fp":"${this.md5(new Date().getTime().toString())}","sdkToken":"jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567","eid":"FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U","appType":1}`,
+                        "modelPreviewType": "1"
+                    })}`,
+                    user
                 }
             )
-            if (this.haskey(list, 'resultData.data.jdReceivedList')) {
-                data = list.resultData.data.jdReceivedList[0]
+            if (this.haskey(list, 'resultData.data.0.jdUnclaimedList')) {
+                data = list.resultData.data[0].jdUnclaimedList[0]
                 await this.setTemp(context.appId, data)
             }
         }
@@ -135,6 +135,7 @@ export class Main extends Template {
         else {
             p.err("没有获取到activityId")
         }
+        a.window.close()
     }
 }
 

@@ -11,11 +11,12 @@ export class Main extends Template {
             interval: 2000,
             crontab: 24,
             prompt: {
-                change: `expired  #只转换过期账户`
+                change: `expired  #只转换过期账户`,
+                cache: `1 #如设置temp,当天有转换成功,后续运行将跳过该账号`
             }
         }
     }
- 
+
     async prepare() {
         if (this.haskey(this.profile, 'change', 'expired')) {
             let expired = await this.getExpire()
@@ -93,7 +94,9 @@ export class Main extends Template {
                     if (y.cookie && y.cookie.includes('app_open')) {
                         this.dict[user] = y.cookie
                         p.log('openKey生成成功');
-                        p.info.work = true
+                        if (this.profile.cache) {
+                            p.info.work = true
+                        }
                         this.valid(user, true)
                     }
                     else {
