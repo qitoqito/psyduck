@@ -14,9 +14,22 @@ export class Cache {
 
     async connect() {
         if (this._type == 'redis') {
-            // var redis = require('redis');
             this._cache = await redis.createClient({
-                url: `redis://:${this._db.password || ''}@${this._db.host || '127.0.0.1'}:${this._db.prot || 6379}/${this._db.db}`
+                url: `redis://:${this._db.password || ''}@${this._db.host || '127.0.0.1'}:${this._db.prot || 6379}/${this._db.db || 2}`,
+                retry_strategy: function(options) {
+                    if (options.error?.code === 'ECONNREFUSED') {
+                        return undefined;
+                    }
+                    // 如果总重试时间超过1分钟，停止重试
+                    if (options.total_retry_time>60000) {
+                        return null;
+                    }
+                    // 重试间隔时间：每次尝试增加100ms，但最少等待3秒
+                    return Math.max(options.attempt * 100, 3000);
+                },
+                enable_offline_queue: false,
+                connect_timeout: 3000,
+                socket_keepalive: true
             })
             await this._cache.connect();
         }

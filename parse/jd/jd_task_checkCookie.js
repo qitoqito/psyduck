@@ -9,24 +9,38 @@ export class Main extends Template {
             userData: true,
             validCookie: true,
             interval: 2000,
-            crontab: 24
+            crontab: 24,
+            prompt: {
+                change: `expired  #只转换过期账户`
+            }
         }
     }
-
+ 
     async prepare() {
+        if (this.haskey(this.profile, 'change', 'expired')) {
+            let expired = await this.getExpire()
+            if (expired) {
+                this.shareCode({
+                    change: 1,
+                    task: expired.join("|")
+                })
+            }
+            else {
+                this.log("没有过期账户,跳过运行")
+                this.jump = 1
+            }
+        }
     }
 
     async main(p) {
         let user = p.data.user;
+        let pin = p.data.pin
         let context = p.context;
         let s = await this.curl({
                 'url': `https://plogin.m.jd.com/cgi-bin/ml/islogin`,
                 user,
                 algo: {
                     shell: 1,
-                    // valid: {
-                    //     haskey: 'islogin', code: ['0']
-                    // }
                 }
             }
         )
@@ -36,7 +50,7 @@ export class Main extends Template {
                 let genToken = await this.curl({
                         url: 'https://api.m.jd.com/client.action',
                         form: 'functionId=genToken&body=%7B%22to%22%3A%22https%3A%2F%2Fbean.m.jd.com%2FbeanDetail%2Findex.action%22%2C%22action%22%3A%22to%22%7D&uuid=487f7b22f68312d2c1bbc93b1a&client=apple&clientVersion=10.10.0',
-                        cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(p.info.pin || user)};`,
+                        cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(pin)};`,
                         algo: {app: true},
                         response: 'all',
                         headers: {
@@ -80,6 +94,7 @@ export class Main extends Template {
                         this.dict[user] = y.cookie
                         p.log('openKey生成成功');
                         p.info.work = true
+                        this.valid(user, true)
                     }
                     else {
                         p.err("openKey获取失败")
