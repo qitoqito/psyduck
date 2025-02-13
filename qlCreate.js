@@ -1,21 +1,30 @@
 import fs from 'fs'
 import path from 'path';
-import {fileURLToPath} from 'url';
+import {
+    fileURLToPath
+} from 'url';
 import ini from 'ini'
 import axios from "axios";
 
 class Ql {
     constructor() {
-        const dirpath = fileURLToPath(import.meta.url);
+        console.log(`Readme: 请先初始化config.ini,打开qitoqito_psyduck/config文件夹,将demo.ini更名config.ini\n        设置QINGLONG_ClientId和QINGLONG_ClientSecret(前面;符号要去掉才能正常解析)\n        如需使用脚本分身,请先自行创建分类ini\n        以京东为例,在指定的iniPath目录(默认qitoqito_psyduck)自行创建jd.ini\n\n        [jd_checkCookie]\n        map=jd_task_checkCookie\n\n        将上述节点代码复制到jd.ini,jd_checkCookie就能映射到jd_task_checkCookie脚本\n`)
+        const dirpath = fileURLToPath(
+            import.meta.url);
         const abspath = path.dirname(dirpath)
         let iniText = fs.readFileSync(`${abspath}/config/config.ini`, 'UTF-8')
         let obj = ini.parse(iniText)
-        let env = obj.env
-        this.config = {
-            baseURL: env.QINGLONG_BaseUrl || 'http://127.0.0.1:5700',
-            clientId: env.QINGLONG_ClientId,
-            clientSecret: env.QINGLONG_ClientSecret
-        };
+        this.env = obj.env
+        if (this.env.QINGLONG_ClientId) {
+            this.config = {
+                baseURL: this.env.QINGLONG_BaseUrl || 'http://127.0.0.1:5700',
+                clientId: this.env.QINGLONG_ClientId,
+                clientSecret: this.env.QINGLONG_ClientSecret
+            };
+        }
+        else {
+            this.config = null
+        }
         this.token = null
     }
 
@@ -39,15 +48,11 @@ class Ql {
     async setEnvs(data) {
         const token = this.token
         try {
-            const response = await axios.put(
-                `${this.config.baseURL}/open/envs`,
-                data,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+            const response = await axios.put(`${this.config.baseURL}/open/envs`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-            );
+            });
             return response.data;
         } catch (error) {
             console.error('[Error] 更新环境变量失败:', error);
@@ -158,15 +163,11 @@ class Ql {
     async addCron(command) {
         const token = this.token
         try {
-            const response = await axios.post(
-                `${this.config.baseURL}/open/crons`,
-                command,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+            const response = await axios.post(`${this.config.baseURL}/open/crons`, command, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-            );
+            });
             return response.data;
         } catch (error) {
             console.error('[Error] 创建定时任务失败:', error);
@@ -179,9 +180,15 @@ class Ql {
     }
 
     async create() {
+        if (!this.config) {
+            consoel.log("请先初始化config.ini,并设置青龙ClientID和ClientSecret")
+            return
+        }
         await this.getToken()
-        let dirpath = fileURLToPath(import.meta.url);
+        let dirpath = fileURLToPath(
+            import.meta.url);
         let abspath = path.dirname(dirpath)
+        let iniPath = this.env.iniPath || `${abspath}/config`
         let crons = await this.getCrons()
         let data = {}
         for (let i of crons.data) {
@@ -201,10 +208,74 @@ class Ql {
         dir.forEach(async function(item, index) {
             let stat = fs.lstatSync(`${abspath}/parse/` + item)
             if (stat.isDirectory() === true) {
+                if (fs.existsSync(`${iniPath}/${item}.ini`)) {
+                    let iniText = fs.readFileSync(`${iniPath}/${item}.ini`, 'UTF-8')
+                    let obj = ini.parse(iniText)
+                    for (let filename in obj) {
+                        if (obj[filename].map) {
+                            let map = obj[filename].map
+                            try {
+                                let imp = await
+                                    import (`${abspath}/parse/${item}/${map}.js`)
+                                let psyDuck = new imp.Main()
+                                let crontab = psyDuck.crontab()
+                                let code = `
+import path from 'path';
+import {
+    fileURLToPath
+} from 'url';
+!(async () => {
+    let dirpath = fileURLToPath(import.meta.url).replace('.swap','');
+    let abspath = path.dirname(dirpath)
+    let filename = dirpath.match(/(\\w+)\\.js/)[1]
+    let type = filename.split('_')[0]
+    if (['js', 'jx', 'jr', 'jw'].includes(type)) {
+        type = 'jd'
+    }
+    let length = process.argv.length
+    let params = {
+        filename,
+        mapping: "${map}",
+    }
+    if (length > 2) {
+        for (let i = 2; i < length; i++) {
+            let key = process.argv[i].match(/^-\\w+$/)
+            if (key) {
+                params[key[0].substr(1)] = process.argv[i + 1]
+            }
+        }
+    }
+    let psyDuck = await import (\`\${abspath}/parse/\${type}/${map}.js\`)
+    let main = new psyDuck.Main()
+    await main.init(params)
+})().catch((e) => {
+    console.log(e.message)
+})`
+                                fs.writeFile(`${abspath}/${filename}.js`, code, function(err, data) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    console.log(`🐯‍❄️ 写入成功: ${filename}.js`)
+                                })
+                                if (!data[`${filename}.js`]) {
+                                    dicts[`${filename}.js`] = {
+                                        name: `PsyDuck_${psyDuck.profile.title}`,
+                                        schedule: crontab,
+                                        command: `task qitoqito_psyduck/${filename}.js`,
+                                        labels: [`PsyDuck`]
+                                    }
+                                }
+                            } catch (e) {
+                                console.log(e)
+                            }
+                        }
+                    }
+                }
                 for (let script of fs.readdirSync(`${abspath}/parse/${item}`)) {
                     try {
                         if (script.match(/\w+\_\w+\_\w/)) {
-                            let imp = await import(`${abspath}/parse/${item}/${script}`)
+                            let imp = await
+                                import (`${abspath}/parse/${item}/${script}`)
                             let psyDuck = new imp.Main()
                             let crontab = psyDuck.crontab()
                             let code = `
@@ -265,10 +336,10 @@ import {
             try {
                 let add = await this.addCron(dicts[i])
                 if (add.data.name) {
-                    console.log('任务添加成功: ', i)
+                    console.log('🐯‍❄️ 任务添加成功: ', i)
                 }
             } catch (e) {
-                console.log('任务添加失败: ', i)
+                console.log('🐽🐽️ 任务添加失败: ', i)
             }
         }
     }
