@@ -12,7 +12,7 @@
 
 ```
 1. 打开config文件夹,将demo.ini重命名为config.ini,按需修改config.ini字段,字段前的;去掉才能正常解析
-2. QINGLONG_ClientId  QINGLONG_ClientSecret 两个字段必须填写,注意去掉前面的;符号 (面板->系统设置->应用设置->创建应用,权限只需:定时任务)
+2. QINGLONG_ClientId  QINGLONG_ClientSecret 两个字段必须填写,注意去掉前面的;符号 (面板->系统设置->应用设置->创建应用,权限:定时任务,环境变量)
 3. 如需开启缓存,找到[cache],按需修改  开启缓存后,跑完任务的账户重运行会自动跳过
 4. 进入bug龙终端安装依赖,执行以下命令: cd /ql/data/scripts/qitoqito_psyduck/ && npm install
 5. 重新执行task qitoqito_psyduck/qlCreate.js now
