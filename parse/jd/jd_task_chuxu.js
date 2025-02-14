@@ -11,11 +11,15 @@ export class Main extends Template {
             crontab: 3,
             headers: {
                 referer: 'https://content.jr.jd.com/'
+            },
+            prompt: {
+                channelCode: '活动id'
             }
         }
     }
 
     async prepare() {
+        await this.field('channelCode')
         let ua = this.userAgents().jd
         let resourceLoader = new jsdom.ResourceLoader({
             userAgent: ua,
@@ -152,7 +156,7 @@ export class Main extends Template {
                                 user
                             }
                         )
-                        if (this.haskey(finish, 'resultData.code', '0000')) {
+                        if (this.haskey(finish, 'resultData.code', '0000') || this.haskey(finish, 'resultData.code', '0001')) {
                             let reward = await this.curl({
                                     'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/awardMission`,
                                     json: {

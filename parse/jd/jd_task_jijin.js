@@ -7,6 +7,9 @@ export class Main extends Template {
         this.profile = {
             title: '京东财富号',
             crontab: 3,
+            headers: {
+                referer: 'https://finshop.jd.com/'
+            }
         }
     }
 
@@ -30,7 +33,7 @@ export class Main extends Template {
         };
         let JSDOM = jsdom.JSDOM
         let a = new JSDOM(`<body><script src="https://jrsecstatic.jdpay.com/jr-sec-dev-static/aar2.min.js"></script> <script src="https://m.jr.jd.com/common/jssdk/jrbridge/2.0.0/jrbridge.js"></script>   <script src="https://jrsecstatic.jdpay.com/jr-sec-dev-static/cryptico.min.js"></script>  </body>`, this.jsConfig)
-        await this.wait(1000)
+        await this.wait(3000)
         if (a.window.AAR2) {
             a.window.AAR2.init();
             this.crypto = {
@@ -141,8 +144,6 @@ export class Main extends Template {
                                         }
                                     },
                                     user,
-                                    shell: true,
-                                    referer: 'https://finshop.jd.com/',
                                 }
                             )
                             let task = await this.curl({
@@ -193,8 +194,6 @@ export class Main extends Template {
                                         }
                                     },
                                     user,
-                                    shell: true,
-                                    referer: 'https://finshop.jd.com/'
                                 }
                             )
                             if (this.haskey(reward, 'resultData.success')) {
@@ -250,8 +249,6 @@ export class Main extends Template {
                                         }
                                     },
                                     user,
-                                    shell: true,
-                                    referer: 'https://finshop.jd.com/',
                                 }
                             )
                             let add = await this.curl({
@@ -270,8 +267,6 @@ export class Main extends Template {
                                         }
                                     },
                                     user,
-                                    shell: true,
-                                    referer: 'https://finshop.jd.com/'
                                 }
                             )
                             if (this.haskey(reward, 'resultData.success')) {
@@ -291,6 +286,112 @@ export class Main extends Template {
                         else {
                             status = 0
                             p.log("没有获取到itemId")
+                        }
+                    }
+                    else if (i.name.includes("浏览")) {
+                        let doLink = i.doLink
+                        let pp = this.query(doLink, '&', 1)
+                        let T = aar.nonce()
+                        status = 0
+                        let batchGetTransLink = await this.curl({
+                                'url': `https://ms.jr.jd.com/gw2/generic/jrResource/h5/m/batchGetTransLink`,
+                                json: {
+                                    "reqData": this.dumps({
+                                        "parentUrlParam": i.doLink.split("?")[1],
+                                        "linkList": []
+                                    }),
+                                },
+                                user
+                            }
+                        )
+                        let signData = this.dumps(
+                            {"missionId": i.missionId.toString(), "PIN": p.info.pin}
+                        )
+                        let nonce4 = aar.nonce()
+                        let signature4 = aar.sign(signData, nonce4)
+                        let queryBrowsMissionExt = await this.curl({
+                                'url': `https://ms.jr.jd.com/gw2/generic/Mission/h5/m/queryBrowsMissionExt`,
+                                json: {
+                                    "missionId": i.missionId,
+                                    "channelCode": pp.channelCode,
+                                    "nonce": nonce4,
+                                    "signData": signData,
+                                    "signature": signature4,
+                                    "version": "2.2.1"
+                                },
+                                user,
+                            }
+                        )
+                        if (this.haskey(queryBrowsMissionExt, 'resultData.data.extendMap')) {
+                            p.log("正在浏览")
+                            let map = queryBrowsMissionExt.resultData.data.extendMap
+                            p.log(`等待${map.readTime}s中...`)
+                            await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMissionReceiveAfterStatus`,
+                                    json: {
+                                        "reqData": this.dumps({
+                                            missionId: i.missionId.toString(),
+                                            "channelCode": pp.channelCode,
+                                        })
+                                    },
+                                    user
+                                }
+                            )
+                            await this.wait(parseInt(map.readTime) * 1000)
+                            let n = JSON.stringify({
+                                missionId: i.missionId.toString(),
+                                readTime: map.readTime.toString(),
+                                PIN: p.info.pin
+                            })
+                            let signature2 = aar.sign(n, T)
+                            let finish = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/finishReadMission`,
+                                    json: {
+                                        "reqData": this.dumps({
+                                            missionId: i.missionId.toString(),
+                                            readTime: map.readTime.toString(),
+                                            nonce: T,
+                                            signature: aar.sign(n, T),
+                                            version: "2.2.1",
+                                            "channelCode": pp.channelCode,
+                                        })
+                                    },
+                                    user
+                                }
+                            )
+                            if (this.haskey(finish, 'resultData.code', '0000') || this.haskey(finish, 'resultData.code', '0001')) {
+                                let reward = await this.curl({
+                                        'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/awardMission`,
+                                        json: {
+                                            "reqData": this.dumps(device2),
+                                            "aar": {
+                                                "nonce": nonce3,
+                                                "signature": signature3
+                                            }
+                                        },
+                                        user,
+                                    }
+                                )
+                                if (this.haskey(reward, 'resultData.success')) {
+                                    if (i.awardName == '京豆') {
+                                        p.draw(i.awardRealNum)
+                                    }
+                                    else {
+                                        p.msg(`${i.awardName}: ${i.awardRealNum}`)
+                                    }
+                                    status = 1
+                                }
+                                else {
+                                    p.log(reward)
+                                }
+                                await this.wait(2000)
+                            }
+                            else {
+                                p.log("浏览失败...")
+                            }
+                        }
+                        else {
+                            p.err("浏览失败")
                         }
                     }
                 }
