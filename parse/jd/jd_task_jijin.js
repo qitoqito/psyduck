@@ -305,7 +305,7 @@ export class Main extends Template {
                             }
                         )
                         let signData = this.dumps(
-                            {"missionId": i.missionId.toString(), "PIN": p.info.pin}
+                            {"missionId": i.missionId.toString(), "PIN": p.data.pin}
                         )
                         let nonce4 = aar.nonce()
                         let signature4 = aar.sign(signData, nonce4)
@@ -341,7 +341,7 @@ export class Main extends Template {
                             let n = JSON.stringify({
                                 missionId: i.missionId.toString(),
                                 readTime: map.readTime.toString(),
-                                PIN: p.info.pin
+                                PIN: p.data.pin
                             })
                             let signature2 = aar.sign(n, T)
                             let finish = await this.curl({
