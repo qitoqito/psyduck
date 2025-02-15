@@ -50,9 +50,9 @@ export class Main extends Template {
             if (userData.wskey) {
                 let genToken = await this.curl({
                         url: 'https://api.m.jd.com/client.action',
-                        form: 'functionId=genToken&body=%7B%22to%22%3A%22https%3A%2F%2Fbean.m.jd.com%2FbeanDetail%2Findex.action%22%2C%22action%22%3A%22to%22%7D&uuid=487f7b22f68312d2c1bbc93b1a&client=apple&clientVersion=10.10.0',
+                        form: 'functionId=genToken&body=%7B%22to%22%3A%22https%3A%2F%2Fbean.m.jd.com%2FbeanDetail%2Findex.action%22%2C%22action%22%3A%22to%22%7D&uuid=487f7b22f68312d2c1bbc93b1a&client=apple&clientVersion=15.0.11',
                         cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(pin)};`,
-                        algo: {app: true},
+                        algo: {sign: true},
                         response: 'all',
                         headers: {
                             'j-e-c': encodeURIComponent(this.dumps({
