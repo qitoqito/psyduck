@@ -5,9 +5,9 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东互动整合',
-            crontab: 4,
+            crontab: 6,
             sync: 1,
-            verify: 1
+            verify: 1,
         }
     }
 
@@ -17,6 +17,35 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        p.lottery = function(lottery) {
+            let data = lottery.data
+            let prizeType = data.prizeType || data.rewardType
+            let amount = data.amount || data.rewardValue
+            if (prizeType == 1) {
+                p.log('优惠券:', data.prizeDesc, data.amount)
+            }
+            else if (prizeType == 2) {
+                p.draw(`红包: ${amount}`)
+            }
+            else if (prizeType == 3) {
+                p.draw(`京豆: ${amount}`)
+            }
+            else if (prizeType == 22) {
+                p.draw(`超市卡: ${amount}`)
+            }
+            else if (prizeType == 0) {
+                p.log('没抽到奖品')
+            }
+            else if (prizeType == 17) {
+                p.log('谢谢参与')
+            }
+            else if (prizeType) {
+                p.draw(`抽到类型: ${prizeType} ${data.codeDesc || data.prizeCode} ${data.prizeDesc || data.prizeName}`)
+            }
+            else {
+                p.log("什么也没有")
+            }
+        }
         if (this[`_${context.category}`]) {
             try {
                 await this[`_${context.category}`](p)
@@ -232,6 +261,58 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         let doIt = await this.doTask(p)
+        let home = await this.curl({
+                'url': `https://api.m.jd.com/api`,
+                'form': `functionId=wheelsHome&body={"linkId":"${context.linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
+                user,
+                algo: {'appId': 'c06b7', status: true},
+            }
+        )
+        let drawNum = this.haskey(home, 'data.lotteryChances') || 0
+        p.log("可抽奖次数:", drawNum)
+        for (let i of Array(drawNum)) {
+            try {
+                let lottery = await this.curl({
+                    url: 'https://api.m.jd.com/api',
+                    form: `functionId=wheelsLottery&body={"linkId":"${context.linkId}"}&t=1739590600753&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
+                    algo: {
+                        'appId': 'bd6c8',
+                        expire: {
+                            code: 1000
+                        }
+                    },
+                    user
+                })
+                if (this.haskey(lottery, 'code', 18002)) {
+                    p.log('抽奖机会用完啦')
+                    break
+                }
+                if (this.haskey(lottery, 'data')) {
+                    drawNum--
+                    p.lottery(lottery)
+                }
+                else {
+                    p.err("抽奖错误")
+                    break
+                }
+                await this.wait(2000)
+            } catch (e) {
+                p.log(e)
+            }
+        }
+        if (drawNum != 0) {
+            home = await this.curl({
+                    'url': `https://api.m.jd.com/api`,
+                    'form': `functionId=wheelsHome&body={"linkId":"wWGE5McZMFWkhTl-AN_TRQ","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
+                    user,
+                    algo: {'appId': 'c06b7', status: true},
+                }
+            )
+            drawNum = this.haskey(home, 'data.lotteryChances')
+        }
+        if (doIt.finish && drawNum == 0) {
+            p.info.work = true
+        }
     }
 
     async _inviteFission(p) {
@@ -346,29 +427,7 @@ export class Main extends Template {
                 }
                 if (this.haskey(lottery, 'data')) {
                     drawNum--
-                    let data = lottery.data
-                    let prizeType = data.prizeType
-                    if (prizeType == 1) {
-                        p.log('优惠券:', data.prizeDesc, data.amount)
-                    }
-                    else if (prizeType == 2) {
-                        p.draw(`红包: ${data.amount}`)
-                    }
-                    else if (prizeType == 3) {
-                        p.draw(`京豆: ${data.amount}`)
-                    }
-                    else if (prizeType == 22) {
-                        p.draw(`超市卡: ${data.amount}`)
-                    }
-                    else if (prizeType == 0) {
-                        p.log('没抽到奖品')
-                    }
-                    else if (prizeType == 17) {
-                        p.log('谢谢参与')
-                    }
-                    else {
-                        p.draw(`抽到类型: ${prizeType} ${data.codeDesc} ${data.prizeDesc}`)
-                    }
+                    p.lottery(lottery)
                 }
                 else {
                     p.err("抽奖错误")
@@ -426,29 +485,7 @@ export class Main extends Template {
                 }
                 if (this.haskey(lottery, 'data')) {
                     drawNum--
-                    let data = lottery.data
-                    let prizeType = data.prizeType
-                    if (prizeType == 1) {
-                        p.log('优惠券:', data.prizeDesc, data.amount)
-                    }
-                    else if (prizeType == 2) {
-                        p.draw(`红包: ${data.amount}`)
-                    }
-                    else if (prizeType == 3) {
-                        p.draw(`京豆: ${data.amount}`)
-                    }
-                    else if (prizeType == 22) {
-                        p.draw(`超市卡: ${data.amount}`)
-                    }
-                    else if (prizeType == 0) {
-                        p.log('没抽到奖品')
-                    }
-                    else if (prizeType == 17) {
-                        p.log('谢谢参与')
-                    }
-                    else {
-                        p.draw(`抽到类型: ${prizeType} ${data.codeDesc} ${data.prizeDesc}`)
-                    }
+                    p.lottery(lottery)
                 }
                 else {
                     p.err("抽奖错误")
