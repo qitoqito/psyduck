@@ -85,12 +85,18 @@ export class Main extends Template {
                     },
                 }
             )
-            if (this.haskey(signBeanAct, 'data.dailyAward.beanAward.beanCount')) {
+            let status = this.haskey(signBeanAct, 'data.status')
+            if (status == '2') {
                 p.info.work = true
-                p.msg(`京豆: ${signBeanAct.data.dailyAward.beanAward.beanCount}`)
+                p.log("已签到...")
             }
-            else if (this.haskey(signBeanAct, 'data.continuityAward.beanAward.beanCount')) {
-                p.msg(`京豆: ${signBeanAct.data.continuityAward.beanAward.beanCount}`)
+            else if (status == '1') {
+                if (this.haskey(signBeanAct, 'data.dailyAward.beanAward.beanCount')) {
+                    p.msg(`京豆: ${signBeanAct.data.dailyAward.beanAward.beanCount}`)
+                }
+                else if (this.haskey(signBeanAct, 'data.continuityAward.beanAward.beanCount')) {
+                    p.msg(`京豆: ${signBeanAct.data.continuityAward.beanAward.beanCount}`)
+                }
                 p.info.work = true
             }
             else {
