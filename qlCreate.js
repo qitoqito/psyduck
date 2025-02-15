@@ -8,7 +8,7 @@ import axios from "axios";
 
 class Ql {
     constructor() {
-        console.log(`Readme: 请先初始化config.ini,打开qitoqito_psyduck/config文件夹,将demo.ini重命名为config.ini\n        设置QINGLONG_ClientId和QINGLONG_ClientSecret(前面;符号要去掉才能正常解析)\n        如需使用脚本分身,请先自行创建分类ini\n        以京东为例,在指定的iniPath目录(默认qitoqito_psyduck/config)自行创建jd.ini\n\n        [jd_checkCookie]\n        map=jd_task_checkCookie\n        ;title=自定义脚本名\n        ;crontab=自定义定时(6 6 6 6 6)\n\n将上述节点代码复制到jd.ini,jd_checkCookie就能映射到jd_task_checkCookie脚本\n`)
+        console.log(`Readme: 请先初始化config.ini,打开qitoqito_psyduck/config文件夹,将demo.ini重命名为config.ini\n        设置QINGLONG_ClientId和QINGLONG_ClientSecret(前面;符号要去掉才能正常解析)\n        如需使用脚本分身,请先自行创建分类ini\n        以京东为例,在指定的iniPath目录(默认qitoqito_psyduck/config)自行创建jd.ini\n\n        [jd_checkCookie]\n        map=jd_task_checkCookie\n        ;title=自定义脚本名\n        ;crontab=自定义定时(6 6 6 6 6)\n\n        将上述节点代码复制到jd.ini,jd_checkCookie就能映射到jd_task_checkCookie脚本\n`)
         const dirpath = fileURLToPath(
             import.meta.url);
         const abspath = path.dirname(dirpath)
@@ -250,7 +250,7 @@ import {
     let main = new psyDuck.Main()
     await main.init(params)
 })().catch((e) => {
-    console.log(e.message)
+    console.log(e)
 })`
                                 fs.writeFile(`${abspath}/${filename}.js`, code, function(err, data) {
                                     if (err) {
@@ -308,7 +308,7 @@ import {
     let main = new psyDuck.Main()
     await main.init(params)
 })().catch((e) => {
-    console.log(e.message)
+    console.log(e)
 })`
                             fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
                                 if (err) {
