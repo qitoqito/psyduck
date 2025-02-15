@@ -101,11 +101,16 @@ export class Main extends Template {
                     }
                     else {
                         p.err("openKey获取失败")
+                        p.msg("openKey生成失败")
                     }
                 }
                 else {
                     p.err("tokenKey获取失败")
+                    p.msg("openKey生成失败")
                 }
+            }
+            else {
+                p.msg("账号过期了呀🐶")
             }
         }
         else if (this.haskey(s, 'islogin', '1')) {
