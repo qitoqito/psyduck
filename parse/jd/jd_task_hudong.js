@@ -7,11 +7,101 @@ export class Main extends Template {
             title: '京东互动整合',
             crontab: 6,
             sync: 1,
-            verify: 1,
+            verify: ['linkId'],
+            tempExpire: 3 * 86400,
+            prompt: {
+                id: "活动Id #url里的那部分id,暂只支持部分类型"
+            }
         }
     }
 
     async prepare() {
+        await this.field('id')
+    }
+
+    async batch(p) {
+        p = this.getTemp(p.pid) || p
+        if (!p.linkId) {
+            let url = `https://prodev.m.jd.com/mall/active/${p.id}/index.html?utm_medium=tuiguang&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=&utm_source=kong&cu=true`
+            let html = await this.curl(url)
+            let mainJs = this.unique(this.matchAll(/src="(.*?\.js)"/g, html).filter(d => d.includes('main.')))
+            let js = ''
+            for (let j of mainJs) {
+                js += await this.curl({
+                    url: j.includes('http') ? j : `https://${j}`
+                })
+            }
+            let lids = this.unique(this.matchAll(/"linkId"\s*:\s*"([^\"]+)"/g, html))
+            if (html.includes('lottery-machine')) {
+                for (let linkId of lids) {
+                    let lottery = await this.curl({
+                            'url': `http://api.m.jd.com/api`,
+                            'form': `functionId=lotteryMachineHome&body={"linkId":"${linkId}","taskId":"","inviter":""}&t=1713449252402&appid=activities_platform&client=ios&clientVersion=15.1.1&uuid=de21c6604748f97dd3977153e51a47f4efdb9a47&build=168960&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13%2C3&lang=zh_CN&osVersion=15.1.1&partner=-1&cthr=1`,
+                            delay: 1,
+                            algo: {
+                                appId: "d7439",
+                            }
+                        }
+                    )
+                    if (this.haskey(lottery, 'data.prizeItems')) {
+                        p.linkId = linkId
+                        p.category = 'lotteryMachine'
+                    }
+                }
+            }
+            else if (js.includes('inviteFission')) {
+                for (let linkId of lids) {
+                    let pl = await this.curl({
+                            'url': `http://api.m.jd.com/api`,
+                            form: `appid=activities_platform&body={"linkId":"${linkId}","taskId":"","inviter":""}&client=ios&clientVersion=12.3.4&functionId=inviteFissionBeforeHome&t=1718017177605&osVersion=16.2.1&build=169143&rfs=0000`,
+                            algo: {
+                                appId: '02f8d'
+                            },
+                        }
+                    )
+                    if (this.haskey(pl, 'data')) {
+                        p.linkId = linkId
+                        p.category = 'inviteFission'
+                        break
+                    }
+                }
+            }
+            else if (js.includes('superLeague')) {
+                for (let linkId of lids) {
+                    let pl = await this.curl({
+                            'url': `http://api.m.jd.com/api`,
+                            form: `appid=activities_platform&body={"linkId":"${linkId}","taskId":"","inviter":""}&client=ios&clientVersion=12.3.4&functionId=superLeagueHome&t=1718017177605&osVersion=16.2.1&build=169143&rfs=0000`,
+                            algo: {
+                                appId: 'b7d17'
+                            },
+                        }
+                    )
+                    if (this.haskey(pl, 'data')) {
+                        p.linkId = linkId
+                        p.category = 'superLeague'
+                        break
+                    }
+                }
+            }
+            else if (js.includes('wheelsLottery')) {
+                for (let linkId of lids) {
+                    let pl = await this.curl({
+                            'url': `https://api.m.jd.com/api`,
+                            'form': `functionId=wheelsHome&body={"linkId":"${linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
+                            algo: {'appId': 'c06b7'},
+                        }
+                    )
+                    if (this.haskey(pl, 'data')) {
+                        p.linkId = linkId
+                        p.category = 'wheels'
+                        break
+                    }
+                }
+            }
+            else {
+            }
+        }
+        return p
     }
 
     async main(p) {
@@ -21,8 +111,11 @@ export class Main extends Template {
             let data = lottery.data
             let prizeType = data.prizeType || data.rewardType
             let amount = data.amount || data.rewardValue
-            if (prizeType == 1) {
-                p.log('优惠券:', data.prizeDesc, data.amount)
+            if (prizeType == 0) {
+                p.log('没抽到奖品')
+            }
+            else if (prizeType == 1) {
+                p.log('优惠券:', data.codeDesc || data.prizeCode, data.prizeDesc || data.prizeName)
             }
             else if (prizeType == 2) {
                 p.draw(`红包: ${amount}`)
@@ -30,14 +123,14 @@ export class Main extends Template {
             else if (prizeType == 3) {
                 p.draw(`京豆: ${amount}`)
             }
-            else if (prizeType == 22) {
-                p.draw(`超市卡: ${amount}`)
-            }
-            else if (prizeType == 0) {
-                p.log('没抽到奖品')
-            }
             else if (prizeType == 17) {
                 p.log('谢谢参与')
+            }
+            else if (prizeType == 18) {
+                p.log(`水滴: ${amount}`)
+            }
+            else if (prizeType == 22) {
+                p.draw(`超市卡: ${amount}`)
             }
             else if (prizeType) {
                 p.draw(`抽到类型: ${prizeType} ${data.codeDesc || data.prizeCode} ${data.prizeDesc || data.prizeName}`)
@@ -46,6 +139,7 @@ export class Main extends Template {
                 p.log("什么也没有")
             }
         }
+        await this.wait(3000)
         if (this[`_${context.category}`]) {
             try {
                 await this[`_${context.category}`](p)
@@ -347,29 +441,7 @@ export class Main extends Template {
                 }
                 if (this.haskey(lottery, 'data')) {
                     drawNum--
-                    let data = lottery.data
-                    let prizeType = data.prizeType
-                    if (prizeType == 1) {
-                        p.log('优惠券:', data.prizeDesc, data.amount)
-                    }
-                    else if (prizeType == 2) {
-                        p.draw(`红包: ${data.amount}`)
-                    }
-                    else if (prizeType == 3) {
-                        p.draw(`京豆: ${data.amount}`)
-                    }
-                    else if (prizeType == 22) {
-                        p.draw(`超市卡: ${data.amount}`)
-                    }
-                    else if (prizeType == 0) {
-                        p.log('没抽到奖品')
-                    }
-                    else if (prizeType == 17) {
-                        p.log('谢谢参与')
-                    }
-                    else {
-                        p.draw(`抽到类型: ${prizeType} ${data.codeDesc} ${data.prizeDesc}`)
-                    }
+                    p.lottery(lottery)
                 }
                 else {
                     p.err("抽奖错误")
@@ -465,8 +537,9 @@ export class Main extends Template {
             }
         )
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
-        p.log("可抽奖次数:", drawNum)
-        for (let i of Array(drawNum)) {
+        let num = drawNum>5 ? 6 : drawNum
+        p.log("可抽奖次数:", num)
+        for (let i of Array(num)) {
             try {
                 let lottery = await this.curl({
                     url: 'https://api.m.jd.com/api?functionId=lotteryMachineDraw',
@@ -496,7 +569,7 @@ export class Main extends Template {
                 p.log(e)
             }
         }
-        if (drawNum != 0) {
+        if (drawNum != 0 && drawNum<6) {
             home = await this.curl({
                     'url': `https://api.m.jd.com/api?functionId=lotteryMachineHome`,
                     'form': `functionId=lotteryMachineHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,

@@ -55,7 +55,7 @@ export class Main extends Template {
                 }
             }
             else {
-                this.msg("有可用券可以保价")
+                p.msg("有可用券可以保价")
             }
         }
         else {
