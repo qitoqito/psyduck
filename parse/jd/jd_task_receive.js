@@ -28,7 +28,7 @@ export class Main extends Template {
             }
         )
         if (this.haskey(receive, 'rs.receiveAmount')) {
-            this.msg(`订单数量:${receive.rs.orderCount} 返豆: ${receive.rs.receiveAmount}`)
+            p.msg(`订单数量:${receive.rs.orderCount} 返豆: ${receive.rs.receiveAmount}`)
             p.info.work = true
         }
         else if (this.haskey(receive, 'code', '1780021')) {
