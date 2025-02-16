@@ -58,27 +58,22 @@ export class Main extends Template {
                 },
             }
         )
-        let subCode = this.haskey(rights, 'subCode')
-        if (this.haskey(rights, 'data.rights')) {
-            p.info.work = true
-            for (let i of this.haskey(rights, 'data.rights')) {
-                if (i.rewardType == 1) {
-                    p.msg(`红包: ${i.discount}`)
-                }
-                else if (i.rewardType == 3) {
-                    p.log(`优惠券:${i.quota}-${i.discount} (${i.category})`)
-                }
-                else {
-                    p.log(i)
-                }
+        let sign = await this.curl({
+                'url': `https://api.m.jd.com/mini_doSign?g_ty=ls&g_tk=1084416199`,
+                'form': `appid=hot_channel&body={"itemId":"1"}&client=apple&clientVersion=10.14.110&functionId=mini_doSign`,
+                algo: {appId: '60d61'},
+                user
             }
+        )
+        let subCode = this.haskey(sign, 'subCode')
+        if (subCode == 0) {
+            p.msg(sign.data.toastMsg)
         }
         else if (subCode == 3010) {
-            p.info.work = true
-            p.log(rights.message)
+            p.log(sign.message)
         }
         else {
-            p.log(this.haskey(rights, 'message') || rights)
+            p.log(this.haskey(sign, 'message') || sign)
         }
     }
 }
