@@ -48,40 +48,26 @@ export class Main extends Template {
         if (this.haskey(s, 'islogin', '0')) {
             let userData = this.userData[user] || {}
             if (userData.wskey) {
-                let genToken = await this.curl({
-                        url: 'https://api.m.jd.com/client.action',
-                        form: 'functionId=genToken&body=%7B%22to%22%3A%22https%3A%2F%2Fbean.m.jd.com%2FbeanDetail%2Findex.action%22%2C%22action%22%3A%22to%22%7D&uuid=487f7b22f68312d2c1bbc93b1a&client=apple&clientVersion=15.0.11',
-                        cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(pin)};`,
-                        algo: {sign: true},
-                        response: 'all',
-                        headers: {
-                            'j-e-c': encodeURIComponent(this.dumps({
-                                "hdid": "JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw=",
-                                "ts": new Date().getTime(),
-                                "ridx": -1,
-                                "cipher": {"pin": this.eip(user, 'b64encode')},
-                                "ciphertype": 5,
-                                "version": "1.2.0",
-                                "appname": "com.jingdong.app.mall"
-                            })),
-                            'j-e-h': encodeURIComponent(this.dumps({
-                                "hdid": "JM9F1ywUPwflvMIpYPok0tt5k9kW4ArJEU3lfLhxBqw=",
-                                "ts": new Date().getTime(),
-                                "ridx": -1,
-                                "cipher": {"User-Agent": this.eip("Mozilla/5.0 (iPad; CPU OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1", 'b64encode')},
-                                "ciphertype": 5,
-                                "version": "1.2.0",
-                                "appname": "com.jingdong.app.mall"
-                            })),
-                            'user-agent': 'JD4iPhone/169635%20(iPhone;%20iOS;%20Scale/3.00);jdmall;iphone;version/13.8.1;build/169635;network/wifi;screen/1170x2532;os/15.1.1',
-                            'x-rp-client': 'ios_4.0.0',
-                            'x-referer-page': 'com.jingdong.app.mall.WebActivity',
-                            'x-referer-package': 'com.jingdong.app.mall',
-                            'charset': 'UTF-8',
-                            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                for (let i = 0; i<2; i++) {
+                    var genToken = await this.curl({
+                            'url': `https://api.m.jd.com/client.action?functionId=genToken`,
+                            'form': `functionId=genToken&body=%7B%22to%22%3A%223.cn%5C%2F10-${this.rand(100000, 999999)}%22%2C%22sceneid%22%3A%2225%22%2C%22action%22%3A%22to%22%7D&uuid=8885e2e6fc106910&client=apple&clientVersion=15.0.15&st=1739755840783&sv=111&sign=91359115eb2809fd16036088787dee1d`,
+                            cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(pin)};`,
+                            algo: i == 0 ? {app: true} : {app: true, shell: false},
+                            response: 'all',
+                            headers: {
+                                'x-rp-client': 'ios_4.0.0',
+                                'x-httpex-retry': 1,
+                                'jd-hybrid-refer': 'Home_Main',
+                                'x-referer-package': 'com.360buy.jdmobile'
+                            }
                         }
+                    )
+                    if (this.haskey(genToken, 'content.tokenKey') && genToken.content.tokenKey.slice(0, 2) == 'AA') {
+                        break
                     }
-                )
+                }
+                p.log('genToken:', genToken)
                 if (this.haskey(genToken, 'content.tokenKey') && genToken.content.tokenKey.slice(0, 2) == 'AA') {
                     let y = await this.curl({
                             'url': `https://un.m.jd.com/cgi-bin/app/appjmp`,
