@@ -32,13 +32,12 @@ export class Panel {
 
     async _qlTask() {
         let envs = await this.getEnvs(`${this.type}_cookie`.toUpperCase())
-        // let pins = []
         if (envs.length) {
-            // console.log(envs)
             for (let i of envs) {
                 let pin = this.func.userName(i.value)
                 if (this.dict[pin]) {
-                    i.value = this.dict[pin]
+                    i.value = this.dict[pin].cookie
+                    this.dict[pin].exist = true
                     let ary = ['_id', 'id', 'name', 'value']
                     let d = ary.reduce((v, k) => {
                         if (i[k]) {
@@ -55,6 +54,46 @@ export class Panel {
                     }
                 }
             }
+            for (let i in this.dict) {
+                let array = []
+                if (!this.dict[i].exist) {
+                    array.push({
+                        name: `${this.type}_cookie`.toUpperCase(),
+                        value: this.dict[i].cookie
+                    })
+                }
+                if (array.length) {
+                    let data = await this.addEnvs(array)
+                    if (data.code == 200) {
+                        for (let pin in this.dict) {
+                            this.func.msg(`新增: ${pin} 成功`)
+                        }
+                    }
+                    else {
+                        console.error('[Error] 添加账号失败');
+                    }
+                }
+            }
+        }
+        else {
+            let array = []
+            for (let i in this.dict) {
+                array.push({
+                    name: `${this.type}_cookie`.toUpperCase(),
+                    value: this.dict[i].cookie
+                })
+            }
+            if (array.length) {
+                let data = await this.addEnvs(array)
+                if (data.code == 200) {
+                    for (let pin in this.dict) {
+                        this.func.msg(`新增: ${pin} 成功`)
+                    }
+                }
+                else {
+                    console.error('[Error] 添加账号失败');
+                }
+            }
         }
     }
 
@@ -69,8 +108,14 @@ export class Panel {
             for (let j in dict[i]) {
                 let pin = this.func.userName(dict[i][j])
                 if (this.dict[pin]) {
-                    dict[i][j] = this.dict[pin]
+                    dict[i][j] = this.dict[pin].cookie
+                    this.dict[pin].category = i
                 }
+            }
+        }
+        for (let pin in this.dict) {
+            if (!this.dict[pin].category) {
+                dict.other.push(this.dict[pin].cookie)
             }
         }
         let text = []
@@ -95,8 +140,14 @@ export class Panel {
             for (let j in dict[i]) {
                 let pin = this.func.userName(dict[i][j])
                 if (this.dict[pin]) {
-                    dict[i][j] = this.dict[pin]
+                    dict[i][j] = this.dict[pin].cookie
+                    this.dict[pin].category = i
                 }
+            }
+        }
+        for (let pin in this.dict) {
+            if (!this.dict[pin].category) {
+                dict.other.push(this.dict[pin].cookie)
             }
         }
         let text = `export default ${JSON.stringify(dict, null, 4)}`
@@ -156,14 +207,10 @@ export class Panel {
     }
 
     // 添加环境变量
-    async addEnv(name, value, remarks = '') {
+    async addEnvs(data) {
         const token = await this.getToken();
         try {
-            const response = await axios.post(`${this.config.baseURL}/open/envs`, [{
-                name,
-                value,
-                remarks
-            }], {
+            const response = await axios.post(`${this.config.baseURL}/open/envs`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -176,7 +223,7 @@ export class Panel {
     }
 
     // 删除环境变量
-    async deleteEnv(envId) {
+    async deleteEnvs(envId) {
         const token = await this.getToken();
         try {
             const response = await axios.delete(`${this.config.baseURL}/open/envs`, {

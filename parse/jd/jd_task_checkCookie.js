@@ -78,7 +78,7 @@ export class Main extends Template {
                         }
                     )
                     if (y.cookie && y.cookie.includes('app_open')) {
-                        this.dict[user] = y.cookie
+                        this.dict[user] = {cookie: y.cookie}
                         p.log('openKey生成成功');
                         if (this.profile.cache) {
                             p.info.work = true
