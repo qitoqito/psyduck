@@ -14,7 +14,7 @@
 
 ### 2. 初始化步骤
 1. 配置文件设置
-   - 打开`qitoqito_psyduck`目录
+   - 打开`qitoqito_psyduck/config`目录
    - 复制 `demo.ini` 为 `config.ini`
    - 填写必要参数,需要删除配置项前的分号 `;`
 
@@ -29,7 +29,7 @@
    [cache]
    type=缓存类型
    ```
-   > 开启缓存: 缓存账户运行状态,重新运行会自动跳过之前已完成任务的账户
+   > 开启缓存: 开启后自动跳过已执行账户
    > 选择json缓存,请定期清理`qitoqito_psyduck/temp`目录
    > 选择redis缓存,请正确填写`host,port,password,db`选项
 
