@@ -1,98 +1,167 @@
+# Bug龙使用指南
 
-# Bug龙订阅
-```
-链接: https://github.com/qitoqito/psyduck.git
+## 一、快速开始
+
+### 1. 订阅配置
+```markdown
+仓库地址：https://github.com/qitoqito/psyduck.git
 定时类型: crontab
-定时规则: 自定(23 23 * * *)
-白名单: psyduck
+定时规则：23 */3 * * *
+白名单：psyduck
 执行后: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck
+不勾选: 自动添加任务 自动删除任务
 ```
 
-# Bug龙初始化
+### 2. 初始化步骤
+1. 配置文件设置
+   - 打开`qitoqito_psyduck`目录
+   - 复制 `demo.ini` 为 `config.ini`
+   - 填写必要参数,需要删除配置项前的分号 `;`
 
+2. 必填参数配置
+   ```ini
+   [env]
+   QINGLONG_ClientId=your_client_id
+   QINGLONG_ClientSecret=your_client_secret
+   ```
+   > 获取路径：青龙面板 → 系统设置 → 应用设置 → 创建应用 → 权限 → 环境变量,定时任务
+   ```ini
+   [cache]
+   type=缓存类型
+   ```
+   > 开启缓存: 缓存账户运行状态,重新运行会自动跳过之前已完成任务的账户
+   > 选择json缓存,请定期清理`qitoqito_psyduck/temp`目录
+   > 选择redis缓存,请正确填写`host,port,password,db`选项
+
+3. 安装项目依赖
+4. > 打开Bug龙终端: docker exec -it qinglong bash
+   ```bash
+   cd /ql/data/scripts/qitoqito_psyduck/
+   npm install
+   ```
+5. 将Bug龙订阅的执行后改为
+   ```
+   cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
+   ```
+
+
+## 二、配置详解
+
+### 1. INI 文件配置
+> 如果你设置了iniPath目录,在iniPath目录(默认qitoqito_psyduck/config)自行创建分类配置文件,如jd.ini
+```ini
+# 脚本配置示例
+[scriptName]
+field=value
 ```
-1. 打开config文件夹,将demo.ini重命名为config.ini,按需修改config.ini字段,字段前的;去掉才能正常解析
-2. QINGLONG_ClientId  QINGLONG_ClientSecret 两个字段必须填写,注意去掉前面的;符号 (面板->系统设置->应用设置->创建应用,权限:定时任务,环境变量)
-3. 如需开启缓存,找到[cache],按需修改  开启缓存后,跑完任务的账户重运行会自动跳过
-4. 进入bug龙终端安装依赖,执行以下命令: cd /ql/data/scripts/qitoqito_psyduck/ && npm install
-5. 重新执行task qitoqito_psyduck/qlCreate.js now
-6. 将Bug龙订阅的执行后改为: cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
+> 上述配置,在名为scriptName.js的脚本中,获取this.profile.field值为value
+### 2. Sign 服务配置
+```bash
+# 部署 Sign 服务
+docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart unless-stopped  seansuny/signapi:latest
 
+# 配置文件添加
+jdSign=http://ip:17840/sign
 ```
- 
-# INI配置文件
-	以JD为例:
-	在指定文件夹(默认config)创建jd.ini文件
-	
-	具体格式:
-	其中filename为需要字段的脚本名 
-	
-	[filename]
-	field=test
-	
+### 3. Redis 服务配置
+```bash
+# 部署 Redis 服务
+docker run -itd --name redis -p 6379:6379 redis --requirepass 123456
 
-# J东SIGN
-    如果环境变量中,已经部署过 JD_SIGN_API, JD_SIGN_KRAPI 可以跳过以下步骤
-
+# 配置文件修改
+host=                            # Redis地址
+port=                            # Redis端口
+password=                        # Redis密码,如无设置请留空
+db=                              # Redis Db
 ```
-docker run -dit \
-  -p 17840:17840 \
-  -e TZ=Asia/Shanghai \
-  --name Sign \
-  --hostname Sign \
-  --restart unless-stopped \
-  seansuny/signapi:latest
-  
-config.ini添加 jdSign=http://ip:17840/sign
+### 4. 通知配置
+```ini
+# telegram
+TELEGRAM_TOKEN=
+TELEGRAM_ID=
+TELEGRAM_URL=自定义TG代理链接
+TELEGRAM_PROXY=代理服务器
+# bark
+BARK_TOKEN=
+BARK_URL=自定义url
+BARK_SOUND=自定义铃声
+
+# 钉钉
+DINGTALK_TOKEN=
+DINGTALK_SECRET=密钥
+
+# igot
+IGOT_TOKEN=
+
+# server酱
+FTQQ_TOKEN=
+
+# pushplus
+PUSHPLUS_TOKEN=
+PUSHPLUS_TOPIC=群组
+
+# 企业微信
+WEIXIN_TOKEN=
+
+# 企业微信AM
+WXAM_TOKEN=
 ```
-   
-	 
-# 通知字段
 
-	# telegram
-	TELEGRAM_TOKEN=
-	TELEGRAM_ID=
-	TELEGRAM_URL=自定义TG代理链接
-	TELEGRAM_PROXY=代理服务器 (http|https|sock)://ip:port, 使用sock需要安装 socks-proxy-agent 模块
+## 三、项目结构
+```
+项目目录
+├── util/          # 工具函数
+├── parse/         # 解析脚本
+├── temp/          # 缓存文件
+├── static/        # 静态资源
+├── cookie/        # 数据存储
+├── config/        # 配置文件
+├── log/           # 日志文件
+├── template.js    # 核心模板
+├── main.js       # 入口文件
+└── qlCreate.js    # 青龙配置
+```
 
-	# bark
-	BARK_TOKEN=
-	BARK_URL=自定义url
-	BARK_SOUND=自定义铃声
+## 四、使用说明
 
-	# 钉钉
-	DINGTALK_TOKEN=
-	DINGTALK_SECRET=密钥
+### 1. 基本用法
+```bash
+node main.js filename [-help n -custom x -thread x]
+```
+### 2. 脚本配置Profile
+> 参考ini文件配置
+> 
+| 参数 | 用法 |  特殊说明 |
+| :--- | :--- | :--- |
+| task | n , n\|m , n:m , tn , pin ,  pin1\|pin2 | 执行哪些账户,当要执行前5个账户,请设置t5 |
+| help | n , n\|m , n:m , tn , pin1\|pin2 | 同task |
+| exclude | n , n\|m , n:m , tn , pin1\|pin2 | 同task |
+| thread | n |并发运行任务,并发数|
+|proxy|http://ip:port|代理地址|
+|startTime|2025-02-05 16:03:35 \| 时间戳|任务开始时间|
+|endTime|2025-02-05 16:03:35 \| 时间戳|任务结束时间|
+|model|user, share, team, shuffle|框架运行方式|
 
-	# igot
-	IGOT_TOKEN=
 
-	# server酱
-	FTQQ_TOKEN=
+### 3. 缓存说明
+- 位置：`[cache]` 节点
+- 功能：开启后自动跳过已执行账户
 
-	# pushplus
-	PUSHPLUS_TOKEN=
-	PUSHPLUS_TOPIC=群组
+### 4. 注意事项
+- 订阅时禁用自动任务管理
+- 确保配置文件格式正确
+- 注意权限设置
+- 不支持旧版本bug龙安装使用
 
-	# 企业微信
-	WEIXIN_TOKEN=
+## 五、常见问题
+1. 配置解析失败
+   - 检查分号是否删除
+   - 确认格式是否正确
 
-	# 企业微信AM
-	WXAM_TOKEN=
+2. 运行异常
+   - 检查依赖安装
+   - 确认权限配置
 
- 
-    
-# 框架结构
-	util: 调用函数目录
-	parse: 解析脚本目录
-    temp: 缓存文件目录
-	static: 静态文件目录
-	cookie: 数据文件目录
-	config:	配置文件目录
-	log: 日志文件目录
-	template.js: 项目主体文件
-	main.js: 项目入口文件
-	qlCreate: 青龙面板生成入口以及添加定时
-
-# 使用方法
-	node main.js filename [-help n -custom x -limit x]
+3. 推送失败
+   - 验证通知配置
+   - 检查网络连接
