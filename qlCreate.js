@@ -181,7 +181,7 @@ class Ql {
 
     async create() {
         if (!this.config) {
-            consoel.log("请先初始化config.ini,并设置青龙ClientID和ClientSecret")
+            console.log("请先初始化config.ini,并设置青龙ClientID和ClientSecret")
             return
         }
         await this.getToken()
@@ -221,9 +221,7 @@ class Ql {
                                 let title = obj[filename].title || `${psyDuck.profile.title}分身`
                                 let code = `
 import path from 'path';
-import {
-    fileURLToPath
-} from 'url';
+import {fileURLToPath, pathToFileURL} from 'url';
 !(async () => {
     let dirpath = fileURLToPath(import.meta.url).replace('.swap','');
     let abspath = path.dirname(dirpath)
@@ -246,11 +244,16 @@ import {
             }
         }
     }
-    let psyDuck = await import (\`\${abspath}/parse/\${type}/${map}.js\`)
+    let jsPath = pathToFileURL(\`\${abspath}/parse/\${type}/${map}.js\`).href
+    let psyDuck = await import (jsPath)
     let main = new psyDuck.Main()
     await main.init(params)
 })().catch((e) => {
-    console.log(e)
+    if (e == 'End') {
+        console.log("End")
+    }else{
+        console.log(e)
+    }
 })`
                                 fs.writeFile(`${abspath}/${filename}.js`, code, function(err, data) {
                                     if (err) {
@@ -281,9 +284,7 @@ import {
                             let crontab = psyDuck.crontab()
                             let code = `
 import path from 'path';
-import {
-    fileURLToPath
-} from 'url';
+import {fileURLToPath, pathToFileURL} from 'url';
 !(async () => {
     let dirpath = fileURLToPath(import.meta.url).replace('.swap','');
     let abspath = path.dirname(dirpath)
@@ -304,11 +305,17 @@ import {
             }
         }
     }
-    let psyDuck = await import (\`\${abspath}/parse/\${type}/\${filename}.js\`)
+    let jsPath = pathToFileURL(\`\${abspath}/parse/\${type}/\${filename}.js\`).href
+    let psyDuck = await import (jsPath)
     let main = new psyDuck.Main()
     await main.init(params)
 })().catch((e) => {
-    console.log(e)
+    if (e == 'End') {
+        console.log("End")
+    }else{
+        console.log(e)
+    }
+    
 })`
                             fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
                                 if (err) {

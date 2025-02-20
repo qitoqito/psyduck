@@ -34,7 +34,7 @@ export class Cache {
             await this._cache.connect();
         }
         else {
-            let dirpath = fileURLToPath(import.meta.url).split('/util')[0];
+            let dirpath = fileURLToPath(import.meta.url).split('/util')[0].split("\\util")[0];
             this._cache = new Tfc({dir: `${dirpath}/temp`})
         }
     }

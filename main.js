@@ -1,9 +1,6 @@
-// import {Template} from "./template.js"
-// console.log(process )
-// let dirname = process.mainModule.path
 import fs from 'fs'
 import path from 'path';
-import {fileURLToPath} from 'url';
+import {fileURLToPath, pathToFileURL} from 'url';
 import ini from 'ini'
 
 let filename;
@@ -28,33 +25,40 @@ if (length>2) {
     if (filename) {
         let type = filename.match(/(^[A-Za-z0-9]+)\_/)[1]
         try {
-            let psyDuck = await import( `./parse/${type}/${filename}.js`)
+            let jsPath = pathToFileURL(`./parse/${type}/${filename}.js`).href
+            let psyDuck = await import(jsPath)
             let main = new psyDuck.Main()
             await main.init(params)
         } catch (e) {
             // console.log(e)
-            let iniText = fs.readFileSync(`config/config.ini`, 'UTF-8')
-            let config = ini.parse(iniText)
-            let iniPath = `config/${type}.ini`
-            if (config.env && config.env.iniPath) {
-                iniPath = `${config.env.iniPath}/${type}.ini`
-            }
-            let scText = fs.readFileSync(iniPath, 'UTF-8')
-            let script = ini.parse(scText)
-            let map = ''
-            for (let i in script) {
-                if (i == filename && script[i].map) {
-                    map = script[i].map
-                }
-            }
-            if (map) {
-                params.mapping = map
-                let psyDuck = await import( `./parse/${type}/${map}.js`)
-                let main = new psyDuck.Main()
-                await main.init(params)
+            if (e == 'End') {
+                console.log("End")
             }
             else {
-                console.log("没有可执行的脚本")
+                let iniText = fs.readFileSync(`config/config.ini`, 'UTF-8')
+                let config = ini.parse(iniText)
+                let iniPath = `config/${type}.ini`
+                if (config.env && config.env.iniPath) {
+                    iniPath = `${config.env.iniPath}/${type}.ini`
+                }
+                let scText = fs.readFileSync(iniPath, 'UTF-8')
+                let script = ini.parse(scText)
+                let map = ''
+                for (let i in script) {
+                    if (i == filename && script[i].map) {
+                        map = script[i].map
+                    }
+                }
+                if (map) {
+                    params.mapping = map
+                    let jsPath = pathToFileURL(`./parse/${type}/${map}.js`).href
+                    let psyDuck = await import(jsPath)
+                    let main = new psyDuck.Main()
+                    await main.init(params)
+                }
+                else {
+                    console.log("没有可执行的脚本")
+                }
             }
         }
     }
