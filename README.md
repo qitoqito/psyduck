@@ -15,7 +15,7 @@
 ### 2. 初始化步骤
 1. 配置文件设置
    - 打开`qitoqito_psyduck/config`目录
-   - 复制 `demo.ini` 为 `config.ini`
+   - 重命名 `demo.ini` 为 `config.ini`
    - 填写必要参数,需要删除配置项前的分号 `;`
 
 2. 必填参数配置
@@ -29,8 +29,10 @@
    [cache]
    type=缓存类型
    ```
-   > 开启缓存: 开启后自动跳过已执行账户
+   > 开启缓存: 开启后自动跳过已执行账户 
+   >
    > 选择json缓存,请定期清理`qitoqito_psyduck/temp`目录
+   >
    > 选择redis缓存,请正确填写`host,port,password,db`选项
 
 3. 安装项目依赖
@@ -46,16 +48,7 @@
 
 
 ## 二、配置详解
-
-### 1. INI 文件配置
-> 如果你设置了iniPath目录,在iniPath目录(默认qitoqito_psyduck/config)自行创建分类配置文件,如jd.ini
-```ini
-# 脚本配置示例
-[scriptName]
-field=value
-```
-> 上述配置,在名为scriptName.js的脚本中,获取this.profile.field值为value
-### 2. Sign 服务配置
+### 1. Sign 服务配置
 ```bash
 # 部署 Sign 服务
 docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart unless-stopped  seansuny/signapi:latest
@@ -63,18 +56,18 @@ docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart un
 # 配置文件添加
 jdSign=http://ip:17840/sign
 ```
-### 3. Redis 服务配置
+### 2. Redis 服务配置
 ```bash
 # 部署 Redis 服务
-docker run -itd --name redis -p 6379:6379 redis --requirepass 123456
+docker run -itd --name redis -p 6379:6379 redis --requirepass 你的密码
 
 # 配置文件修改
-host=                            # Redis地址
+host=                            # Redis地址,只需ip地址
 port=                            # Redis端口
 password=                        # Redis密码,如无设置请留空
-db=                              # Redis Db
+db=                              # Redis Db,0-15随意选一个
 ```
-### 4. 通知配置
+### 3. 通知配置
 ```ini
 # telegram
 TELEGRAM_TOKEN=
@@ -106,7 +99,18 @@ WEIXIN_TOKEN=
 # 企业微信AM
 WXAM_TOKEN=
 ```
-
+### 4. INI 文件配置
+> 如果你设置了iniPath目录,在iniPath目录(默认qitoqito_psyduck/config)自行创建分类配置文件,如jd.ini
+```ini
+# 脚本配置示例
+[scriptName]
+field=test
+```
+> 框架只支持读取极少部分的环境变量,获取脚本变量都是用ini配置文件,或js配置文件
+> 
+> 上述演示代码,在名为scriptName.js的脚本中,通过获取this.profile.field得到的数据为test
+>
+> 脚本日志,如有[Field]标识,请按要求修改添加到分类配置文件
 ## 三、项目结构
 ```
 项目目录
@@ -134,8 +138,8 @@ node main.js filename [-help n -custom x -thread x]
 | 参数 | 用法 |  特殊说明 |
 | :--- | :--- | :--- |
 | task | n , n\|m , n:m , tn , pin ,  pin1\|pin2 | 执行哪些账户,当要执行前5个账户,请设置t5 |
-| help | n , n\|m , n:m , tn , pin1\|pin2 | 同task |
-| exclude | n , n\|m , n:m , tn , pin1\|pin2 | 同task |
+| help | 同task | 被助力账户|
+| exclude | 同task | 排除运行账户 |
 | thread | n |并发运行任务,并发数|
 |proxy|http://ip:port|代理地址|
 |startTime|2025-02-05 16:03:35 \| 时间戳|任务开始时间|
