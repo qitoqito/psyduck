@@ -162,6 +162,11 @@ export class Main extends Template {
                 user
             }
         )
+        if (!apTask) {
+            return {
+                finish: false
+            }
+        }
         let isOk = 1
         for (let i of this.haskey(apTask, 'data')) {
             if (i.taskLimitTimes == i.taskDoTimes) {
@@ -373,7 +378,8 @@ export class Main extends Template {
                         'appId': 'bd6c8',
                         expire: {
                             code: 1000
-                        }
+                        },
+                        status: true
                     },
                     user
                 })
@@ -548,7 +554,8 @@ export class Main extends Template {
                         'appId': 'd7439',
                         expire: {
                             code: 1000
-                        }
+                        },
+                        status: true
                     },
                     user
                 })
