@@ -373,7 +373,8 @@ export class Main extends Template {
                         'appId': 'bd6c8',
                         expire: {
                             code: 1000
-                        }
+                        },
+                        status: true
                     },
                     user
                 })
@@ -548,7 +549,8 @@ export class Main extends Template {
                         'appId': 'd7439',
                         expire: {
                             code: 1000
-                        }
+                        },
+                        status: true
                     },
                     user
                 })
