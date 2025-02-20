@@ -35,7 +35,6 @@ export class Main extends Template {
 
     async main(p) {
         let user = p.data.user;
-        let pin = p.data.pin
         let context = p.context;
         let s = await this.curl({
                 'url': `https://plogin.m.jd.com/cgi-bin/ml/islogin`,
@@ -52,7 +51,7 @@ export class Main extends Template {
                     var genToken = await this.curl({
                             'url': `https://api.m.jd.com/client.action?functionId=genToken`,
                             'form': `functionId=genToken&body=%7B%22to%22%3A%223.cn%5C%2F10-${this.rand(100000, 999999)}%22%2C%22sceneid%22%3A%2225%22%2C%22action%22%3A%22to%22%7D&uuid=8885e2e6fc106910&client=apple&clientVersion=15.0.15&st=1739755840783&sv=111&sign=91359115eb2809fd16036088787dee1d`,
-                            cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(pin)};`,
+                            cookie: `wskey=${userData.wskey};pin=${encodeURIComponent(user)};`,
                             algo: i == 0 ? {app: true} : {app: true, shell: false},
                             response: 'all',
                             headers: {
