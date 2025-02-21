@@ -191,7 +191,9 @@ class Ql {
         let iniPath = this.env.iniPath || `${abspath}/config`
         let crons = await this.getCrons()
         let data = {}
-        for (let i of crons.data) {
+        let cronData = crons.data || crons
+        let label = crons.data ? true : false
+        for (let i of cronData) {
             let command = i.command.match(/task\s*qitoqito_psyduck\/(\w+\.js)/)
             if (command) {
                 let script = command[1]
@@ -266,7 +268,10 @@ import {fileURLToPath, pathToFileURL} from 'url';
                                         name: `PsyDuck_${title}`,
                                         schedule: crontab,
                                         command: `task qitoqito_psyduck/${filename}.js`,
-                                        labels: [`PsyDuck`]
+                                        // labels: label ? [`PsyDuck`] : ''
+                                    }
+                                    if (label) {
+                                        dicts[`${filename}.js`].labels = [`PsyDuck`]
                                     }
                                 }
                             } catch (e) {
@@ -328,7 +333,10 @@ import {fileURLToPath, pathToFileURL} from 'url';
                                     name: `PsyDuck_${psyDuck.profile.title}`,
                                     schedule: crontab,
                                     command: `task qitoqito_psyduck/${script}`,
-                                    labels: [`PsyDuck`]
+                                    // labels: label ? [`PsyDuck`] : ''
+                                }
+                                if (label) {
+                                    dicts[script].labels = [`PsyDuck`]
                                 }
                             }
                         }

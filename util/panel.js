@@ -32,7 +32,7 @@ export class Panel {
 
     async _qlTask() {
         let envs = await this.getEnvs(`${this.type}_cookie`.toUpperCase())
-        if (envs.length) {
+        if (envs.length>0) {
             for (let i of envs) {
                 let pin = this.func.userName(i.value)
                 if (this.dict[pin]) {
@@ -62,12 +62,10 @@ export class Panel {
                         value: this.dict[i].cookie
                     })
                 }
-                if (array.length) {
+                if (array.length>0) {
                     let data = await this.addEnvs(array)
                     if (data.code == 200) {
-                        for (let pin in this.dict) {
-                            this.func.msg(`新增: ${pin} 成功`)
-                        }
+                        this.func.msg(`新增: ${i} 成功`)
                     }
                     else {
                         console.error('[Error] 添加账号失败');
