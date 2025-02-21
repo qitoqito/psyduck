@@ -43,6 +43,7 @@ export class Main extends Template {
                     p.activityId = s.data.id
                     p.venderId = s.data.venderId
                     p.continuePrizeRuleList = s.data.continuePrizeRuleList
+                    p.category = 'shopSign'
                 }
             }
             if (this.haskey(s, 'code', 402)) {
@@ -85,9 +86,15 @@ export class Main extends Template {
                 user,
                 algo: {
                     appId: '4da33',
-                    version: 'latest'
+                    version: 'latest',
+                    status: true
                 },
             })
+            if (this.haskey(sign, 'code', 402)) {
+                p.log('当前不存在有效的活动')
+                p.context.jump = true
+                return
+            }
             if (this.haskey(sign, 'code', [403030023, 200])) {
                 p.info.work = true
                 if (sign.success) {
