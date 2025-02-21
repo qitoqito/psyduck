@@ -1,5 +1,4 @@
 import {Template} from '../../template.js'
-import {load} from 'cheerio'
 
 export class Main extends Template {
     constructor() {
