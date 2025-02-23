@@ -38,6 +38,17 @@ export class Main extends Template {
                         appId: '4da33',
                     }
                 })
+                if (!shopInfo) {
+                    shopInfo = await this.curl({
+                            'url': `https://api.m.jd.com/client.action?functionId=getShopHomeActivityInfo`,
+                            'form': `avifSupport=0&body={"lngWs":"","sourceRpc":"shop_app_home_home","venderId":"${s.data.venderId}","source":"app-shop","latWs":"","displayWidth":"1098.000000"}&build=169720&client=apple&clientVersion=15.0.15`,
+                            algo: {
+                                sign: true
+                            },
+                            cookie: this.tester()
+                        }
+                    )
+                }
                 if (this.haskey(shopInfo, 'data.shopInfo.shopName')) {
                     p.shopName = shopInfo.data.shopInfo.shopName
                     p.activityId = s.data.id
@@ -57,29 +68,38 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        let s = await this.curl({
-            'url': `https://api.m.jd.com/api?appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_getSignRecord&body={"token":"${context.token}","venderId":${context.venderId},"activityId":${context.activityId},"type":56,"actionType":7}&jsonp=jsonp1004`,
-            user,
-            algo: {
-                appId: '4da33',
-                expire: {
-                    code: 407000007
-                }
-            }
-        })
-        if (this.haskey(s, 'code', 402)) {
-            p.log('当前不存在有效的活动')
-            p.context.finish = true
-            return
-        }
-        let days = this.haskey(s, 'data.days')
-        let maxDay = this.column(context.continuePrizeRuleList, 'days').reduce((v, k) => {
-            return v += k
-        }, 0)
-        if (days>=maxDay) {
-            console.log(`签到已满${maxDay}天,跳出签到`, context.token, `https://shop.m.jd.com/?venderId=${context.venderId}`)
+        if (!context.venderId) {
+            p.err("没有获取到该Token的数据,请重试...")
+            p.context.jump = true
         }
         else {
+            // let s = await this.curl({
+            //     'url': `https://api.m.jd.com/api?appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_getSignRecord&body={"token":"${context.token}","venderId":${context.venderId},"activityId":${context.activityId},"type":56,"actionType":7}&jsonp=jsonp1004`,
+            //     user,
+            //     algo: {
+            //         appId: '4da33',
+            //         expire: {
+            //             code: 407000007
+            //         }
+            //     }
+            // })
+            // if (this.haskey(s, 'code', 402)) {
+            //     p.log('当前不存在有效的活动')
+            //     p.context.finish = true
+            //     return
+            // }
+            // let days = this.haskey(s, 'data.days')
+            // let isOk = 0
+            // if (context.continuePrizeRuleList) {
+            //     let maxDay = this.column(context.continuePrizeRuleList, 'days').reduce((v, k) => {
+            //         return v += k
+            //     }, 0)
+            //     if (days>=maxDay) {
+            //         console.log(`签到已满${maxDay}天,跳出签到`, context.token, `https://shop.m.jd.com/?venderId=${context.venderId}`)
+            //         isOk++
+            //     }
+            // }
+            // if (!isOk) {
             let sign = await this.curl({
                 'url': `https://api.m.jd.com`,
                 form: `appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_signCollectGift&body={"token":"${context.token}","venderId":${context.venderId},"activityId":${context.activityId},"type":56,"actionType":7}`,
@@ -104,6 +124,7 @@ export class Main extends Template {
                     p.log(sign.msg)
                 }
             }
+            // }
         }
     }
 }
