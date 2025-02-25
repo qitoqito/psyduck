@@ -41,7 +41,7 @@ export class Main extends Template {
     }
 
     async batch(p) {
-        p = this.getTemp(p.pid) || p
+        p = await this.getTemp(p.pid) || p
         if (!p.orgName) {
             let device = {
                 appId: p.appId,

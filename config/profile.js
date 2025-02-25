@@ -57,6 +57,10 @@ export default {
                     {
                         'eval': '_shareData',
                         'haskey': 'shareData'
+                    },
+                    {
+                        'eval': '_inviteJson',
+                        'haskey': 'inviteJson',
                     }
                 ],
                 appids: [
@@ -65,11 +69,12 @@ export default {
                     'SecKill2020',
                     'content_ecology',
                     'u',
+                    'ihub_3c',
                     'u_hongbao',
                     'babelh5',
                     'publicUseApi',
                     'newtry'
-                ]
+                ],
             }
         },
         map: {

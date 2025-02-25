@@ -20,7 +20,7 @@ export class Main extends Template {
     }
 
     async batch(p) {
-        p = this.getTemp(p.pid) || p
+        p = await this.getTemp(p.pid) || p
         if (!p.linkId) {
             let url = `https://prodev.m.jd.com/mall/active/${p.id}/index.html?utm_medium=tuiguang&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=&utm_source=kong&cu=true`
             let html = await this.curl(url)
@@ -383,7 +383,7 @@ export class Main extends Template {
                     },
                     user
                 })
-                if (this.haskey(lottery, 'code', 18002)) {
+                if (this.haskey(lottery, 'code', 4000)) {
                     p.log('抽奖机会用完啦')
                     break
                 }

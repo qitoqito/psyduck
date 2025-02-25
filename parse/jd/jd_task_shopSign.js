@@ -20,7 +20,7 @@ export class Main extends Template {
     }
 
     async batch(p) {
-        p = this.getTemp(p.pid) || p
+        p = await this.getTemp(p.pid) || p
         if (!p.shopName) {
             var s = await this.curl({
                 url: `https://api.m.jd.com/api?appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_getActivityInfo&body={"token":"${p.token}","venderId":""}`,
