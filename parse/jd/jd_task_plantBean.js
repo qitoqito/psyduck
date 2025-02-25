@@ -12,7 +12,7 @@ export class Main extends Template {
             prompt: {
                 inviteJson: 'true #使用自定义助力码'
             },
-            readme: `如要使用自定义助力码,请在框架目录/initer创建jd_task_plantBean.json,按需修改[{"user":"a","plantUuid":"abc"},{"user":"b","plantUuid":"efg"}]`
+            readme: `如要使用自定义助力码,请在框架目录/inviter创建jd_task_plantBean.json,按需修改[{"user":"a","plantUuid":"abc"},{"user":"b","plantUuid":"efg"}]`
         }
     }
 

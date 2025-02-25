@@ -11,8 +11,8 @@ export class Main extends Template {
             interval: 2000,
             crontab: 24,
             prompt: {
-                change: `expired  #只转换过期账户`,
-                cache: `1 #如设置temp,当天有转换成功,后续运行将跳过该账号`
+                change: `expired|all  #expired:只转换过期账户, all:即使账号没过期也强制转换`,
+                cache: `1 #如设置cache,当天有转换成功,后续运行将跳过该账号`
             }
         }
     }
@@ -36,15 +36,32 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        let s = await this.curl({
-                'url': `https://plogin.m.jd.com/cgi-bin/ml/islogin`,
-                user,
-                algo: {
-                    shell: 1,
+        var expire = 0
+        if (this.haskey(this.profile, 'change', 'all')) {
+            expire = 1
+        }
+        else {
+            let s = await this.curl({
+                    'url': `https://plogin.m.jd.com/cgi-bin/ml/islogin`,
+                    user,
+                    algo: {
+                        shell: 1,
+                    }
                 }
+            )
+            if (this.haskey(s, 'islogin', '1')) {
+                p.log("账户还未过期")
+                this.valid(user, true)
             }
-        )
-        if (this.haskey(s, 'islogin', '0')) {
+            if (this.haskey(s, 'islogin', '0')) {
+                p.log("账户过期")
+                expire = 1
+            }
+            else {
+                p.err("没有获取到数据")
+            }
+        }
+        if (expire) {
             let userData = this.userData[user] || {}
             if (userData.wskey) {
                 for (let i = 0; i<2; i++) {
@@ -97,13 +114,6 @@ export class Main extends Template {
             else {
                 p.msg("账号过期了呀🐶")
             }
-        }
-        else if (this.haskey(s, 'islogin', '1')) {
-            p.log("账户还未过期")
-            this.valid(user, true)
-        }
-        else {
-            p.err("没有获取到数据")
         }
     }
 
