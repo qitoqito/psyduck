@@ -14,6 +14,7 @@ export class Main extends Template {
             },
             headers: {
                 'x-rp-client': "h5_1.0.0",
+                'request-from': 'native',
                 referer: 'https://h5.m.jd.com/pb/015686010/Bc9WX7MpCW7nW9QjZ5N3fFeJXMH/index.html'
             },
             tempExpire: 86400000,
@@ -174,7 +175,7 @@ export class Main extends Template {
                         status = 0
                         for (let n of Array(parseInt((i.taskLimitTimes - i.taskDoTimes) / 5))) {
                             let water = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
+                                    'url': `http://api.m.jd.com/client.action`,
                                     'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
@@ -192,6 +193,7 @@ export class Main extends Template {
                                 await this.wait(1000)
                             }
                             else {
+                                console.log(water)
                                 p.log('浇水失败:', this.haskey(water, 'data.bizMsg'))
                                 isOk = 0
                                 status = 0
@@ -200,7 +202,7 @@ export class Main extends Template {
                         }
                         for (let n of Array(((i.taskLimitTimes - i.taskDoTimes) % 5))) {
                             let water = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
+                                    'url': `http://api.m.jd.com/client.action`,
                                     'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":1,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
@@ -350,7 +352,7 @@ export class Main extends Template {
                     while (true) {
                         s1 = 0
                         let water = await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
+                                'url': `http://api.m.jd.com/client.action`,
                                 'form':
                                     `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                 user,
@@ -622,6 +624,9 @@ export class Main extends Template {
                     algo: {'appId': 'c06b7',},
                 }
             )
+            if (!home) {
+                isOk = 0
+            }
             let drawNum = this.haskey(home, 'data.lotteryChances') || 0
             p.log("可抽奖次数:", drawNum)
             for (let i of Array(drawNum)) {
