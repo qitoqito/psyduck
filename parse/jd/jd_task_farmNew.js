@@ -169,6 +169,7 @@ export class Main extends Template {
                 }
                 else if (i.mainTitle.includes("浇水")) {
                     if (i.taskDoTimes != i.taskLimitTimes) {
+                        p.log("正在运行:", i.mainTitle)
                         let isOk = 1
                         status = 0
                         for (let n of Array(parseInt((i.taskLimitTimes - i.taskDoTimes) / 5))) {
@@ -244,6 +245,9 @@ export class Main extends Template {
                                 status = 0
                                 p.err("获取失败:", this.haskey(award, 'data.bizMsg'))
                             }
+                        }
+                        if (bottleWater<200) {
+                            status = 0
                         }
                     }
                 }
