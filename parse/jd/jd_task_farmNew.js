@@ -102,7 +102,7 @@ export class Main extends Template {
                 return
             }
             if (treeFullStage == 5) {
-                this.msg(`商品可兑换`)
+                p.msg(`商品可兑换`)
             }
             if (treeFullStage == 5 && this.profile.tree) {
                 p.log('没有种树')
@@ -618,7 +618,7 @@ export class Main extends Template {
                 }
             }
             let home = await this.curl({
-                    'url': `https://api.m.jd.com/api`,
+                    'url': `http://api.m.jd.com/api`,
                     'form': `functionId=wheelsHome&body={"linkId":"${linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                     user,
                     algo: {'appId': 'c06b7',},
