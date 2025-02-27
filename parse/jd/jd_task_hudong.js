@@ -168,6 +168,7 @@ export class Main extends Template {
             }
         }
         let isOk = 1
+        let userFinishedTimes
         for (let i of this.haskey(apTask, 'data')) {
             if (i.taskLimitTimes == i.taskDoTimes) {
                 p.log("任务已完成:", i.taskShowTitle)
@@ -235,7 +236,7 @@ export class Main extends Template {
                                 }
                             )
                             let taskItemList = this.haskey(apTaskDetail, 'data.taskItemList')
-                            if (taskItemList) {
+                            if (taskItemList.length) {
                                 for (let j in Array.from(Array(i.taskLimitTimes - i.taskDoTimes), (_val, index) => index)) {
                                     if (taskItemList[j] && taskItemList[j].itemId) {
                                         if (i.timeLimitPeriod) {
@@ -303,6 +304,9 @@ export class Main extends Template {
                                     }
                                 }
                             }
+                            else if (this.haskey(apTaskDetail, 'data.status.userFinishedTimes', 0)) {
+                                userFinishedTimes = true
+                            }
                         }
                         break
                 }
@@ -343,6 +347,9 @@ export class Main extends Template {
                         case'ORDER_MARK':
                         case 'SHARE_INVITE':
                         case 'SUBSCRIBE_WITH_RECEIVE':
+                            break
+                        case  'BROWSE_CHANNEL':
+                            isOk = userFinishedTimes ? 1 : 0
                             break
                         default:
                             isOk = 0
