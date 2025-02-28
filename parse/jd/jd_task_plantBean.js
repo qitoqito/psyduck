@@ -22,12 +22,14 @@ export class Main extends Template {
     async middle() {
         if (this.turnCount == 1) {
             for (let i of this.inviter) {
-                let inviter = [...i, ...{
-                    category: 'plantBean',
-                    limit: 3,
-                    times: 25,
-                    model: 'user'
-                }]
+                let inviter = {
+                    ...i, ...{
+                        category: 'plantBean',
+                        limit: 3,
+                        times: 25,
+                        model: 'user'
+                    }
+                }
                 this.shareCode(inviter)
             }
             for (let user of this.help) {

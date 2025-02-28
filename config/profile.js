@@ -43,6 +43,16 @@ export default {
                 },
                 prepare: [
                     {
+                        'eval': '_inviteJson',
+                        'haskey': 'inviteJson',
+                    },
+                    {
+                        'eval': '_userData',
+                        'haskey': 'userData'
+                    }
+                ],
+                runtime: [
+                    {
                         'eval': 'algo.bill'
                     },
                     {
@@ -51,16 +61,8 @@ export default {
                         'equal': 'isv'
                     },
                     {
-                        'eval': '_userData',
-                        'haskey': 'userData'
-                    },
-                    {
                         'eval': '_shareData',
                         'haskey': 'shareData'
-                    },
-                    {
-                        'eval': '_inviteJson',
-                        'haskey': 'inviteJson',
                     }
                 ],
                 appids: [

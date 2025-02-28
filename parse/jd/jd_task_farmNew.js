@@ -146,7 +146,6 @@ export class Main extends Template {
                         return
                     }
                 } catch (e) {
-                    console.log(e)
                     p.log("种树失败2")
                 }
             }
@@ -193,7 +192,6 @@ export class Main extends Template {
                                 await this.wait(1000)
                             }
                             else {
-                                console.log(water)
                                 p.log('浇水失败:', this.haskey(water, 'data.bizMsg'))
                                 isOk = 0
                                 status = 0
