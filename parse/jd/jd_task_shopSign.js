@@ -118,7 +118,7 @@ export class Main extends Template {
             if (this.haskey(sign, 'code', [403030023, 200])) {
                 p.info.work = true
                 if (sign.success) {
-                    p.log(`签到: ${days + 1}天`, context.token, context.shopName)
+                    p.log(`签到成功`, context.token, context.shopName)
                 }
                 else {
                     p.log(sign.msg)
