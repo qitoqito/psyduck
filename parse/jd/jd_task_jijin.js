@@ -85,7 +85,202 @@ export class Main extends Template {
                     let signature2 = aar.sign(this.dumps(device2), nonce2)
                     let nonce3 = aar.nonce()
                     let signature3 = aar.sign(this.dumps(device2), nonce3)
-                    if (i.name.includes("关注")) {
+                    if (i.name.includes("自选")) {
+                        let doLink = i.doLink
+                        let pp = this.query(doLink, '&', 1)
+                        // var data2 = {}
+                        // console.log(pp, i)
+                        let itemId
+                        if (!this.dict[pp.fundCode]) {
+                            let product = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/getFundDetailPageInfo`,
+                                    'form': `reqData={"itemId":"","createOrdermaket":"","fundCode":"${pp.fundCode}","clientVersion":null,"channel":"7"}`,
+                                    user
+                                }
+                            )
+                            itemId = this.haskey(product, 'resultData.datas.headerOfItem.itemId')
+                            if (itemId) {
+                                this.dict[pp.fundCode] = itemId
+                            }
+                        }
+                        else {
+                            itemId = this.dict[pp.fundCode]
+                        }
+                        if (itemId) {
+                            let cancel = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/cancelFundZxProduct`,
+                                    'form': `reqData={"fundIds":["${itemId}"],"clientType":"ios","channel":"7"}`,
+                                    user
+                                }
+                            )
+                            let receive = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/receiveMission`,
+                                    json: {
+                                        "reqData": this.dumps(device2),
+                                        "aar": {
+                                            "nonce": nonce2,
+                                            "signature": signature2
+                                        }
+                                    },
+                                    user,
+                                }
+                            )
+                            let add = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/addFundZxProduct`,
+                                    'form': `reqData={"fundId":"${itemId}","clientType":"ios","systemId":"JJXQ0001","channel":"7"}`,
+                                    user
+                                }
+                            )
+                            let reward = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/awardMission`,
+                                    json: {
+                                        "reqData": this.dumps(device2),
+                                        "aar": {
+                                            "nonce": nonce3,
+                                            "signature": signature3
+                                        }
+                                    },
+                                    user,
+                                }
+                            )
+                            if (this.haskey(reward, 'resultData.success')) {
+                                if (i.awardName == '京豆') {
+                                    p.draw(i.awardRealNum)
+                                }
+                                else {
+                                    p.msg(`${i.awardName}: ${i.awardRealNum}`)
+                                }
+                                status = 1
+                            }
+                            else {
+                                p.log(reward)
+                            }
+                            await this.wait(2000)
+                        }
+                        else {
+                            status = 0
+                            p.log("没有获取到itemId")
+                        }
+                    }
+                    else if (i.name.includes("浏览") && i.name.includes("文章")) {
+                        let receive = await this.curl({
+                                'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/receiveMission`,
+                                json: {
+                                    "reqData": this.dumps(device2),
+                                    "aar": {
+                                        "nonce": nonce2,
+                                        "signature": signature2
+                                    }
+                                },
+                                user,
+                            }
+                        )
+                        let doLink = i.doLink
+                        let pp = this.query(doLink, '&', 1)
+                        let T = aar.nonce()
+                        status = 0
+                        let batchGetTransLink = await this.curl({
+                                'url': `https://ms.jr.jd.com/gw2/generic/jrResource/h5/m/batchGetTransLink`,
+                                json: {
+                                    "reqData": this.dumps({
+                                        "parentUrlParam": i.doLink.split("?")[1],
+                                        "linkList": []
+                                    }),
+                                },
+                                user
+                            }
+                        )
+                        let signData = this.dumps(
+                            {"missionId": i.missionId.toString(), "PIN": user}
+                        )
+                        let nonce4 = aar.nonce()
+                        let signature4 = aar.sign(signData, nonce4)
+                        let queryBrowsMissionExt = await this.curl({
+                                'url': `https://ms.jr.jd.com/gw2/generic/Mission/h5/m/queryBrowsMissionExt`,
+                                json: {
+                                    "missionId": i.missionId.toString(),
+                                    "channelCode": pp.channelCode,
+                                    "nonce": nonce4,
+                                    "signData": signData,
+                                    "signature": signature4,
+                                    "version": "2.2.1"
+                                },
+                                user,
+                            }
+                        )
+                        if (this.haskey(queryBrowsMissionExt, 'resultData.data.extendMap')) {
+                            p.log("正在浏览")
+                            let map = queryBrowsMissionExt.resultData.data.extendMap
+                            p.log(`等待${map.readTime}s中...`)
+                            await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMissionReceiveAfterStatus`,
+                                    json: {
+                                        "reqData": this.dumps({
+                                            missionId: i.missionId.toString(),
+                                            "channelCode": pp.channelCode,
+                                        })
+                                    },
+                                    user
+                                }
+                            )
+                            await this.wait(parseInt(map.readTime) * 1000)
+                            let n = JSON.stringify({
+                                missionId: i.missionId.toString(),
+                                readTime: map.readTime.toString(),
+                                PIN: user
+                            })
+                            let signature2 = aar.sign(n, T)
+                            let finish = await this.curl({
+                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/finishReadMission`,
+                                    json: {
+                                        "reqData": this.dumps({
+                                            missionId: i.missionId.toString(),
+                                            readTime: map.readTime.toString(),
+                                            nonce: T,
+                                            signature: aar.sign(n, T),
+                                            version: "2.2.1",
+                                            "channelCode": pp.channelCode,
+                                        })
+                                    },
+                                    user
+                                }
+                            )
+                            if (this.haskey(finish, 'resultData.code', '0000') || this.haskey(finish, 'resultData.code', '0001')) {
+                                let reward = await this.curl({
+                                        'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/awardMission`,
+                                        json: {
+                                            "reqData": this.dumps(device2),
+                                            "aar": {
+                                                "nonce": nonce3,
+                                                "signature": signature3
+                                            }
+                                        },
+                                        user,
+                                    }
+                                )
+                                if (this.haskey(reward, 'resultData.success')) {
+                                    if (i.awardName == '京豆') {
+                                        p.draw(i.awardRealNum)
+                                    }
+                                    else {
+                                        p.msg(`${i.awardName}: ${i.awardRealNum}`)
+                                    }
+                                    status = 1
+                                }
+                                else {
+                                    p.log(reward)
+                                }
+                                await this.wait(2000)
+                            }
+                            else {
+                                p.log("浏览失败...")
+                            }
+                        }
+                        else {
+                            p.err("浏览失败")
+                        }
+                    }
+                    else if (i.name.includes("关注") || (i.name.includes("浏览") && i.name.includes("号"))) {
                         var data = {}
                         let doLink = i.doLink
                         let pp = this.query(doLink, '&', 1)
@@ -209,189 +404,6 @@ export class Main extends Template {
                                 p.log(reward)
                             }
                             await this.wait(2000)
-                        }
-                    }
-                    else if (i.name.includes("自选")) {
-                        let doLink = i.doLink
-                        let pp = this.query(doLink, '&', 1)
-                        // var data2 = {}
-                        // console.log(pp, i)
-                        let itemId
-                        if (!this.dict[pp.fundCode]) {
-                            let product = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/getFundDetailPageInfo`,
-                                    'form': `reqData={"itemId":"","createOrdermaket":"","fundCode":"${pp.fundCode}","clientVersion":null,"channel":"7"}`,
-                                    user
-                                }
-                            )
-                            itemId = this.haskey(product, 'resultData.datas.headerOfItem.itemId')
-                            if (itemId) {
-                                this.dict[pp.fundCode] = itemId
-                            }
-                        }
-                        else {
-                            itemId = this.dict[pp.fundCode]
-                        }
-                        if (itemId) {
-                            let cancel = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/cancelFundZxProduct`,
-                                    'form': `reqData={"fundIds":["${itemId}"],"clientType":"ios","channel":"7"}`,
-                                    user
-                                }
-                            )
-                            let receive = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/receiveMission`,
-                                    json: {
-                                        "reqData": this.dumps(device2),
-                                        "aar": {
-                                            "nonce": nonce2,
-                                            "signature": signature2
-                                        }
-                                    },
-                                    user,
-                                }
-                            )
-                            let add = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw/generic/jj/h5/m/addFundZxProduct`,
-                                    'form': `reqData={"fundId":"${itemId}","clientType":"ios","systemId":"JJXQ0001","channel":"7"}`,
-                                    user
-                                }
-                            )
-                            let reward = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/awardMission`,
-                                    json: {
-                                        "reqData": this.dumps(device2),
-                                        "aar": {
-                                            "nonce": nonce3,
-                                            "signature": signature3
-                                        }
-                                    },
-                                    user,
-                                }
-                            )
-                            if (this.haskey(reward, 'resultData.success')) {
-                                if (i.awardName == '京豆') {
-                                    p.draw(i.awardRealNum)
-                                }
-                                else {
-                                    p.msg(`${i.awardName}: ${i.awardRealNum}`)
-                                }
-                                status = 1
-                            }
-                            else {
-                                p.log(reward)
-                            }
-                            await this.wait(2000)
-                        }
-                        else {
-                            status = 0
-                            p.log("没有获取到itemId")
-                        }
-                    }
-                    else if (i.name.includes("浏览")) {
-                        let doLink = i.doLink
-                        let pp = this.query(doLink, '&', 1)
-                        let T = aar.nonce()
-                        status = 0
-                        let batchGetTransLink = await this.curl({
-                                'url': `https://ms.jr.jd.com/gw2/generic/jrResource/h5/m/batchGetTransLink`,
-                                json: {
-                                    "reqData": this.dumps({
-                                        "parentUrlParam": i.doLink.split("?")[1],
-                                        "linkList": []
-                                    }),
-                                },
-                                user
-                            }
-                        )
-                        let signData = this.dumps(
-                            {"missionId": i.missionId.toString(), "PIN": user}
-                        )
-                        let nonce4 = aar.nonce()
-                        let signature4 = aar.sign(signData, nonce4)
-                        let queryBrowsMissionExt = await this.curl({
-                                'url': `https://ms.jr.jd.com/gw2/generic/Mission/h5/m/queryBrowsMissionExt`,
-                                json: {
-                                    "missionId": i.missionId,
-                                    "channelCode": pp.channelCode,
-                                    "nonce": nonce4,
-                                    "signData": signData,
-                                    "signature": signature4,
-                                    "version": "2.2.1"
-                                },
-                                user,
-                            }
-                        )
-                        if (this.haskey(queryBrowsMissionExt, 'resultData.data.extendMap')) {
-                            p.log("正在浏览")
-                            let map = queryBrowsMissionExt.resultData.data.extendMap
-                            p.log(`等待${map.readTime}s中...`)
-                            await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMissionReceiveAfterStatus`,
-                                    json: {
-                                        "reqData": this.dumps({
-                                            missionId: i.missionId.toString(),
-                                            "channelCode": pp.channelCode,
-                                        })
-                                    },
-                                    user
-                                }
-                            )
-                            await this.wait(parseInt(map.readTime) * 1000)
-                            let n = JSON.stringify({
-                                missionId: i.missionId.toString(),
-                                readTime: map.readTime.toString(),
-                                PIN: user
-                            })
-                            let signature2 = aar.sign(n, T)
-                            let finish = await this.curl({
-                                    'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/finishReadMission`,
-                                    json: {
-                                        "reqData": this.dumps({
-                                            missionId: i.missionId.toString(),
-                                            readTime: map.readTime.toString(),
-                                            nonce: T,
-                                            signature: aar.sign(n, T),
-                                            version: "2.2.1",
-                                            "channelCode": pp.channelCode,
-                                        })
-                                    },
-                                    user
-                                }
-                            )
-                            if (this.haskey(finish, 'resultData.code', '0000') || this.haskey(finish, 'resultData.code', '0001')) {
-                                let reward = await this.curl({
-                                        'url': `https://ms.jr.jd.com/gw2/generic/finshop/h5/m/awardMission`,
-                                        json: {
-                                            "reqData": this.dumps(device2),
-                                            "aar": {
-                                                "nonce": nonce3,
-                                                "signature": signature3
-                                            }
-                                        },
-                                        user,
-                                    }
-                                )
-                                if (this.haskey(reward, 'resultData.success')) {
-                                    if (i.awardName == '京豆') {
-                                        p.draw(i.awardRealNum)
-                                    }
-                                    else {
-                                        p.msg(`${i.awardName}: ${i.awardRealNum}`)
-                                    }
-                                    status = 1
-                                }
-                                else {
-                                    p.log(reward)
-                                }
-                                await this.wait(2000)
-                            }
-                            else {
-                                p.log("浏览失败...")
-                            }
-                        }
-                        else {
-                            p.err("浏览失败")
                         }
                     }
                 }
