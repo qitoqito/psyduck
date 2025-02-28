@@ -377,6 +377,7 @@ export class Main extends Template {
                     }
                 }
             }
+            await this.setTemp(user, inviteCode)
             if (status && s1) {
                 p.info.work = true
             }
