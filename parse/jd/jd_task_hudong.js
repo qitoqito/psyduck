@@ -156,10 +156,12 @@ export class Main extends Template {
     async doTask(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         let apTask = await this.curl({
                 'url': `https://api.m.jd.com/api`,
                 'form': `functionId=apTaskList&body={"linkId":"${context.linkId}","channel":4}&t=1738479849113&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                user
+                user,
+                algo
             }
         )
         if (!apTask) {
@@ -192,6 +194,7 @@ export class Main extends Template {
                         }
                     case 'ORDER_MARK':
                     case 'SUBSCRIBE_WITH_RECEIVE':
+                    case 'FOLLOW_CHANNEL':
                         break
                     case 'BROWSE_CHANNEL':
                     case  'BROWSE_PRODUCT':
@@ -347,6 +350,7 @@ export class Main extends Template {
                         case'ORDER_MARK':
                         case 'SHARE_INVITE':
                         case 'SUBSCRIBE_WITH_RECEIVE':
+                        case 'FOLLOW_CHANNEL':
                             break
                         case  'BROWSE_CHANNEL':
                             isOk = userFinishedTimes ? 1 : 0
@@ -368,7 +372,7 @@ export class Main extends Template {
         let context = p.context;
         let doIt = await this.doTask(p)
         let home = await this.curl({
-                'url': `https://api.m.jd.com/api`,
+                'url': `http://api.m.jd.com/api`,
                 'form': `functionId=wheelsHome&body={"linkId":"${context.linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                 user,
                 algo: {'appId': 'c06b7', status: true},
@@ -417,7 +421,7 @@ export class Main extends Template {
             )
             drawNum = this.haskey(home, 'data.lotteryChances')
         }
-        if (doIt.finish && drawNum == 0) {
+        if (doIt.finish && drawNum == 0 && home) {
             p.info.work = true
         }
     }
@@ -475,7 +479,7 @@ export class Main extends Template {
             )
             drawNum = this.haskey(home, 'data.prizeNum')
         }
-        if (doIt.finish && drawNum == 0) {
+        if (doIt.finish && drawNum == 0 && home) {
             p.info.work = true
         }
     }
@@ -533,7 +537,7 @@ export class Main extends Template {
             )
             drawNum = this.haskey(home, 'data.remainTimes')
         }
-        if (doIt.finish && drawNum == 0) {
+        if (doIt.finish && drawNum == 0 && home) {
             p.info.work = true
         }
     }
@@ -593,7 +597,7 @@ export class Main extends Template {
             )
             drawNum = this.haskey(home, 'data.remainTimes')
         }
-        if (doIt.finish && drawNum == 0) {
+        if (doIt.finish && drawNum == 0 && home) {
             p.info.work = true
         }
     }
