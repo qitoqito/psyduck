@@ -69,7 +69,7 @@ export class Main extends Template {
                 p.log("正在关注", this.haskey(drawShopGift, 'result.giftDesc') || '没有领取到')
                 for (let g of this.haskey(drawShopGift, 'result.alreadyReceivedGifts') || []) {
                     if (g.prizeType == 4) {
-                        this.msg(`京豆: ${g.redWord}`)
+                        p.msg(`京豆: ${g.redWord}`)
                     }
                 }
                 await this.curl({
