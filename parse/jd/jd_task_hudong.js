@@ -5,7 +5,7 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东互动整合',
-            crontab: 6,
+            crontab: 8,
             sync: 1,
             verify: ['linkId'],
             tempExpire: 3 * 86400,
@@ -332,7 +332,10 @@ export class Main extends Template {
                                 'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
                                 user,
                                 algo: {
-                                    appId: 'f0f3f'
+                                    appId: 'f0f3f',
+                                    expire: {
+                                        code: 1000
+                                    }
                                 }
                             }
                         )

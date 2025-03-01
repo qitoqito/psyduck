@@ -7,7 +7,6 @@ export class Main extends Template {
             title: '京东视频红包',
             interval: 3000,
             round: 4,
-            verify: 2,
             crontab: 4
         }
     }
