@@ -8,7 +8,7 @@ export class Main extends Template {
             interval: 3000,
             round: 4,
             verify: 2,
-            crontab: 3
+            crontab: 4
         }
     }
 
@@ -260,6 +260,7 @@ export class Main extends Template {
                 "lDbJke38X/LYwQ4NXzjcXw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
                 "m0M0jZT19vGManJFn6JUtw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
             ]
+            let isOk = 1
             for (let i of lists.slice(0, 5)) {
                 let coin = await this.curl({
                         'url': `https://api.m.jd.com/client.action?functionId=videoHbGoldCoin_done`,
@@ -273,6 +274,7 @@ export class Main extends Template {
                 if (this.haskey(coin, 'success')) {
                     p.log('获得金币:', coin.data.rewardValue)
                     if (!coin.data.rewardValue) {
+                        isOk = 0
                         break
                     }
                 }
@@ -280,7 +282,36 @@ export class Main extends Template {
                     p.log(coin)
                     break
                 }
-                await this.wait(2000)
+                await this.wait(8000)
+            }
+            if (!isOk) {
+                context.list = null
+                for (let i of lists.slice(0, 5)) {
+                    let coin = await this.curl({
+                            'url': `https://api.m.jd.com/client.action?functionId=videoHbGoldCoin_done`,
+                            'form': `avifSupport=0&body={"contentId":"${i}","playType":"163","jsLabel":"\/DM3FV\/PEde9BKNudk4NEQ7LYwslHVatolqZKq0h\/nbpuOtrMZKpsSx6AY1fvblB0Dp+W9WGxfkrD\/y8BAJ3iO5UO\/CKNmGetDYZHD+x2E7ElUM0I3rMHO2XhEv5A+ihHfZ9zCMVtC2h+SmLy042QK2NPMlS2busoZYVVI1go5I=","activitySource":"1"}&build=169736&client=apple&clientVersion=15.0.20`,
+                            user,
+                            algo: {
+                                sign: true
+                            }
+                        }
+                    )
+                    if (this.haskey(coin, 'success')) {
+                        p.log('获得金币:', coin.data.rewardValue)
+                        if (!coin.data.rewardValue) {
+                            isOk = 0
+                            break
+                        }
+                    }
+                    else {
+                        p.log(coin)
+                        break
+                    }
+                    await this.wait(8000)
+                }
+            }
+            if (isOk) {
+                p.info.work = true
             }
         }
     }
