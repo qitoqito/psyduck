@@ -378,7 +378,7 @@ export class Main extends Template {
                 'url': `http://api.m.jd.com/api`,
                 'form': `functionId=wheelsHome&body={"linkId":"${context.linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                 user,
-                algo: {'appId': 'c06b7', status: true},
+                algo: {'appId': 'c06b7'},
             }
         )
         let drawNum = this.haskey(home, 'data.lotteryChances') || 0
@@ -419,7 +419,7 @@ export class Main extends Template {
                     'url': `https://api.m.jd.com/api`,
                     'form': `functionId=wheelsHome&body={"linkId":"wWGE5McZMFWkhTl-AN_TRQ","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                     user,
-                    algo: {'appId': 'c06b7', status: true},
+                    algo: {'appId': 'c06b7'},
                 }
             )
             drawNum = this.haskey(home, 'data.lotteryChances')
