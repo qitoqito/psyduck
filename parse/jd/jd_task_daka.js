@@ -42,7 +42,7 @@ export class Main extends Template {
         let context = p.context;
         let sign = await this.curl({
                 'url': `https://api.m.jd.com/?functionId=interact_game_sign&_=1740844423946`,
-                'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_sign&body={"encryptAssignmentId":"${context.encryptAssignmentId}","itemId":"${context.itemId}"}`,
+                'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_sign&body={"encryptAssignmentId":"${context.assignmentId}","itemId":"${context.itemId}"}`,
                 user,
                 algo: {
                     expire: {
