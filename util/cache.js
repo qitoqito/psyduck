@@ -35,7 +35,7 @@ export class Cache {
         }
         else {
             let dirpath = fileURLToPath(import.meta.url).split('/util')[0].split("\\util")[0];
-            this._cache = new Tfc({dir: `${dirpath}/temp`})
+            this._cache = new Tfc({dir: `${dirpath}/temp`, folderNum: 2})
         }
     }
 
