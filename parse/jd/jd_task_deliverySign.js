@@ -1,16 +1,18 @@
-import {Template } from '../../template.js'
+import {Template} from '../../template.js'
 
-export class Main extends Template  {
+export class Main extends Template {
     constructor() {
         super()
         this.profile = {
             title: "京东天天领豆",
-            crontab: 3,
+            crontab: 4,
             model: 'user',
             sync: 1,
             prompt: {
                 activityId: '活动id1|id2'
             },
+            delay: 800,
+            interval: 2000,
             verify: 1
         }
     }
