@@ -30,6 +30,9 @@ export default {
                     },
                     'u.jd.com': {
                         shell: true
+                    },
+                    'p.m.jd.com': {
+                        shell: true
                     }
                 },
                 referer: "https://prodev.m.jd.com/",

@@ -11,6 +11,11 @@ export class Main extends Template {
             tempExpire: 3 * 86400,
             prompt: {
                 id: "活动Id #url里的那部分id,暂只支持部分类型"
+            },
+            headers: {
+                'x-rp-client': "h5_1.0.0",
+                'request-from': 'native',
+                referer: 'https://h5.m.jd.com/pb/015686010/Bc9WX7MpCW7nW9QjZ5N3fFeJXMH/index.html'
             }
         }
     }
@@ -35,7 +40,7 @@ export class Main extends Template {
             if (html.includes('lottery-machine')) {
                 for (let linkId of lids) {
                     let lottery = await this.curl({
-                            'url': `http://api.m.jd.com/api`,
+                            'url': `https://api.m.jd.com/api`,
                             'form': `functionId=lotteryMachineHome&body={"linkId":"${linkId}","taskId":"","inviter":""}&t=1713449252402&appid=activities_platform&client=ios&clientVersion=15.1.1&uuid=de21c6604748f97dd3977153e51a47f4efdb9a47&build=168960&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13%2C3&lang=zh_CN&osVersion=15.1.1&partner=-1&cthr=1`,
                             delay: 1,
                             algo: {
@@ -52,7 +57,7 @@ export class Main extends Template {
             else if (js.includes('inviteFission')) {
                 for (let linkId of lids) {
                     let pl = await this.curl({
-                            'url': `http://api.m.jd.com/api`,
+                            'url': `https://api.m.jd.com/api`,
                             form: `appid=activities_platform&body={"linkId":"${linkId}","taskId":"","inviter":""}&client=ios&clientVersion=12.3.4&functionId=inviteFissionBeforeHome&t=1718017177605&osVersion=16.2.1&build=169143&rfs=0000`,
                             algo: {
                                 appId: '02f8d'
@@ -69,7 +74,7 @@ export class Main extends Template {
             else if (js.includes('superLeague')) {
                 for (let linkId of lids) {
                     let pl = await this.curl({
-                            'url': `http://api.m.jd.com/api`,
+                            'url': `https://api.m.jd.com/api`,
                             form: `appid=activities_platform&body={"linkId":"${linkId}","taskId":"","inviter":""}&client=ios&clientVersion=12.3.4&functionId=superLeagueHome&t=1718017177605&osVersion=16.2.1&build=169143&rfs=0000`,
                             algo: {
                                 appId: 'b7d17'
@@ -375,12 +380,16 @@ export class Main extends Template {
         let context = p.context;
         let doIt = await this.doTask(p)
         let home = await this.curl({
-                'url': `http://api.m.jd.com/api`,
+                'url': `https://api.m.jd.com/api`,
                 'form': `functionId=wheelsHome&body={"linkId":"${context.linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                 user,
-                algo: {'appId': 'c06b7'},
+                algo: {'appId': 'c06b7',},
             }
         )
+        if (this.haskey(home, 'code', 12)) {
+            p.context.finish = true
+            return
+        }
         let drawNum = this.haskey(home, 'data.lotteryChances') || 0
         p.log("可抽奖次数:", drawNum)
         for (let i of Array(drawNum)) {
@@ -417,7 +426,7 @@ export class Main extends Template {
         if (drawNum != 0) {
             home = await this.curl({
                     'url': `https://api.m.jd.com/api`,
-                    'form': `functionId=wheelsHome&body={"linkId":"wWGE5McZMFWkhTl-AN_TRQ","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
+                    'form': `functionId=wheelsHome&body={"linkId":"${context.linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                     user,
                     algo: {'appId': 'c06b7'},
                 }
@@ -440,6 +449,10 @@ export class Main extends Template {
                 algo: {'appId': 'eb67b', status: true},
             }
         )
+        if (this.haskey(home, 'code', 12)) {
+            p.context.finish = true
+            return
+        }
         let drawNum = this.haskey(home, 'data.prizeNum') || 0
         p.log("可抽奖次数:", drawNum)
         for (let i of Array(drawNum)) {
@@ -498,6 +511,10 @@ export class Main extends Template {
                 algo: {'appId': 'b7d17', status: true},
             }
         )
+        if (this.haskey(home, 'code', 12)) {
+            p.context.finish = true
+            return
+        }
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
         p.log("可抽奖次数:", drawNum)
         for (let i of Array(drawNum)) {
@@ -556,6 +573,10 @@ export class Main extends Template {
                 algo: {'appId': 'd7439'},
             }
         )
+        if (this.haskey(home, 'code', 12)) {
+            p.context.finish = true
+            return
+        }
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
         let num = drawNum>5 ? 6 : drawNum
         p.log("可抽奖次数:", num)
