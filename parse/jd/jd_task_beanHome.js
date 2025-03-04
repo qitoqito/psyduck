@@ -5,7 +5,7 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东领京豆',
-            round: 2,
+            turn: 3,
             crontab: 3,
             model: 'user'
         }
@@ -22,12 +22,26 @@ export class Main extends Template {
         if (this.haskey(feeds, 'data.feedsList')) {
             this.code = (this.column(feeds.data.feedsList, 'skuId'))
         }
+        else {
+            this.code = [
+                '100124947609',
+                '10113472733713',
+                '10111336292831',
+                '100043430641',
+                '100061222266',
+                '100042916006',
+                '100072438118',
+                '100116209250',
+                '100135636960',
+                '100010459381'
+            ]
+        }
     }
 
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        if (context.round == 1) {
+        if (this.turnCount == 1) {
             let uuid = this.md5(user)
             for (let i of this.code) {
                 p.log(`正在浏览任务`)
@@ -70,6 +84,89 @@ export class Main extends Template {
                     break
                 }
                 await this.wait(2000)
+            }
+        }
+        else if (this.turnCount == 2) {
+            let list = await this.curl({
+                    'url': `https://api.m.jd.com/client.action`,
+                    'form': `functionId=beanTaskList&body={"beanVersion":1,"newList":"1","lng":"0.000000","lat":"0.000000","imei":"${this.sha1(user)}","prstate":"0","aid":"","oaid":"","idfa":"","uuid":"","op_type":1,"app_info":"390*676^iPhone13,3^apple^15.1.1^15.0.25^wifi","location_info":""}&appid=ld&client=apple&screen=390*676&networkType=wifi&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                    user
+                }
+            )
+            let status = 1
+            let counts = [0]
+            for (let i of this.haskey(list, 'data.taskInfos')) {
+                if (i.status != 2) {
+                    counts.push(i.maxTimes - i.times)
+                }
+            }
+            for (let _ of Array.from({length: Math.max(...counts)}, (_, index) => index)) {
+                for (let i of this.haskey(list, 'data.taskInfos')) {
+                    if (i.status == 2) {
+                        if (_ == 0) {
+                            p.log("任务已完成:", i.taskName)
+                        }
+                    }
+                    else {
+                        p.log("正在运行:", i.taskName)
+                        status = 0
+                        if (i.taskType == 9) {
+                            let doTask = await this.curl({
+                                    'url': `https://api.m.jd.com/client.action`,
+                                    'form': `functionId=beanDoTask&body={"actionType":1,"taskToken":"${i.subTaskVOS[0].taskToken}"}&appid=signed_wh5_ihub&client=apple&screen=390*676&networkType=wifi&openudid=&uuid=&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                                    user
+                                }
+                            )
+                            if (!this.haskey(doTask, 'data')) {
+                                p.log(this.haskey(doTask, 'errorMessage') || doTask)
+                                continue
+                            }
+                            if (i.waitDuration) {
+                                p.log("等待:", i.waitDuration)
+                                await this.wait(i.waitDuration * 1000)
+                            }
+                            let reward = await this.curl({
+                                    'url': `https://api.m.jd.com/client.action`,
+                                    'form': `functionId=beanDoTask&body={"actionType":0,"taskToken":"${i.subTaskVOS[0].taskToken}"}&appid=signed_wh5_ihub&client=apple&screen=390*676&networkType=wifi&openudid=&uuid=&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                                    user
+                                }
+                            )
+                            if (this.haskey(reward, 'data')) {
+                                status = 1
+                                p.log(reward.data.bizMsg)
+                            }
+                            else {
+                                p.log(reward)
+                            }
+                            await this.wait(2000)
+                        }
+                        else {
+                            let reward = await this.curl({
+                                    'url': `https://api.m.jd.com/client.action`,
+                                    'form': `functionId=beanDoTask&body={"actionType":0,"taskToken":"${i.subTaskVOS[0].taskToken}"}&appid=signed_wh5_ihub&client=apple&screen=390*676&networkType=wifi&openudid=&uuid=&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                                    user
+                                }
+                            )
+                            if (this.haskey(reward, 'data')) {
+                                status = 1
+                                p.log(reward.data.bizMsg)
+                            }
+                            else {
+                                p.log(reward)
+                            }
+                            await this.wait(2000)
+                        }
+                    }
+                }
+                list = await this.curl({
+                        'url': `https://api.m.jd.com/client.action`,
+                        'form': `functionId=beanTaskList&body={"beanVersion":1,"newList":"1","lng":"0.000000","lat":"0.000000","imei":"${this.sha1(user)}","prstate":"0","aid":"","oaid":"","idfa":"","uuid":"","op_type":1,"app_info":"390*676^iPhone13,3^apple^15.1.1^15.0.25^wifi","location_info":""}&appid=ld&client=apple&screen=390*676&networkType=wifi&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                        user
+                    }
+                )
+            }
+            if (status && list) {
+                p.info.work = true
             }
         }
         else {
