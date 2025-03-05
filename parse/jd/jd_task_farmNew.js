@@ -51,7 +51,7 @@ export class Main extends Template {
         }
         else if (this.turnCount == 1) {
             this.shareCode({
-                task: 'main'
+                task: 'help'
             })
         }
     }

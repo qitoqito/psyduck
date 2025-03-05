@@ -234,8 +234,8 @@ import {fileURLToPath, pathToFileURL} from 'url';
     }
     let length = process.argv.length
     let params = {
-        filename,
-        mapping: "${map}",
+        filename: "${map}",
+        mapping: filename,
         title: "${title}",
     }
     if (length > 2) {
@@ -320,7 +320,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
     }else{
         console.log(e)
     }
-    
+
 })`
                             fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
                                 if (err) {
