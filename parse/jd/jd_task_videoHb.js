@@ -13,7 +13,7 @@ export class Main extends Template {
 
     async prepare() {
         let html = await this.curl({
-                'url': `https://pro.m.jd.com/mall/active/4VRY8pVY1KRhYkVPgywV5Qa9Rovp/index.html?tttparams=i2c4MeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIiLCJwb3NMYXQiOiIyMy45MzkxOTIiLCJwb3NMbmciOiIxMTcuNjExMjMiLCJncHNfYXJlYSI6IjBfMF8wXzAiLCJsbmciOiIiLCJ1ZW1wcyI6IjAtMC0yIiwiZ0xuZyI6IjExNy42MTEyMyIsIm1vZGVsIjoiaVBob25lMTMsMyIsImRMbmciOiIifQ5%3D%3D`,
+                'url': `https://pro.m.jd.com/mall/active/8WYa8CGWvkB5b3EC9TcyAbAobeo/index.html?tttparams=i2c4MeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIiLCJwb3NMYXQiOiIyMy45MzkxOTIiLCJwb3NMbmciOiIxMTcuNjExMjMiLCJncHNfYXJlYSI6IjBfMF8wXzAiLCJsbmciOiIiLCJ1ZW1wcyI6IjAtMC0yIiwiZ0xuZyI6IjExNy42MTEyMyIsIm1vZGVsIjoiaVBob25lMTMsMyIsImRMbmciOiIifQ5%3D%3D`,
                 user: this.tester()
             }
         )
@@ -24,44 +24,20 @@ export class Main extends Template {
                 return {
                     "type": "20",
                     "assignmentId": d,
-                    "scanTaskCodeIndex": "2",
-                    "activitySource": "1",
-                    "realClient": "ios",
-                    "taskRewardType": "1"
                 }
             })
-            // for (let d of this.matchAll(/"signInTaskCode(?:_\d+)*"\s*:\s*"(\w+)"/g, html)) {
-            //     this.code.push({
-            //         "type": "21",
-            //         "assignmentId": d,
-            //         "activitySource": "1", "realClient": "ios", "floatType": "1"
-            //     })
-            // }
-            for (let d of this.matchAll(/"liveFollowTaskCode(?:_\d+)*"\s*:\s*"(\w+)"/g, html)) {
-                this.code.push({
-                    "type": "24",
-                    "assignmentId": d,
-                    "activitySource": "1",
-                    "realClient": "ios",
-                    "floatType": "1",
-                    "subPlayType": "-100"
-                })
-            }
-            for (let d of this.matchAll(/"secondsTaskCode(?:_\d+)*"\s*:\s*"(\w+)"/g, html)) {
-                this.code.push({
-                    "type": "25",
-                    "assignmentId": d,
-                    "activitySource": "1",
-                    "realClient": "ios",
-                    "floatType": "1",
-                    "subPlayType": "-100"
-                })
-            }
-            for (let d of this.matchAll(/"fissionTaskCode(?:_\d+)*"\s*:\s*"(\w+)"/g, html)) {
-                this.code.push({
-                    "type": "29", "assignmentId": d, "activitySource": "1", "realClient": "ios", "floatType": "1"
-                })
-            }
+        }
+        else {
+            this.code = [{"type": "20", "assignmentId": "3pqBgSLxZYRuXYqHB3Mqt491gdW7"}, {
+                "type": "20",
+                "assignmentId": "42Nh2x5EzX6pdbtDhuSjCn5vbsvG"
+            }, {"type": "20", "assignmentId": "3QNFKrBjMdhLAo3cLM9Ybn9A2pMK"}, {
+                "type": "20",
+                "assignmentId": "3vdcpRcRQYwA9gtaQwXCwz8ajLm"
+            }, {"type": "20", "assignmentId": "2352pNzjbjkZmx42QWVeMQBsmVPf"}, {
+                "type": "20",
+                "assignmentId": "2sRpWMCxxwVPT1i5Z52iBiKe1ec9"
+            }]
         }
     }
 
@@ -225,48 +201,16 @@ export class Main extends Template {
             }
         }
         else {
-            var lists = ['740963579',
-                '419744560', '419744560', '419744560', '419744560', '419744560', '590181549', '626885205'
-            ]
-            if (!context.list) {
-                let videoDetail = await this.curl({
-                        'url': `https://api.m.jd.com/video_videoDetail?g_ty=ls&g_tk=2107606655`,
-                        'form': `appid=mini_content&body={"id":"711886908","offset":"5_41","playtype":"9999","modeid":"1","style":"11","projectid":"100967","adid":"","pi":"","mpplaytype":"11","extParam":"{\\"activityId\\":\\"BPC-20240513-0019\\"}","skuId":""}&client=wxapp&clientVersion=10.14.200&functionId=video_videoDetail`,
-                        user,
-                        algo: {
-                            appId: 'd734e'
-                        }
-                    }
-                )
-                if (this.haskey(videoDetail, 'list')) {
-                    lists = this.column(videoDetail.list, 'id')
-                    context.list = lists
-                }
-            }
-            else {
-                lists = context.list
-            }
-            let jsLable = [
-                "Q/g3kHW+Z0OYavMQtYHrNA7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBiQLM/X3mONW05GImZM/KBH7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==", "4Nc6P/zwB+60A2aTvNSx9w7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBiQLM/X3mONW05GImZM/KBH7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==", "gF1/9jdFDopw6w6LGhzbeQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBiQLM/X3mONW05GImZM/KBH7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==", "27ulfi2CH8N0JwjosX1ulg7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBiQLM/X3mONW05GImZM/KBH7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==", "zM36K2DPt0ARtmy6GComUQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBiQLM/X3mONW05GImZM/KBH7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "VStpTFFcPyNVMZXHhdgYdQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBdFtCn/2sVW4/51duXMv5DX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "t6XttZjgZni/znFvFXvlUg7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBdFtCn/2sVW4/51duXMv5DX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "78kfI5MBs8LDtC0gTr7Xdw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBdFtCn/2sVW4/51duXMv5DX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "Vnwf2U7YFC71f6bqRet05A7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBdFtCn/2sVW4/51duXMv5DX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "iQX3z0f5Gt9z3+kVgwKnSQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBdFtCn/2sVW4/51duXMv5DX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==", "m0M0jZT19vGManJFn6JUtw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "AjmJ8sS/Z9lcMhvwONeMGw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "ZBQB4MvvDkmjDdq2n5qX2Q7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "DYG1oqdj0YcKMrFS+Uj3OQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "lDbJke38X/LYwQ4NXzjcXw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-                "m0M0jZT19vGManJFn6JUtw7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblBM4R7PDP6fNrkpORnefS1PX7CINMd/iXLDxurzYcNmVVPsPYyuq6ZgPn/28UD24t+rY08yVLZu6yhlhVUjWCjkg==",
-            ]
+            var lists = ['419744560', '419744560', '419744560', '419744560', '419744560']
+
             let isOk = 1
             for (let i of lists.slice(0, 5)) {
                 let coin = await this.curl({
                         'url': `https://api.m.jd.com/client.action?functionId=videoHbGoldCoin_done`,
-                        'form': `avifSupport=0&body={"contentId":"${i}","playType":"163","jsLabel":"${this.random(jsLable)}","activitySource":"1"}&build=169736&client=apple&clientVersion=15.0.20`,
+                        'form': `avifSupport=0&body={"contentId":"${i}","playType":"163","jsLabel":"/DM3FV/PEde9BKNudk4NEQ7LYwslHVatolqZKq0h/nbpuOtrMZKpsSx6AY1fvblB0Dp+W9WGxfkrD/y8BAJ3iO5UO/CKNmGetDYZHD+x2E7ElUM0I3rMHO2XhEv5A+ihHfZ9zCMVtC2h+SmLy042QK2NPMlS2busoZYVVI1go5I=","activitySource":"1"}&build=169736&client=apple&clientVersion=15.0.20`,
                         user,
                         algo: {
-                            sign: true
+                            app: true
                         }
                     }
                 )
@@ -283,32 +227,7 @@ export class Main extends Template {
                 }
                 await this.wait(8000)
             }
-            if (!isOk) {
-                context.list = null
-                for (let i of lists.slice(0, 5)) {
-                    let coin = await this.curl({
-                            'url': `https://api.m.jd.com/client.action?functionId=videoHbGoldCoin_done`,
-                            'form': `avifSupport=0&body={"contentId":"${i}","playType":"163","jsLabel":"\/DM3FV\/PEde9BKNudk4NEQ7LYwslHVatolqZKq0h\/nbpuOtrMZKpsSx6AY1fvblB0Dp+W9WGxfkrD\/y8BAJ3iO5UO\/CKNmGetDYZHD+x2E7ElUM0I3rMHO2XhEv5A+ihHfZ9zCMVtC2h+SmLy042QK2NPMlS2busoZYVVI1go5I=","activitySource":"1"}&build=169736&client=apple&clientVersion=15.0.20`,
-                            user,
-                            algo: {
-                                sign: true
-                            }
-                        }
-                    )
-                    if (this.haskey(coin, 'success')) {
-                        p.log('获得金币:', coin.data.rewardValue)
-                        if (!coin.data.rewardValue) {
-                            isOk = 0
-                            break
-                        }
-                    }
-                    else {
-                        p.log(coin)
-                        break
-                    }
-                    await this.wait(8000)
-                }
-            }
+
             if (isOk) {
                 p.info.work = true
             }
