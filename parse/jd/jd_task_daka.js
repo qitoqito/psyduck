@@ -8,33 +8,34 @@ export class Main extends Template {
             verify: 1,
             help: 'main',
             interval: 1000,
-            crontab: 4
+            crontab: 4,
+            sync: 1
         }
     }
 
     async prepare() {
-        let c = 0
-        for (let user of this.help) {
-            let home = await this.curl({
-                    'url': `https://api.m.jd.com/?functionId=interact_game_home&_=1740844418368`,
-                    'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_home&body={}`,
-                    user
-                }
-            )
-            for (let i of this.haskey(home, 'data.assetInfos.bannerInfos')) {
-                if (i.functionId == 'beanSign') {
-                    c++
-                    this.shareCode({
-                        assignmentId: i.assignmentId,
-                        itemId: i.itemId
-                    })
-                }
-            }
-            if (c) {
-                break
-            }
-            await this.wait(2000)
-        }
+        // let c = 0
+        // for (let user of this.help) {
+        //     let home = await this.curl({
+        //             'url': `https://api.m.jd.com/?functionId=interact_game_home&_=1740844418368`,
+        //             'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_home&body={}`,
+        //             user
+        //         }
+        //     )
+        //     for (let i of this.haskey(home, 'data.assetInfos.bannerInfos')) {
+        //         if (i.functionId == 'beanSign') {
+        //             c++
+        //             this.shareCode({
+        //                 assignmentId: i.assignmentId,
+        //                 itemId: i.itemId
+        //             })
+        //         }
+        //     }
+        //     if (c) {
+        //         break
+        //     }
+        //     await this.wait(2000)
+        // }
     }
 
     async main(p) {
