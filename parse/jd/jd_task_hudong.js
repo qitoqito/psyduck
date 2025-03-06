@@ -5,7 +5,7 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东互动整合',
-            crontab: 8,
+            crontab: 12,
             sync: 1,
             verify: ['linkId'],
             tempExpire: 3 * 86400,
@@ -26,7 +26,7 @@ export class Main extends Template {
 
     async batch(p) {
         p = await this.getTemp(p.pid) || p
-        if (!p.linkId) {
+        if (!p.linkId && !p.enAwardK) {
             let url = `https://prodev.m.jd.com/mall/active/${p.id}/index.html?utm_medium=tuiguang&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=&utm_source=kong&cu=true`
             let html = await this.curl(url)
             let mainJs = this.unique(this.matchAll(/src="(.*?\.js)"/g, html).filter(d => d.includes('main.')))
@@ -102,6 +102,14 @@ export class Main extends Template {
                         break
                     }
                 }
+            }
+            else if (html.includes('enAwardK') && html.includes('encryptAssignmentId')) {
+                p.encryptAssignmentId = this.match(/"encryptAssignmentId"\s*:\s*"(\w+)"/, html)
+                p.enAwardK = this.match(/"enAwardK"\s*:\s*"([^\"]+)"/, html)
+                p.mid = this.match(/"moduleId"\s*:\s*(\d+)/, html)
+                p.aid = this.match(/"activityId"\s*:\s*"(\d+)"/, html)
+                p.encryptProjectId = this.match(/"encryptProjectId"\s*:\s*"(\w+)"/, html)
+                p.category = 'babelGet'
             }
             else {
             }
@@ -623,6 +631,37 @@ export class Main extends Template {
         }
         if (doIt.finish && drawNum == 0 && home) {
             p.info.work = true
+        }
+    }
+
+    async _babelGet(p) {
+        let user = p.data.user;
+        let context = p.context;
+        while (true) {
+            let lottery = await this.curl({
+                    'url': `https://api.m.jd.com/client.action?functionId=babelGetLottery`,
+                    'form': `body=%7B%22enAwardK%22%3A%22${encodeURIComponent(context.enAwardK)}%22%2C%22awardSource%22%3A%221%22%2C%22srv%22%3A%22%7B%5C%22bord%5C%22%3A%5C%220%5C%22%2C%5C%22fno%5C%22%3A%5C%220-0-2%5C%22%2C%5C%22mid%5C%22%3A%5C%22${context.mid}%5C%22%2C%5C%22bi2%5C%22%3A%5C%222%5C%22%2C%5C%22bid%5C%22%3A%5C%220%5C%22%2C%5C%22aid%5C%22%3A%5C%22${context.aid}%5C%22%7D%22%2C%22encryptProjectId%22%3A%22${context.encryptProjectId}%22%2C%22encryptAssignmentId%22%3A%22${context.encryptAssignmentId}%22%2C%22authType%22%3A%222%22%2C%22riskParam%22%3A%7B%22platform%22%3A%223%22%2C%22orgType%22%3A%222%22%2C%22openId%22%3A%22-1%22%2C%22pageClickKey%22%3A%22Babel_WheelSurf%22%2C%22eid%22%3A%22UT42BFT33TGS6GOIOWXCCOFR2T5UM44HG27BZ3JBLL5TQWMEHHCGMANY7T3YNDDBPISS4SS7Z7C7T3OFBOP5QFT2KI%22%2C%22fp%22%3A%2272e488edc504c9c767b6866b3576387c%22%2C%22shshshfp%22%3A%22c23f1c90f0550b5c54792f20fb6ba35b%22%2C%22shshshfpa%22%3A%22dc7ab86b-e448-fce6-09f4-bc6cbb608517-1711437197%22%2C%22shshshfpb%22%3A%22BApXcqszQTOpAjBZ7Fg8SUrs91RsApjTNBlMCdrhW9xJ1NN1Sb4LRlxX-7i2a%22%2C%22childActivityUrl%22%3A%22https%253A%252F%252Fpro.m.jd.com%252Fmall%252Factive%252F${context.id}%252Findex.html%253Fstath%253D47%2526navh%253D44%2526tttparams%253DTMjLskeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIwLjAwMDAwMCIsInBvc0xhdCI6IjIzLjkzOTE5MiIsInBvc0xuZyI6IjExNy42MTEyMyIsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IjAuMDAwMDAwIiwidWVtcHMiOiIwLTAtMCIsImdMbmciOiIxMTcuNjExMjMiLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn60%25253D%22%2C%22userArea%22%3A%22-1%22%2C%22client%22%3A%22%22%2C%22clientVersion%22%3A%22%22%2C%22uuid%22%3A%22%22%2C%22osVersion%22%3A%22%22%2C%22brand%22%3A%22%22%2C%22model%22%3A%22%22%2C%22networkType%22%3A%22%22%2C%22jda%22%3A%22-1%22%7D%2C%22siteClient%22%3A%22apple%22%2C%22mitemAddrId%22%3A%22%22%2C%22geo%22%3A%7B%22lng%22%3A%220.000000%22%2C%22lat%22%3A%220.000000%22%7D%2C%22addressId%22%3A%22%22%2C%22posLng%22%3A%22123.61123%22%2C%22posLat%22%3A%2223.969192%22%2C%22un_area%22%3A%2216_1234_1314_44750%22%2C%22gps_area%22%3A%220_0_0_0%22%2C%22homeLng%22%3A%22123.61123%22%2C%22homeLat%22%3A%2223.969192%22%2C%22homeCityLng%22%3A%22%22%2C%22homeCityLat%22%3A%22%22%2C%22focus%22%3A%22%22%2C%22innerAnchor%22%3A%22%22%2C%22cv%22%3A%222.0%22%2C%22gLng1%22%3A%22%22%2C%22gLat1%22%3A%22%22%2C%22head_area%22%3A%22%22%2C%22fullUrl%22%3A%22https%3A%2F%2Fpro.m.jd.com%2Fmall%2Factive%2F34oVq6LqN9Yshb8Y841RXHG3Nzf7%2Findex.html%3Fstath%3D47%26navh%3D44%26tttparams%3DTMjLskeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIwLjAwMDAwMCIsInBvc0xhdCI6IjIzLjkzOTE5MiIsInBvc0xuZyI6IjExNy42MTEyMyIsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IjAuMDAwMDAwIiwidWVtcHMiOiIwLTAtMCIsImdMbmciOiIxMTcuNjExMjMiLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn60%253D%22%7D&screen=1170*2259&client=wh5&clientVersion=15.1.1&appid=wh5&functionId=babelGetLottery`,
+                    user,
+                    algo: {
+                        appId: '35fa0',
+                        expire: {
+                            "code": "3",
+                        }
+                    }
+                }
+            )
+            let num = parseInt(this.haskey(lottery, 'chances') || 0)
+            if (this.haskey(lottery, 'prizeType')) {
+                p.msg(lottery.prizeName)
+            }
+            else {
+                p.log(this.haskey(lottery, 'promptMsg') || lottery)
+            }
+            if (!num) {
+                p.info.work = true
+                break
+            }
+            await this.wait(2000)
         }
     }
 }
