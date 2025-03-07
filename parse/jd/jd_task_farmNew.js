@@ -10,7 +10,8 @@ export class Main extends Template {
                 'tenWater': '1 #每天只做20次浇水任务',
                 'stock': "200 #保留水滴数",
                 'tree': '1 #如果检测到没有种树,自动选择一个商品进行种植',
-                'inviteJson': 'true #使用自定义助力码'
+                'inviteJson': 'true #使用自定义助力码',
+                'times': '35 #最多助力人数'
             },
             headers: {
                 'x-rp-client': "h5_1.0.0",
@@ -32,7 +33,7 @@ export class Main extends Template {
         if (this.turnCount == 3) {
             for (let inviter of this.inviter) {
                 inviter.category = 'inviteCode'
-                inviter.times = 35
+                inviter.times = parseInt(this.profile.times || 35)
                 inviter.limit = 1
                 this.shareCode(inviter)
             }
@@ -43,7 +44,7 @@ export class Main extends Template {
                         user,
                         inviteCode,
                         category: 'inviteCode',
-                        times: 35,
+                        times: parseInt(this.profile.times || 35),
                         limit: 1
                     })
                 }
@@ -74,6 +75,11 @@ export class Main extends Template {
                 )
                 if (this.haskey(signIn, 'success')) {
                     p.log('签到成功')
+                }
+                else if (this.haskey(signIn, 'code', 210000)) {
+                    p.log('非东东农场用户/树种植状态异常!')
+                    p.info.jump = true
+                    return
                 }
                 else {
                     p.log(this.haskey(signIn, 'errMsg') || '签到失败')
