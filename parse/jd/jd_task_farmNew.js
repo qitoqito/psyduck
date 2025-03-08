@@ -78,7 +78,7 @@ export class Main extends Template {
                 }
                 else if (this.haskey(signIn, 'code', 210000)) {
                     p.log('非东东农场用户/树种植状态异常!')
-                    p.info.jump = true
+                    // p.info.jump = true
                     return
                 }
                 else {
