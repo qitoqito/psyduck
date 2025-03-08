@@ -4,7 +4,8 @@ export class Main extends Template {
     constructor() {
         super()
         this.profile = {
-            title: '京东超市'
+            title: '京东超市',
+            crontab: 4
         }
     }
 
@@ -17,18 +18,16 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        if (this.turnCound == 0) {
+        if (this.turnCount == 0) {
             var html = await this.curl({
                     'url': `https://pro.m.jd.com/mall/active/${context.id}/index.html?stath=20&navh=44&babelChannel=ttt1&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=`,
                     user,
                     referer: 'https://pro.m.jd.com/mall/active/3nh7HzSjYemGqAHSbktTrf8rrH8M/index.html'
                 }
             )
-            // for(let i of this.matchAll(/<script>([^\<]+)<\/script>/g,html)){
-            //     p.log(this.jsonParse(i))
-            // }
             let react = this.jsonParse(this.match([/__react_data__\s*=\s*(.*?)\s*;\n+/,], html))
             let signToken = this.match(/"signToken"\s*:\s*"(\w+)"/, html)
+            let status = 0
             if (signToken) {
                 let sign = await this.curl({
                         'url': `https://api.m.jd.com/atop_channel_sign_in`,
@@ -40,10 +39,15 @@ export class Main extends Template {
                     }
                 )
                 if (this.haskey(sign, 'success')) {
+                    status = 1
                     p.log(`签到成功`)
                     for (let i of sign.data.rewards) {
                         p.log(`获得: ${i.rewardDesc}`)
                     }
+                }
+                else if (this.haskey(sign, "code", "14013")) {
+                    p.log(`您今天已经签过到了`)
+                    status = 1
                 }
                 else {
                     p.log(this.haskey(sign, 'message') || sign)
@@ -59,16 +63,16 @@ export class Main extends Template {
                         if (jj.providerData && this.haskey(jj, 'providerData.data.floorData.name') == '汪贝任务楼层') {
                             let floor = jj.providerData.data.floorData
                             for (let i of floor.items) {
-                                // let ts = new Date().getTime().toString()
-                                // let token = this.md5(ts + "5YT%aC89$22OI@pQ")
-                                // let uuid = this.md5(user)
+                                status = 0
                                 if (i.completionFlag) {
+                                    status = 1
                                     p.log(`任务已经完成: ${i.assignmentName}`)
                                 }
                                 else {
                                     p.log(`正在运行: ${i.assignmentName}`)
                                     let extraType = i.ext.extraType
                                     if (i.assignmentName.includes('邀请')) {
+                                        status = 1
                                         if (this.haskey(i, 'ext.assistTaskDetail.itemId')) {
                                         }
                                     }
@@ -119,7 +123,6 @@ export class Main extends Template {
                                                         user, algo: {
                                                             appId: '51113'
                                                         },
-                                                        // ciphers: 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384'
                                                     }
                                                 )
                                                 p.log(i.assignmentName, this.haskey(s, 'data.msg') || this.haskey(s, 'message'))
@@ -135,6 +138,7 @@ export class Main extends Template {
                                                             p.log(`获得:`, kkkk.quantity, kkkk.rewardName)
                                                         }
                                                     }
+                                                    status = 1
                                                 }
                                                 await this.wait(1000)
                                             }
@@ -149,6 +153,9 @@ export class Main extends Template {
                         }
                     }
                 }
+            }
+            if (status) {
+                p.info.work = true
             }
         }
     }
