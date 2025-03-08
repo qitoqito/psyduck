@@ -6,8 +6,7 @@ export class Main extends Template {
         this.profile = {
             title: '京东视频红包',
             interval: 3000,
-            round: 4,
-            crontab: 4
+            round: 4
         }
     }
 

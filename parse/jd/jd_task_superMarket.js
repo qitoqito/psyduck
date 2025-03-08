@@ -4,8 +4,7 @@ export class Main extends Template {
     constructor() {
         super()
         this.profile = {
-            title: '京东超市',
-            crontab: 4
+            title: '京东超市'
         }
     }
 
