@@ -28,7 +28,12 @@ export class Main extends Template {
                     form: 'functionId=getFollowShop&body={"page":1,"activityStatus":1,"refresh":false,"pageSize":20,"channel":"jg_shop"}&t=1721701312676&appid=shop_m_jd_com&clientVersion=13.1.2&client=wh5&screen=1170*2532&uuid=1d2057c82bc10bed6b30fcf24c8ede39&loginType=2&x-api-eid-token=jdd03BEKUSIICX7NIA2GGINTXC5QERR6B54KI6TFAJ7B4DI337FEFP4DTEMJ2Z7PKJQUV4OH6P3U74CEGNVTDWIZGD4JSXIAAAAMQ3VSF6CQAAAAACYUXLQXVUJSGIYX',
                     user,
                     referer: 'https://shop.m.jd.com/favorite/home',
-                    ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 15_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.33(0x18002129) NetType/WIFI Language/zh_CN miniProgram/wx91d27dbf599dff74"
+                    ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 15_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.33(0x18002129) NetType/WIFI Language/zh_CN miniProgram/wx91d27dbf599dff74",
+                    algo: {
+                        expire: {
+                            code: "3"
+                        }
+                    }
                 }
             )
             if (this.haskey(s, 'result.showShopList')) {
