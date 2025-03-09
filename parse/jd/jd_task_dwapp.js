@@ -5,7 +5,8 @@ export class Main extends Template {
         super()
         this.profile = {
             title: "京东充值金",
-            crontab: 3
+            crontab: 3,
+            libressl: true
         }
     }
 

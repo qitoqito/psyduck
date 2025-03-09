@@ -16,7 +16,8 @@ export class Main extends Template {
                 'x-rp-client': "h5_1.0.0",
                 'request-from': 'native',
                 referer: 'https://h5.m.jd.com/pb/015686010/Bc9WX7MpCW7nW9QjZ5N3fFeJXMH/index.html'
-            }
+            },
+            libressl: true
         }
     }
 

@@ -11,7 +11,8 @@ export class Main extends Template {
             tempExpire: 7 * 86400,
             prompt: {
                 token: "店铺签到token|token1"
-            }
+            },
+            libressl: true
         }
     }
 
@@ -23,7 +24,7 @@ export class Main extends Template {
         p = await this.getTemp(p.pid) || p
         if (!p.shopName) {
             var s = await this.curl({
-                url: `http://api.m.jd.com/api?appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_getActivityInfo&body={"token":"${p.token}","venderId":""}`,
+                url: `https://api.m.jd.com/api?appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_getActivityInfo&body={"token":"${p.token}","venderId":""}`,
                 referer: 'https://h5.m.jd.com/',
                 algo: {
                     appId: '4da33',

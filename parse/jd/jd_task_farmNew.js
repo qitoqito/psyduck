@@ -22,7 +22,8 @@ export class Main extends Template {
             readme: `如要使用自定义助力码,请在框架目录/inviter创建jd_task_plantBean.json,按需修改[{"user":"a","inviteCode":"abc"},{"user":"b","inviteCode":"efg"}]`,
             turn: 4,
             crontab: 3,
-            interval: 1000
+            interval: 1000,
+            libressl: true
         }
     }
 
@@ -180,7 +181,7 @@ export class Main extends Template {
                         status = 0
                         for (let n of Array(parseInt((i.taskLimitTimes - i.taskDoTimes) / 5))) {
                             let water = await this.curl({
-                                    'url': `http://api.m.jd.com/client.action`,
+                                    'url': `https://api.m.jd.com/client.action`,
                                     'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
@@ -206,7 +207,7 @@ export class Main extends Template {
                         }
                         for (let n of Array(((i.taskLimitTimes - i.taskDoTimes) % 5))) {
                             let water = await this.curl({
-                                    'url': `http://api.m.jd.com/client.action`,
+                                    'url': `https://api.m.jd.com/client.action`,
                                     'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":1,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
@@ -356,7 +357,7 @@ export class Main extends Template {
                     while (true) {
                         s1 = 0
                         let water = await this.curl({
-                                'url': `http://api.m.jd.com/client.action`,
+                                'url': `https://api.m.jd.com/client.action`,
                                 'form':
                                     `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":10,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                 user,
@@ -623,7 +624,7 @@ export class Main extends Template {
                 }
             }
             let home = await this.curl({
-                    'url': `http://api.m.jd.com/api`,
+                    'url': `https://api.m.jd.com/api`,
                     'form': `functionId=wheelsHome&body={"linkId":"${linkId}","inviteActId":"","inviterEncryptPin":"","inviteCode":""}&t=1739590571889&appid=activities_platform&client=ios&clientVersion=15.0.15&cthr=1&loginType=&loginWQBiz=wegame`,
                     user,
                     algo: {'appId': 'c06b7',},
