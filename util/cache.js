@@ -15,7 +15,7 @@ export class Cache {
     async connect() {
         if (this._type == 'redis') {
             this._cache = await redis.createClient({
-                url: `redis://:${this._db.password || ''}@${this._db.host || '127.0.0.1'}:${this._db.prot || 6379}/${this._db.db || 2}`,
+                url: `redis://:${this._db.password || ''}@${this._db.host || '127.0.0.1'}:${this._db.port || 6379}/${this._db.db || 2}`,
                 retry_strategy: function(options) {
                     if (options.error?.code === 'ECONNREFUSED') {
                         return undefined;
