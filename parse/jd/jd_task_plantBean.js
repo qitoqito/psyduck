@@ -7,7 +7,7 @@ export class Main extends Template {
             title: "京东种豆得豆",
             turn: 2,
             crontab: 4,
-            tempExpire: 89400000,
+            tempExpire: 86400000,
             help: "main",
             prompt: {
                 inviteJson: 'true #使用自定义助力码'
@@ -450,7 +450,7 @@ export class Main extends Template {
                 }
             }
             if (status) {
-                p.info.work = true
+                // p.info.work = true
             }
         }
         else {
