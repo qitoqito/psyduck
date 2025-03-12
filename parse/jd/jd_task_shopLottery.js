@@ -39,7 +39,7 @@ export class Main extends Template {
             p.msg(s.result.signReward.name)
         }
         else {
-            p.log("什么也没有")
+            p.log(this.haskey(s, 'result.signNoteAttach') || "什么也没有")
         }
         if (this.haskey(s, 'result')) {
             p.info.work = true
