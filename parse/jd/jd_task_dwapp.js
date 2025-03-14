@@ -18,13 +18,14 @@ export class Main extends Template {
         let list = await this.curl({
                 'url': `https://api.m.jd.com/api?functionId=dwapp_task_dwList`,
                 'form': `appid=h5-sep&body=${this.dumps(await this.cmd5x())}&client=m&clientVersion=6.0.0`,
-                user
+                user,
+                algo: {
+                    expire: {
+                        'code': 201
+                    }
+                }
             }
         )
-        if (this.haskey(list, 'code', 201)) {
-            p.err("未登录")
-            return
-        }
         let cash = 0
         for (let i of this.haskey(list, 'data') || []) {
             if (i.viewStatus == 3 || i.viewStatus == 1) {
