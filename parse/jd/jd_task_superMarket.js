@@ -34,7 +34,10 @@ export class Main extends Template {
                         'form': `appid=jd-super-market&t=1713230766545&functionId=atop_channel_sign_in&client=m&uuid=de21c6604748f97dd3977153e51a47f4efdb9a47&body={"signToken":"${signToken}","channelFollowStatus":1,"bizCode":"cn_retail_jdsupermarket","scenario":"sign","babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
                         user,
                         algo: {
-                            appId: 'b8fc7'
+                            appId: 'b8fc7',
+                            expire: {
+                                "code": "11001"
+                            }
                         }
                     }
                 )

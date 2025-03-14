@@ -35,6 +35,9 @@ export class Main extends Template {
                     appId: 'e2224',
                     log: true,
                     // code: ['0']
+                    expire: {
+                        "subCode": "300"
+                    }
                 }
             }
         )

@@ -62,6 +62,11 @@ export class Main extends Template {
                 headers: {
                     'referer': 'https://servicewechat.com/wx91d27dbf599dff74/747/page-frame.html',
                     'user-agnet': 'wechat'
+                },
+                algo: {
+                    expire: {
+                        "code": "3",
+                    }
                 }
             })
             if (drawShopGift) {

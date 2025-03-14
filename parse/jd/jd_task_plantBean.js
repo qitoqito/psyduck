@@ -57,6 +57,9 @@ export class Main extends Template {
                     user,
                     algo: {
                         'appId': 'd246a',
+                        expire: {
+                            "code": "3"
+                        }
                     }
                 }
             )
