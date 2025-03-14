@@ -36,6 +36,7 @@ export default {
                     }
                 },
                 referer: "https://prodev.m.jd.com/",
+                url: "https://api.m.jd.com/api",
                 timer: {
                     params: {
                         'url':
