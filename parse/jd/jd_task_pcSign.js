@@ -21,7 +21,10 @@ export class Main extends Template {
                 user,
                 algo: {
                     appId: '73c2f',
-                    type: 'wechat'
+                    type: 'wechat',
+                    expire: {
+                        "code": "3"
+                    }
                 },
                 referer: 'https://bean.jd.com/myJingBean/list',
                 ua: "Mozilla/5.0(WindowsNT10.0;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/" + 59 + Math.round(Math.random() * 10) + ".0.3497." + Math.round(Math.random() * 100) + "Safari/537.36",

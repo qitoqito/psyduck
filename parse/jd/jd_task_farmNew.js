@@ -62,9 +62,6 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         if (this.turnCount == 0) {
-            p.context.complete = true
-        }
-        if (this.turnCount == 0) {
             if (this.turnCount == 0) {
                 let signIn = await this.curl({
                         'url': `https://api.m.jd.com/client.action`,

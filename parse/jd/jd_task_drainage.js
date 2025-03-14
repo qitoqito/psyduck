@@ -45,7 +45,10 @@ export class Main extends Template {
                 'form': `loginType=11&clientType=wxapp&client=apple&clientVersion=9.23.140&build=&osVersion=iOS%2015.1.1&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone%2012%20Pro%3CiPhone13%2C3%3E&lang=zh_CN&uuid=oCwKwuBoW0okKEIIDlT5FXxscxcM&functionId=miniTask_queryMyRights&t=1731719821597&body={}&appid=hot_channel&d_name=`,
                 user,
                 algo: {
-                    appId: '1221c'
+                    appId: '1221c',
+                    expire: {
+                        "subCode": 102
+                    }
                 }
             }
         )

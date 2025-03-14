@@ -48,7 +48,10 @@ export class Main extends Template {
                 'form': `cthr=1&client=h5&clientVersion=&t=1741106496828&loginWQBiz=&appid=mygiftcard&functionId=personalCenterReceiveHolderEquity&body={"ruleId":"${context.ruleId}","pid":"${context.pid}","eid":"FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U"}`,
                 user,
                 algo: {
-                    appId: 'aea58'
+                    appId: 'aea58',
+                    expire: {
+                        "error": "NotLogin"
+                    }
                 }
             }
         )

@@ -22,7 +22,12 @@ export class Main extends Template {
         let user = p.data.user;
         let s = await this.curl({
                 'url': `https://api.m.jd.com/client.action?functionId=chatReward_doReward&appid=wechat_activity&client=h5&body={"activityId":"${p.context.activityId}"}`,
-                user
+                user,
+                algo: {
+                    expire: {
+                        "subCode": 103
+                    }
+                }
             }
         )
         let reward = await this.curl({

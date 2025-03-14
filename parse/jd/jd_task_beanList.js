@@ -21,7 +21,10 @@ export class Main extends Template {
         let xs = []
         let s = await this.curl({
                 'url': `https://api.m.jd.com/?appid=jd-cphdeveloper-m&functionId=myBean&body={"tenantCode":"jgminise","bizModelCode":6,"bizModeClientType":"WxMiniProgram","externalLoginType":1}&sceneval=2&g_login_type=1&callback=draw_activetemporary&g_tk=610895985&g_ty=ls`,
-                user
+                user,
+                algo: {
+                    expire: {"code": "1001"}
+                }
             }
         )
         if (this.haskey(s, 'list')) {
