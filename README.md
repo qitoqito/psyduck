@@ -99,17 +99,15 @@ WEIXIN_TOKEN=
 WXAM_TOKEN=
 ```
 ### 4. INI 文件配置
-> 如果你设置了iniPath目录,在iniPath目录(默认qitoqito_psyduck/config)自行创建分类配置文件,如jd.ini
+> 在iniPath目录(默认qitoqito_psyduck/config)自行创建分类配置文件,如jd.ini
 ```ini
 # 脚本配置示例
-[scriptName]
-field=test
+[jd_task_test]
+abc=234
 ```
-> 框架只支持读取极少部分的环境变量,获取脚本变量都是用ini配置文件,或js配置文件
-> 
-> 上述演示代码,在名为scriptName.js的脚本中,通过获取this.profile.field得到的数据为test
+> 本框架不支持环境变量,此设置相当于其他脚本使用的环境变量: export jd_task_test_abc=123
 >
-> 脚本日志,如有[Field]标识,请按要求修改添加到分类配置文件
+> 脚本日志头如带有[Field]标识,请按要求修改添加到配置文件中
 ## 三、项目结构
 ```
 项目目录
@@ -182,11 +180,11 @@ seconds=                         # 代理ip每隔几秒换新一个
 proxy=                           # 代理ip
 ```
 
-> proxyUrl,proxyGroup,proxy自选一个模式使用,无需同时设置
+> proxyUrl,proxyGroup,proxy自选一个使用,无需同时设置
 > 
 > 使用proxyUrl模式,pool参数必须同时设置
 > 
-> config.ini设置为全局参数,如想单独设置,可在脚本节点单独设置
+> 在config.ini设置为全局参数,如只想作用于某个脚本,可在脚本节点单独设置
 ### 5. 注意事项
 - 订阅时禁用自动任务管理
 - 确保配置文件格式正确
