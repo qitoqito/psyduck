@@ -183,7 +183,9 @@ proxy=                           # 代理ip
 ```
 
 > proxyUrl,proxyGroup,proxy自选一个模式使用,无需同时设置
+> 
 > 使用proxyUrl模式,pool参数必须同时设置
+> 
 > config.ini设置为全局参数,如想单独设置,可在脚本节点单独设置
 ### 5. 注意事项
 - 订阅时禁用自动任务管理
