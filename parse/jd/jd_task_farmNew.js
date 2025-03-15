@@ -76,8 +76,16 @@ export class Main extends Template {
                 }
                 else if (this.haskey(signIn, 'code', 210000)) {
                     p.log('非东东农场用户/树种植状态异常!')
-                    // p.info.jump = true
-                    return
+                    let tree = await this.curl({
+                            'from': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
+                            user
+                        }
+                    )
+                    if (this.haskey(tree, 'data.success')) {
+                    }
+                    else {
+                        return
+                    }
                 }
                 else {
                     p.log(this.haskey(signIn, 'errMsg') || '签到失败')
@@ -119,7 +127,7 @@ export class Main extends Template {
                 try {
                     let skus = board.data.result.farmTreeLevels[2].farmLevelTrees[0]
                     p.log("正在种树,选择商品:", skus.skuName)
-                    await this.curl({
+                    let tree = await this.curl({
                             'url': `https://api.m.jd.com/client.action`,
                             'form': `appid=signed_wh5&body=${this.dumps({
                                 "version": 10,
