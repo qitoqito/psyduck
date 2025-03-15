@@ -1,6 +1,5 @@
-# Bug龙使用指南
 
-## 一、快速开始
+## 一、快速开始 🚀
 
 ### 1. 订阅配置
 ```markdown
@@ -132,26 +131,61 @@ field=test
 ```bash
 node main.js filename [-help n -custom x -thread x]
 ```
-### 2. 脚本配置Profile
-> 参考ini文件配置
-> 
-| 参数 | 用法 |  特殊说明 |
-| :--- | :--- | :--- |
-| task | n , n\|m , n:m , tn , pin ,  pin1\|pin2 | 执行哪些账户,当要执行前5个账户,请设置t5 |
-| help | 同task | 被助力账户|
-| exclude | 同task | 排除运行账户 |
-| thread | n |并发运行任务,并发数|
-|proxy|http://ip:port|代理地址|
-|startTime|2025-02-05 16:03:35 \| 时间戳|任务开始时间|
-|endTime|2025-02-05 16:03:35 \| 时间戳|任务结束时间|
-|model|user, share, team, shuffle|框架运行方式|
+### 2. 脚本配置 Profile 📝
 
+ 
+| 参数 | 用法 | 说明 |
+|:--|:--|:--|
+| 🎯 **任务相关** |||
+| `task` | `n`, `n\|m`, `n:m`, `tn`, `pin`, `pin1\|pin2` | 指定执行账户，例如 `t5` 表示执行前 5 个账户 |
+| `help` | 同 task | 指定被助力的账户 |
+| `exclude` | 同 task | 指定需要排除的账户 |
+| `thread` | `n` | 并发执行任务数量 |
+| 🕒 **时间控制** |||
+| `startTime` | `2025-02-05 16:03:35` 或时间戳 | 任务开始时间 |
+| `endTime` | `2025-02-05 16:03:35` 或时间戳 | 任务结束时间 |
+| `interval` | 毫秒数，如 `1000` | 账户间执行间隔时间 |
+| `delay` | 毫秒数，如 `1000` | API 调用等待时间 |
+| 🌐 **代理设置** |||
+| `proxy` | `http://ip:port` | 指定代理服务器地址 |
+| `proxyUrl` | 代理 API 地址 | 可设为全局变量或脚本变量 |
+| `pool` | 参考 `config.proxy` | 代理池配置，可全局或单独设置 |
+| `seconds` | 数字 | 代理 IP 更换间隔(秒) |
+| 🔄 **运行模式** |||
+| `model` | `user`, `share`, `team`, `shuffle` | 框架运行方式选择 |
+
+ 
+```ini
+[示例脚本]
+# 基础配置
+task=1,2,3          # 执行 1、2、3 号账户
+thread=3            # 3个任务并发执行
+interval=1000       # 每个账户执行间隔1秒
+
+# 时间控制
+startTime=2025-02-05 08:00:00  # 指定开始时间
+endTime=2025-02-05 20:00:00    # 指定结束时间
+
+# 代理设置
+proxy=http://127.0.0.1:7890    # 使用本地代理
+```
 
 ### 3. 缓存说明
 - 位置：`[cache]` 节点
 - 功能：开启后自动跳过已执行账户
+### 4. 代理设置
+```bash
+proxyGroup=                      # 静态代理池,适用长期有效ip,需要自行创建proxy.ini
+proxyUrl=                        # 代理ip请求地址
+pool=                            # 代理池缓存数量,为正整数时候,框架向proxyUrl获取n个ip存储在代理池,运行账号依次取出ip,数量小于n时,自动补充ip. n为-1时,取一个ip,运行账户共用此ip
+seconds=                         # 代理ip每隔几秒换新一个
+proxy=                           # 代理ip
+```
 
-### 4. 注意事项
+> proxyUrl,proxyGroup,proxy自选一个模式使用,无需同时设置
+> 使用proxyUrl模式,pool参数必须同时设置
+> config.ini设置为全局参数,如想单独设置,可在脚本节点单独设置
+### 5. 注意事项
 - 订阅时禁用自动任务管理
 - 确保配置文件格式正确
 - 注意权限设置
@@ -169,3 +203,6 @@ node main.js filename [-help n -custom x -thread x]
 3. 推送失败
    - 验证通知配置
    - 检查网络连接
+
+
+ 
