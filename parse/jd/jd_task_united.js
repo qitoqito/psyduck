@@ -151,6 +151,9 @@ export class Main extends Template {
                 if (this.haskey(s, 'data.data.sendStatus') == false) {
                     break
                 }
+                if (remark.includes("京豆")) {
+                    p.award(remark, 'bean')
+                }
                 if (this.haskey(s, 'data.data.sendStatus')) {
                     let num = this.match(/(\d+)个京豆/, remark)
                     bean += parseInt(num)
