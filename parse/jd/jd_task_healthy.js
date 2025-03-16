@@ -39,7 +39,8 @@ export class Main extends Template {
         let gift = function(a) {
             for (let i of this.haskey(a, ['result.result.prizeInfovo', 'result.result.prizeInfovos']) || {}) {
                 if (i.prizeType == 2) {
-                    p.msg(`获得京豆: ${i.awardId}`)
+                    // p.msg(`获得京豆: ${i.awardId}`)
+                    p.award(i.awardId, 'bean')
                     p.info.work = true
                 }
                 else if (i.prizeType == 14) {

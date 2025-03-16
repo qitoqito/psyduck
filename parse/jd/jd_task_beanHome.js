@@ -78,7 +78,8 @@ export class Main extends Template {
                     if (this.haskey(reward, 'data')) {
                         p.info.work = true
                         if (reward.data.beanNum) {
-                            p.msg(`京豆: ${reward.data.beanNum}`)
+                            // p.msg(`京豆: ${reward.data.beanNum}`)
+                            p.award(reward.data.beanNum, 'bean')
                         }
                     }
                     break
@@ -189,10 +190,12 @@ export class Main extends Template {
             }
             else if (status == '1') {
                 if (this.haskey(signBeanAct, 'data.dailyAward.beanAward.beanCount')) {
-                    p.msg(`京豆: ${signBeanAct.data.dailyAward.beanAward.beanCount}`)
+                    // p.msg(`京豆: ${signBeanAct.data.dailyAward.beanAward.beanCount}`)
+                    p.award(signBeanAct.data.dailyAward.beanAward.beanCount, 'bean')
                 }
                 else if (this.haskey(signBeanAct, 'data.continuityAward.beanAward.beanCount')) {
-                    p.msg(`京豆: ${signBeanAct.data.continuityAward.beanAward.beanCount}`)
+                    // p.msg(`京豆: ${signBeanAct.data.continuityAward.beanAward.beanCount}`)
+                    p.award(signBeanAct.data.continuityAward.beanAward.beanCount, 'bean')
                 }
                 p.info.work = true
             }

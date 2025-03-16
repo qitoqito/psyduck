@@ -77,15 +77,11 @@ export class Main extends Template {
                 else if (this.haskey(signIn, 'code', 210000)) {
                     p.log('非东东农场用户/树种植状态异常!')
                     let tree = await this.curl({
-                            'from': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
                             user
                         }
                     )
-                    if (this.haskey(tree, 'data.success')) {
-                    }
-                    else {
-                        return
-                    }
+                    return
                 }
                 else {
                     p.log(this.haskey(signIn, 'errMsg') || '签到失败')

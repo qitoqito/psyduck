@@ -62,7 +62,8 @@ export class Main extends Template {
             for (let kk in signIn.rewardsInfo.successRewards) {
                 for (let kkk of signIn.rewardsInfo.successRewards[kk]) {
                     let text = `${kkk.rewardName}: ${kkk.quantity}`
-                    p.msg(text)
+                    // p.msg(text)
+                    p.award(kkk.quantity, 'bean')
                 }
             }
         }

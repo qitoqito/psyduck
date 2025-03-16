@@ -132,10 +132,12 @@ export class Main extends Template {
                 p.log('优惠券:', data.codeDesc || data.prizeCode, data.prizeDesc || data.prizeName)
             }
             else if (prizeType == 2) {
-                p.draw(`红包: ${amount}`)
+                // p.draw(`红包: ${amount}`)
+                p.award(amount, 'redpacket')
             }
             else if (prizeType == 3) {
-                p.draw(`京豆: ${amount}`)
+                // p.draw(`京豆: ${amount}`)
+                p.award(amount, 'bean')
             }
             else if (prizeType == 17) {
                 p.log('谢谢参与')
@@ -144,7 +146,8 @@ export class Main extends Template {
                 p.log(`水滴: ${amount}`)
             }
             else if (prizeType == 22) {
-                p.draw(`超市卡: ${amount}`)
+                // p.draw(`超市卡: ${amount}`)
+                p.award(amount, 'card')
             }
             else if (prizeType) {
                 p.draw(`抽到类型: ${prizeType} ${data.codeDesc || data.prizeCode} ${data.prizeDesc || data.prizeName}`)

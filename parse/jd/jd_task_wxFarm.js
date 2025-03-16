@@ -10,7 +10,8 @@ export class Main extends Template {
                 'user-agent': 'wechat',
                 'referer': 'https://h5.m.jd.com/wq/dev/RFz7fuh1jc5mfj4speLLRjb1pEQ/index.html'
             },
-            turn: 2
+            turn: 2,
+            delay: 500
         }
     }
 
@@ -83,10 +84,10 @@ export class Main extends Template {
                     if (i.mainTitle.includes("浇水")) {
                         if (i.taskDoTimes != i.taskLimitTimes) {
                             status = 0
-                            for (let j of Array(i.taskLimitTimes - i.taskDoTimes)) {
+                            for (let j of Array(Math.ceil((i.taskLimitTimes - i.taskDoTimes) / 4))) {
                                 let water = await this.curl({
                                         'url': `https://api.m.jd.com/client.action`,
-                                        'form': `appid=signed_farm_mp&client=&clientVersion=1.0.0&screen=390*812&wqDefault=false&loginType=2&t=1739982505593&body={"version":9,"channelParam":"2","waterType":1,"babelChannel":"ttt1"}&functionId=farm_water`,
+                                        'form': `appid=signed_farm_mp&client=&clientVersion=1.0.0&screen=390*812&wqDefault=false&loginType=2&t=1739982505593&body={"version":9,"channelParam":"2","waterType":2,"babelChannel":"ttt1"}&functionId=farm_water`,
                                         user,
                                         algo: {
                                             appId: '28981'

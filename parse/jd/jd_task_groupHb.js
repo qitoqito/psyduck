@@ -40,7 +40,8 @@ export class Main extends Template {
         }
         else if (subCode == 0) {
             p.info.work = true
-            p.msg(`${reward.data.rewardDesc}: ${reward.data.rewardAmount}`)
+            // p.msg(`${reward.data.rewardDesc}: ${reward.data.rewardAmount}`)
+            p.award(reward.data.rewardAmount, 'redpacket')
         }
         else if (subCode == 1006) {
             p.info.finish = true

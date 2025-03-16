@@ -41,7 +41,8 @@ export class Main extends Template {
         let bizCode = this.haskey(sign, 'data.bizCode')
         if (this.haskey(sign, 'data.result.value')) {
             p.info.work = true
-            p.msg(`京豆: ${sign.data.result.value}`)
+            // p.msg(`京豆: ${sign.data.result.value}`)
+            p.award(sign.data.result.value, 'bean')
         }
         else if (bizCode == -2002) {
             p.info.work = true
