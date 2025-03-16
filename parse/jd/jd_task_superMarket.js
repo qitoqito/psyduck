@@ -5,7 +5,8 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东超市',
-            crontab: 4
+            crontab: 4,
+            help: 'main'
         }
     }
 
@@ -13,6 +14,12 @@ export class Main extends Template {
         this.shareCode({
             id: '3nh7HzSjYemGqAHSbktTrf8rrH8M'
         })
+        for (let user of this.help) {
+            let itemId = await this.getTemp(user)
+            if (itemId) {
+                this.dict[user] = itemId
+            }
+        }
     }
 
     async main(p) {
@@ -77,6 +84,18 @@ export class Main extends Template {
                                     if (i.assignmentName.includes('邀请')) {
                                         status = 1
                                         if (this.haskey(i, 'ext.assistTaskDetail.itemId')) {
+                                            await this.setTemp(user, i.ext.assistTaskDetail.itemId, 86400000)
+                                        }
+                                        let users = Object.keys(this.dict)
+                                        if (users) {
+                                            let itemId = ''
+                                            this.n++
+                                            itemId = this.dict[users[this.n % users.length]]
+                                            let help = await this.curl({
+                                                    'form': `appid=jd-super-market&t=1742122986378&functionId=atop_channel_complete_task&client=m&body={"bizCode":"cn_retail_jdsupermarket","scenario":"sign","assignmentType":"${i.assignmentType}","encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","assistFlag":true,"babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
+                                                    user
+                                                }
+                                            )
                                         }
                                     }
                                     else if (this.haskey(i, `ext.${i.ext.extraType}`)) {
