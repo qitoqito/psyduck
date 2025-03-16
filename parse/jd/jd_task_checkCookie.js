@@ -53,7 +53,7 @@ export class Main extends Template {
                 p.log("账户还未过期")
                 this.valid(user, true)
             }
-            if (this.haskey(s, 'islogin', '0')) {
+            else if (this.haskey(s, 'islogin', '0')) {
                 p.log("账户过期")
                 expire = 1
             }
