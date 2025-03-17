@@ -6,7 +6,8 @@ export class Main extends Template {
         this.profile = {
             title: '京东商品自动评价',
             prompt: {
-                content: "评语1|评语2"
+                content: "评语1|评语2",
+                count: "单次评价个数"
             },
             keyExpire: 7200
         }
@@ -23,6 +24,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let count = parseInt(this.profile.count || 3)
         let s = await this.curl({
                 'url': `https://api.m.jd.com/client.action`,
                 'form': `functionId=getCommentWareList&body={"status":"1","planType":"1","pageIndex":"1","pageSize":"400"}&uuid=487f7b22f68312d2c1bbc93b1aea44&client=apple&clientVersion=10.0.10&st=1741443233685&sv=120&sign=0970e172b1727930982b85d8fe544e3b`,
@@ -53,7 +55,7 @@ export class Main extends Template {
                 }
             )
             if (this.haskey(q, 'commentWareListInfo.commentWareList')) {
-                for (let i of q.commentWareListInfo.commentWareList.reverse().splice(0, 3)) {
+                for (let i of q.commentWareListInfo.commentWareList.reverse().splice(0, count)) {
                     if (i.ahaInfo) {
                         p.log(`${i.wname}有种草秀活动,跳出自动评价`)
                     }
