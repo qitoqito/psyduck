@@ -35,12 +35,17 @@
    > 选择redis缓存,请正确填写`host,port,password,db`选项
 
 3. 安装项目依赖
-4. > 打开Bug龙终端: docker exec -it qinglong bash
+   > 打开Bug龙终端: docker exec -it qinglong bash
    ```bash
    cd /ql/data/scripts/qitoqito_psyduck/
    npm install
    ```
-5. 将Bug龙订阅的执行后改为
+4. 安装LibreSSL
+    ```bash
+    cd /ql/data/scripts/qitoqito_psyduck/sh && chmod +x libressl.sh && ./libressl.sh && node ./libressl.js
+    ```
+    > 安装完成,在config.ini添加curlPath=/opt/psyduck/curl/bin/psyduck-curl
+4. 将Bug龙订阅的执行后改为
    ```
    cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
    ```
@@ -58,7 +63,7 @@ jdSign=http://ip:17840/sign
 ### 2. Redis 服务配置
 ```bash
 # 部署 Redis 服务
-docker run -itd --name redis -p 6379:6379 redis --requirepass 你的密码
+docker run -itd --name redis -p 6379:6379 --restart=always redis --requirepass 你的密码
 
 # 配置文件修改
 host=                            # Redis地址,只需ip地址
@@ -203,6 +208,8 @@ proxy=                           # 代理ip
 3. 推送失败
    - 验证通知配置
    - 检查网络连接
-
+4. 活动火爆
+   - Docker容器网络选择host
+   - 安装libressl
 
  
