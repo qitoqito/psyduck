@@ -5,34 +5,38 @@ export class Message {
         this.func = process.psyDuck
         this.msg = this.func.message
         this.title = `🐽  消息提醒: ${this.func.profile.title}`
-        message.push([`PsyDuck [https://github.com/qitoqito/psyduck]`])
-        this.message = message.map(d => d.join("\n"))
+        this.msgAry = message.map(d => d.join("\n"))
     }
 
     async send(msgAry) {
-        if (this.msg.hasOwnProperty('TELEGRAM_TOKEN')) {
-            await this.tgNotify()
-        }
-        if (this.msg.hasOwnProperty('BARK_TOKEN')) {
-            await this.barkNotify()
-        }
-        if (this.msg.hasOwnProperty('PUSHPLUS_TOKEN')) {
-            await this.ppNotify()
-        }
-        if (this.msg.hasOwnProperty('FTQQ_TOKEN')) {
-            await this.ftqqNotify()
-        }
-        if (this.msg.hasOwnProperty('DINGTALK_TOKEN')) {
-            await this.ddNotify()
-        }
-        if (this.msg.hasOwnProperty('IGOT_TOKEN')) {
-            await this.igotNotify()
-        }
-        if (this.msg.hasOwnProperty('WEIXIN_TOKEN')) {
-            await this.wechatNotify()
-        }
-        if (this.msg.hasOwnProperty('WXAM_TOKEN')) {
-            await this.wxamNotify()
+        const result = this.splitArrays(this.msgAry);
+        for (let message of result) {
+            message.push([`PsyDuck [https://github.com/qitoqito/psyduck]`])
+            this.message = message
+            if (this.msg.hasOwnProperty('TELEGRAM_TOKEN')) {
+                await this.tgNotify()
+            }
+            if (this.msg.hasOwnProperty('BARK_TOKEN')) {
+                await this.barkNotify()
+            }
+            if (this.msg.hasOwnProperty('PUSHPLUS_TOKEN')) {
+                await this.ppNotify()
+            }
+            if (this.msg.hasOwnProperty('FTQQ_TOKEN')) {
+                await this.ftqqNotify()
+            }
+            if (this.msg.hasOwnProperty('DINGTALK_TOKEN')) {
+                await this.ddNotify()
+            }
+            if (this.msg.hasOwnProperty('IGOT_TOKEN')) {
+                await this.igotNotify()
+            }
+            if (this.msg.hasOwnProperty('WEIXIN_TOKEN')) {
+                await this.wechatNotify()
+            }
+            if (this.msg.hasOwnProperty('WXAM_TOKEN')) {
+                await this.wxamNotify()
+            }
         }
     }
 
@@ -319,5 +323,27 @@ export class Message {
         } catch (e) {
             console.log('[Message] Telegram 发送通知消息失败')
         }
+    }
+
+    splitArrays(arr, maxLength = 200) {
+        const result = [];
+        let currentArray = [];
+        let currentLength = 0;
+        for (const subArray of arr) {
+            const subLength = subArray.split("\n").length;
+            if (currentLength + subLength<=maxLength) {
+                currentArray.push(subArray);
+                currentLength += subLength;
+            }
+            else {
+                result.push(currentArray);
+                currentArray = [subArray];
+                currentLength = subLength;
+            }
+        }
+        if (currentArray.length>0) {
+            result.push(currentArray);
+        }
+        return result;
     }
 }
