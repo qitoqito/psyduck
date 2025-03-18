@@ -19,7 +19,7 @@ export class Main extends Template {
                 referer: 'https://h5.m.jd.com/pb/015686010/Bc9WX7MpCW7nW9QjZ5N3fFeJXMH/index.html'
             },
             tempExpire: 86400000,
-            readme: `如要使用自定义助力码,请在框架目录/inviter创建jd_task_plantBean.json,按需修改[{"user":"a","inviteCode":"abc"},{"user":"b","inviteCode":"efg"}]`,
+            readme: `如要使用自定义助力码,请在框架目录/inviter创建jd_task_farmNew.json,按需修改[{"user":"a","inviteCode":"abc"},{"user":"b","inviteCode":"efg"}]`,
             turn: 4,
             crontab: 3,
             interval: 1000,
