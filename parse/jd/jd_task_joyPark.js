@@ -6,7 +6,6 @@ export class Main extends Template {
         this.profile = {
             title: '京东汪汪庄园',
             crontab: 3,
-            delay: 500,
             keyExpire: 12000,
             prompt: {
                 merge: '1 # 执行购买与合成任务',
@@ -15,14 +14,29 @@ export class Main extends Template {
     }
 
     async prepare() {
-        let linkId = "99DZNpaCTAv8f4TuKXr0Ew"
-        this.shareCode({linkId})
+        this.shareCode({linkId: "99DZNpaCTAv8f4TuKXr0Ew"})
     }
 
     async main(p) {
         let user = p.data.user;
         let context = p.context;
         this.dict[user] = {}
+        await this.curl({
+                'url': `https://api.m.jd.com/api`,
+                'form': `appid=risk_h5_info&functionId=reportInvokeLog&body={"sdkClient":"handler","sdkVersion":"1.1.0","url":"aHR0cHM6Ly9qb3lwYXJrLmpkLmNvbS8","timestamp":${new Date().getTime()}}`,
+                user
+            }
+        )
+        await this.curl({
+                'url': `https://api.m.jd.com/?functionId=getStaticResource&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
+                user
+            }
+        )
+        await this.curl({
+                'url': `https://api.m.jd.com/?functionId=getStationMarquees&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
+                user
+            }
+        )
         await this.baseInfo(p)
         await this.joyList(p)
         // p.log("获取数据中...", this.dict[user])

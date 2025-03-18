@@ -21,6 +21,22 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         this.dict[user] = {}
+        await this.curl({
+                'url': `https://api.m.jd.com/api`,
+                'form': `appid=risk_h5_info&functionId=reportInvokeLog&body={"sdkClient":"handler","sdkVersion":"1.1.0","url":"aHR0cHM6Ly9qb3lwYXJrLmpkLmNvbS8","timestamp":${new Date().getTime()}}`,
+                user
+            }
+        )
+        await this.curl({
+                'url': `https://api.m.jd.com/?functionId=getStaticResource&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
+                user
+            }
+        )
+        await this.curl({
+                'url': `https://api.m.jd.com/?functionId=getStationMarquees&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
+                user
+            }
+        )
         await this.baseInfo(p)
         await this.joyList(p)
         // p.log("获取数据中...", this.dict[user])
