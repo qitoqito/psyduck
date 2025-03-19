@@ -73,12 +73,25 @@ export class Main extends Template {
                     for (let j = 0; j<(i.taskLimitTimes - i.taskDoTimes); j++) {
                         let item = detail.data.taskItemList[j]
                         p.log(`正在浏览:`, item.itemName || i.taskShowTitle)
-                        let start = await this.curl({
-                                'url': `https://api.m.jd.com/api`,
-                                'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemId":"${encodeURIComponent(item.itemId)}","taskInsert":true,"channel":4}&t=1741095788064&appid=activities_platform&client=ios&clientVersion=6.30.0`,
-                                user
-                            }
-                        )
+                        if (item.pipeExt) {
+                            var start = await this.curl({
+                                    'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemType":"${item.itemType}","itemId":"${encodeURIComponent(item.itemId)}","channel":4,"pipeExt":${this.dumps(
+                                        {...i.pipeExt, ...item.pipeExt}
+                                    )}}&t=1742393559070&appid=activity_platform_se&client=ios&clientVersion=6.29.0&platform=12&loginType=2&loginWQBiz=wegame`,
+                                    user,
+                                    algo: {
+                                        appId: 'acb1e'
+                                    }
+                                }
+                            )
+                        }
+                        else {
+                            var start = await this.curl({
+                                    'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemId":"${encodeURIComponent(item.itemId)}","taskInsert":true,"channel":4}&t=1741095788064&appid=activities_platform&client=ios&clientVersion=6.30.0`,
+                                    user
+                                }
+                            )
+                        }
                         if (i.taskLimitTimes) {
                             p.log("等待:", i.timeLimitPeriod)
                             await this.wait(i.timeLimitPeriod * 1000)
