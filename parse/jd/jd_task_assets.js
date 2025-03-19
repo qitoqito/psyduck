@@ -53,6 +53,9 @@ export class Main extends Template {
                             t.push(`🙊 即将过期: ${i.eventMassage} ${i.amount}京豆`)
                         }
                     }
+                    else if (data.expireBean) {
+                        t.push(`🙊 即将过期: ${data.expireBean}京豆`)
+                    }
                     break
                 default:
                     // console.log(i)
@@ -122,7 +125,7 @@ export class Main extends Template {
                     }
                 })
                 if (this.haskey(b, 'others')) {
-                    bean.expire = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
+                    bean.expireBean = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
                     bean.all = this.haskey(b, 'others.jingBeanBalance.jingBeanCount')
                 }
             }
