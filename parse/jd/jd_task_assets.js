@@ -40,7 +40,6 @@ export class Main extends Template {
                     t.push(`🦊 还未生效: ${data.disable}元`)
                     t.push(`🦊 通用红包: ${data.current[0]}元, 过期: ${data.current[1]}元`)
                     t.push(`🦊 商城红包: ${data.app[0]}元, 过期: ${data.app[1]}元`)
-                    // t.push(`🦊 京喜红包: ${data.pingou[0]}元, 过期: ${data.pingou[1]}元`)
                     t.push(`🦊 特价红包: ${data.lite[0]}元, 过期: ${data.lite[1]}元`)
                     t.push(`🦊 微信红包: ${data.wechat[0]}元, 过期: ${data.wechat[1]}元`)
                     t.push(`🦊 健康红包: ${data.healthy[0]}元, 过期: ${data.healthy[1]}元`)
@@ -55,33 +54,6 @@ export class Main extends Template {
                         }
                     }
                     break
-                case 'xibean':
-                    t.push(`🐻 当前喜豆: ${data || 0}喜豆`)
-                    break
-                case'cash':
-                    t.push(`🐰 换领现金: 可兑换${data || 0}元`)
-                    break
-                case 'ms':
-                    t.push(`🦁 换秒秒币: 可兑换${(data / 1000).toFixed(2)}元`)
-                    break
-                case 'earn':
-                    t.push(`🐹 京东赚赚: 可兑换${(data / 10000).toFixed(2)}元`)
-                    break
-                case 'coin':
-                    t.push(`🐯 极速金币: 可兑换${(data / 10000).toFixed(2)}元`)
-                    break
-                case 'cattle':
-                    t.push(`🐮 牛牛福利: 可兑换${(data / 1000).toFixed(2)}元`)
-                    break
-                case 'egg':
-                    t.push(`🐥 京喜牧场: 可兑换鸡蛋${data || 0}个`)
-                    break
-                case 'pet':
-                    t.push(`🐙 东东萌宠: ${data.goods}, 完成: ${data.complete}-${data.percent}%/${data.exchange}`)
-                    break
-                case 'farm':
-                    t.push(`🐨 东东农场: ${data.goods}, 完成: ${data.complete}/${data.exchange}, 还需浇水: ${(data.exchange - data.complete) / 10}次, 进度: ${data.percent}%`)
-                    break
                 default:
                     // console.log(i)
                     break
@@ -93,11 +65,17 @@ export class Main extends Template {
     async _bean(p) {
         let user = p.data.user;
         let context = p.context;
-        let b = await this.curl({
-            url: 'https://api.m.jd.com/client.action',
-            form: 'functionId=jingBeanDetail&body=%7B%7D&uuid=bbf7dd32710a04388eec3dd&client=apple&clientVersion=10.0.10&st=1640919377235&sv=112&sign=8ddd454db0ddfa76947dab4c35cc07fb',
-            user
-        })
+        let c = await this.curl({
+                'form': `functionId=myBeanHome&body={}&t=1742384177284&appid=jd-home-mybean&client=ios&clientVersion=15.0.65`,
+                user,
+                algo: {
+                    appId: '502bc',
+                    expire: {
+                        code: 2
+                    }
+                }
+            }
+        )
         try {
             let x = this.getDate(this.timestamp, 0, '-')
             let y = this.getDate(this.timestamp, -1, '-')
@@ -130,8 +108,24 @@ export class Main extends Template {
             let bean = {}
             bean.today = [this.sum(xsa) || 0, this.sum(xsb) || 0]
             bean.yesterday = [this.sum(ysa) || 0, this.sum(ysb) || 0]
-            bean.expire = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
-            bean.all = this.haskey(b, 'others.jingBeanBalance.jingBeanCount')
+            if (this.haskey(c, 'data.beanAmount')) {
+                bean.expire = c.data.expireSoonNum
+                bean.all = c.data.beanAmount
+            }
+            else {
+                let b = await this.curl({
+                    url: 'https://api.m.jd.com/client.action',
+                    form: 'functionId=jingBeanDetail&body=%7B%7D&uuid=bbf7dd32710a04388eec3dd&client=android&clientVersion=15.2.8&st=1640919377235&sv=112&sign=8ddd454db0ddfa76947dab4c35cc07fb',
+                    user,
+                    algo: {
+                        sign: true
+                    }
+                })
+                if (this.haskey(b, 'others')) {
+                    bean.expire = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
+                    bean.all = this.haskey(b, 'others.jingBeanBalance.jingBeanCount')
+                }
+            }
             context.dict.bean = bean
         } catch (e) {
         }

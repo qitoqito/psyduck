@@ -18,38 +18,6 @@ export class Main extends Template {
         await this.field('actId')
     }
 
-    async batch1(p) {
-        let a = await this.curl({
-                'url': `https://jinggengjcq-isv.isvjcloud.com/dm/front/jdJoinCardtf/shop/shopProduct?open_id=&mix_nick=BZwJHR&push_way=1&user_id=10299171`,
-                json: {
-                    "jsonRpc": "2.0",
-                    "params": {
-                        "commonParameter": {
-                            "m": "POST",
-                            "oba": "6e5e793ff0ce0ac6293e2ee26f88dac6",
-                            "timestamp": 1713947376182,
-                            "userId": 10299171
-                        },
-                        "admJson": {
-                            "actId": p.actId,
-                            "method": "/jdJoinCardtf/shop/shopProduct",
-                            "userId": 10299171,
-                            "pushWay": 1
-                        }
-                    }
-                }
-            }
-        )
-        let skuList = []
-        if (this.haskey(a, 'data.data.0.numId')) {
-            skuList = this.column(a.data.data, 'numId')
-        }
-        if (skuList) {
-            p.skuList = skuList
-            return p
-        }
-    }
-
     async main(p) {
         let user = p.data.user;
         let context = p.context;
@@ -154,10 +122,6 @@ export class Main extends Template {
                 if (remark.includes("京豆")) {
                     p.award(remark, 'bean')
                 }
-                if (this.haskey(s, 'data.data.sendStatus')) {
-                    let num = this.match(/(\d+)个京豆/, remark)
-                    bean += parseInt(num)
-                }
                 else {
                     if (this.dumps(s).includes("上限")) {
                         break
@@ -197,14 +161,10 @@ export class Main extends Template {
                 )
                 let remark = this.haskey(collectShop, 'data.data.remark') || ''
                 p.log(remark)
-                if (this.haskey(collectShop, 'data.data.sendStatus')) {
-                    let num = this.match(/(\d+)个京豆/, remark)
-                    bean += parseInt(num)
+                if (remark.includes("京豆")) {
+                    p.award(remark, 'bean')
                 }
                 await this.wait(1000)
-            }
-            if (bean>0) {
-                p.msg(`获得京豆: ${bean}`)
             }
             p.info.work = true
         }
