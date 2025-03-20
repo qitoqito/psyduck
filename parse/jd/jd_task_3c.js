@@ -4,7 +4,7 @@ export class Main extends Template {
     constructor() {
         super()
         this.profile = {
-            title: '京东超市',
+            title: '京东3C数码',
             crontab: 4,
             help: 'main'
         }
@@ -12,7 +12,7 @@ export class Main extends Template {
 
     async prepare() {
         this.shareCode({
-            id: '3nh7HzSjYemGqAHSbktTrf8rrH8M'
+            id: '4SWjnZSCTHPYjE5T7j35rxxuMTb6'
         })
         for (let user of this.help) {
             let itemId = await this.getTemp(user)
@@ -39,13 +39,10 @@ export class Main extends Template {
             if (signToken) {
                 let sign = await this.curl({
                         'url': `https://api.m.jd.com/atop_channel_sign_in`,
-                        'form': `appid=jd-super-market&t=1713230766545&functionId=atop_channel_sign_in&client=m&uuid=de21c6604748f97dd3977153e51a47f4efdb9a47&body={"signToken":"${signToken}","channelFollowStatus":1,"bizCode":"cn_retail_jdsupermarket","scenario":"sign","babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
+                        'form': `appid=jd-super-market&t=1713230766545&functionId=atop_channel_sign_in&client=m&uuid=de21c6604748f97dd3977153e51a47f4efdb9a47&body={"signToken":"${signToken}","channelFollowStatus":1,"bizCode":"cn_retail_3c_digital","scenario":"sign","babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
                         user,
                         algo: {
-                            appId: 'b8fc7',
-                            expire: {
-                                "code": "11001"
-                            }
+                            appId: 'b8fc7'
                         }
                     }
                 )
@@ -97,7 +94,7 @@ export class Main extends Template {
                                             }
                                             itemId = this.dict[u]
                                             let help = await this.curl({
-                                                    'form': `appid=jd-super-market&t=1742122986378&functionId=atop_channel_complete_task&client=m&body={"bizCode":"cn_retail_jdsupermarket","scenario":"sign","assignmentType":"${i.assignmentType}","encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","assistFlag":true,"babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
+                                                    'form': `appid=jd-super-market&t=1742122986378&functionId=atop_channel_complete_task&client=m&body={"bizCode":"cn_retail_3c_digital","scenario":"sign","assignmentType":"${i.assignmentType}","encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","assistFlag":true,"babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
                                                     user,
                                                     algo: {
                                                         appId: '51113'
@@ -130,7 +127,7 @@ export class Main extends Template {
                                                             'url': `https://api.m.jd.com/client.action`,
                                                             'form': `appid=jd-super-market&body=${this.dumps(
                                                                 {
-                                                                    "bizCode": "cn_retail_jdsupermarket",
+                                                                    "bizCode": "cn_retail_3c_digital",
                                                                     "scenario": "sign",
                                                                     "assignmentType": i.assignmentType,
                                                                     "encryptAssignmentId": i.encryptAssignmentId,
@@ -155,7 +152,7 @@ export class Main extends Template {
                                                         'url': `https://api.m.jd.com/client.action`,
                                                         'form': `appid=jd-super-market&body=${this.dumps(
                                                             {
-                                                                "bizCode": "cn_retail_jdsupermarket",
+                                                                "bizCode": "cn_retail_3c_digital",
                                                                 "scenario": "sign",
                                                                 "assignmentType": i.assignmentType,
                                                                 "encryptAssignmentId": i.encryptAssignmentId,
@@ -168,6 +165,7 @@ export class Main extends Template {
                                                         user, algo: {
                                                             appId: '51113'
                                                         },
+                                                        // ciphers: 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384'
                                                     }
                                                 )
                                                 p.log(i.assignmentName, this.haskey(s, 'data.msg') || this.haskey(s, 'message'))
