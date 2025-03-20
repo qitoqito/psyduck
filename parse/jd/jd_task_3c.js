@@ -35,7 +35,7 @@ export class Main extends Template {
             let react = this.jsonParse(this.match([/__react_data__\s*=\s*(.*?)\s*;\n+/,], html))
             let signToken = this.match(/"signToken"\s*:\s*"(\w+)"/, html)
             let status = 0
-            let isOk
+            let isOk = 0
             if (signToken) {
                 let sign = await this.curl({
                         'url': `https://api.m.jd.com/atop_channel_sign_in`,
@@ -75,9 +75,6 @@ export class Main extends Template {
                                 if (i.completionFlag) {
                                     status = 1
                                     p.log(`任务已经完成: ${i.assignmentName}`)
-                                    if (i.assignmentName.includes('邀请')) {
-                                        isOk = 1
-                                    }
                                 }
                                 else {
                                     p.log(`正在运行: ${i.assignmentName}`)
