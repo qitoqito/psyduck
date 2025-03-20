@@ -21,6 +21,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let status
         let s = await this.curl({
                 'url': `https://api.m.jd.com/MiniTask_ChannelPage?g_ty=ls&g_tk=1629788202`,
                 'form': `loginType=11&clientType=wxapp&client=apple&clientVersion=9.23.200&build=&osVersion=iOS%2015.1.1&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone%2012%20Pro%3CiPhone13%2C3%3E&lang=zh_CN&functionId=MiniTask_ChannelPage&t=1732259085779&body={"source":"task","businessSource":"bbxa"}&appid=hot_channel`,
@@ -70,13 +71,27 @@ export class Main extends Template {
         )
         let subCode = this.haskey(sign, 'subCode')
         if (subCode == 0) {
+            status = 1
             p.msg(sign.data.toastMsg)
         }
         else if (subCode == 3010) {
+            status = 1
             p.log(sign.message)
         }
         else {
             p.log(this.haskey(sign, 'message') || sign)
+        }
+        let sign2 = await this.curl({
+                'form': `loginType=11&clientType=wxapp&client=apple&clientVersion=10.15.100&build=&osVersion=iOS%2015.1.1&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone%2012%20Pro%3CiPhone13%2C3%3E&lang=zh_CN&uuid=oTGnpnBPpyvARmNaPlEeBxjJ4J_U&partner=&forcebot=&wifiBssid=&scope=&functionId=SignComponent_doSignTask&appid=hot_channel&loginWQBiz=signcomponent&body={"activityId":"10004","version":1}`,
+                user,
+                algo: {
+                    appId: '9a38a'
+                },
+                referer: 'https://servicewechat.com/wx91d27dbf599dff74/793/page-frame.html'
+            }
+        )
+        if (status) {
+            p.info.work = true
         }
     }
 }
