@@ -79,12 +79,15 @@ export class Main extends Template {
                             })
                             if (this.haskey(dd, 'success')) {
                                 p.log('任务完成:', dd.success)
-                                await this.baseInfo(p)
-                                await this.two(p)
+                                if (!p.info.balck) {
+                                    await this.baseInfo(p)
+                                    await this.two(p)
+                                }
                             }
                             break
                         case 'BROWSE_CHANNEL':
                         case 'BROWSE_PRODUCT':
+                        case 'BROWSE_RTB':
                             let detail = await this.curl({
                                 'url': `https://api.m.jd.com/`,
                                 'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"openUdId":"","cityId":"1234","provinceId":"16","countyId":"1234","channel":4,"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
@@ -110,8 +113,10 @@ export class Main extends Template {
                                     })
                                     if (this.haskey(d, 'success')) {
                                         p.log('任务完成:', d.success)
-                                        await this.baseInfo(p)
-                                        await this.two(p)
+                                        if (!p.info.balck) {
+                                            await this.baseInfo(p)
+                                            await this.two(p)
+                                        }
                                     }
                                 }
                                 else {
@@ -139,8 +144,10 @@ export class Main extends Template {
                                     })
                                     if (this.haskey(d, 'success')) {
                                         p.log('任务完成:', d.success)
-                                        await this.baseInfo(p)
-                                        await this.two(p)
+                                        if (!p.info.balck) {
+                                            await this.baseInfo(p)
+                                            await this.two(p)
+                                        }
                                     }
                                 }
                                 else {
@@ -401,6 +408,9 @@ export class Main extends Template {
             }
             for (let i in this.dict[user].joy) {
                 if (this.dict[user].joy[i] && this.dict[user].joy[i].length % 2 == 1 && i<this.dict[user].buyLevel) {
+                    if (!this.dict[user].shop) {
+                        await this.shopList(p)
+                    }
                     let joyInfo = this.dict[user].shop[i]
                     if (joyInfo && this.dict[user].coin>0 && joyInfo.consume>0 && joyInfo.consume<this.dict[user].coin) {
                         if (this.dict[user].number>9) {
@@ -622,6 +632,7 @@ export class Main extends Template {
         if (this.haskey(baseInfo, 'errMsg', 'blackfail')) {
             p.log("狗子在小黑屋里面...")
             p.info.jump = true
+            p.info.black = true
             return {
                 error: 1
             }

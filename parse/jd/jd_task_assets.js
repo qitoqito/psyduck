@@ -112,7 +112,7 @@ export class Main extends Template {
             bean.today = [this.sum(xsa) || 0, this.sum(xsb) || 0]
             bean.yesterday = [this.sum(ysa) || 0, this.sum(ysb) || 0]
             if (this.haskey(c, 'data.beanAmount')) {
-                bean.expire = c.data.expireSoonNum
+                bean.expireBean = c.data.expireSoonNum
                 bean.all = c.data.beanAmount
             }
             else {
@@ -125,7 +125,7 @@ export class Main extends Template {
                     }
                 })
                 if (this.haskey(b, 'others')) {
-                    bean.expireBean = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
+                    bean.expire = this.haskey(b, 'others.jingBeanExpiringInfo.detailList')
                     bean.all = this.haskey(b, 'others.jingBeanBalance.jingBeanCount')
                 }
             }
