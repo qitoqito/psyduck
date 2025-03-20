@@ -11,7 +11,9 @@ export class Message {
     async send(msgAry) {
         const result = this.splitArrays(this.msgAry);
         for (let message of result) {
-            message.push([`PsyDuck [https://github.com/qitoqito/psyduck]`])
+            if (!this.func.message.notice) {
+                message.push([`PsyDuck [https://github.com/qitoqito/psyduck]`])
+            }
             this.message = message
             if (this.msg.hasOwnProperty('TELEGRAM_TOKEN')) {
                 await this.tgNotify()
