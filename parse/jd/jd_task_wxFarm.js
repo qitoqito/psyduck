@@ -38,7 +38,7 @@ export class Main extends Template {
             p.log("已签到..")
         }
         else {
-            status = 0
+            st = 0
             let sign = await this.curl({
                     'url': `https://api.m.jd.com/miniTask_doFarmSign?g_ty=ls&g_tk=1084416199`,
                     'form': `loginType=2&clientType=wxapp&client=apple&clientVersion=10.14.110&build=&osVersion=iOS%2015.1.1&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone%2012%20Pro%3CiPhone13%2C3%3E&lang=zh_CN&uuid=oCwKwuBoW0okKEIIDlT5FXxscxcM&functionId=miniTask_doFarmSign&t=1739945007901&body={}&appid=hot_channel`,
@@ -51,7 +51,7 @@ export class Main extends Template {
             )
             if (this.haskey(sign, 'data.signStatus')) {
                 p.log(`签到成功: 获得水滴: ${sign.data.awardNum}`)
-                status = 1
+                st = 1
             }
         }
         let taskList = await this.curl({
