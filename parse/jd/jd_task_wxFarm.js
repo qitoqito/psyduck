@@ -18,6 +18,7 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         let st = 1
+        let status = 1
         let signList = await this.curl({
                 'url': `https://api.m.jd.com/miniTask_queryFarmSignList?g_ty=ls&g_tk=1084416199`,
                 'form': `loginType=2&clientType=wxapp&client=apple&clientVersion=10.14.110&build=&osVersion=iOS%2015.1.1&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone%2012%20Pro%3CiPhone13%2C3%3E&lang=zh_CN&uuid=oCwKwuBoW0okKEIIDlT5FXxscxcM&functionId=miniTask_queryFarmSignList&t=1739944985868&body={}&appid=hot_channel`,
@@ -65,7 +66,6 @@ export class Main extends Template {
             p.err("没有获取到任务列表...")
             return
         }
-        let status = 1
         for (let i of list) {
             if (i.mainTitle.includes("下单")) {
             }
