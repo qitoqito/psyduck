@@ -35,7 +35,6 @@ export class Main extends Template {
             let react = this.jsonParse(this.match([/__react_data__\s*=\s*(.*?)\s*;\n+/,], html))
             let signToken = this.match(/"signToken"\s*:\s*"(\w+)"/, html)
             let status = 0
-            let isOk
             if (signToken) {
                 let sign = await this.curl({
                         'url': `https://api.m.jd.com/atop_channel_sign_in`,
@@ -75,52 +74,48 @@ export class Main extends Template {
                                 if (i.completionFlag) {
                                     status = 1
                                     p.log(`任务已经完成: ${i.assignmentName}`)
-                                    if (i.assignmentName.includes('邀请')) {
-                                        isOk = 1
-                                    }
                                 }
                                 else {
                                     p.log(`正在运行: ${i.assignmentName}`)
                                     let extraType = i.ext.extraType
                                     if (i.assignmentName.includes('邀请')) {
                                         status = 1
-                                        isOk = 0
                                         if (this.haskey(i, 'ext.assistTaskDetail.itemId')) {
                                             await this.setTemp(user, i.ext.assistTaskDetail.itemId, 86400000)
                                         }
-                                        let users = Object.keys(this.dict)
-                                        if (users) {
-                                            let itemId = ''
-                                            let u = users[this.n % users.length]
-                                            this.n++
-                                            if (u == user) {
-                                                u = users[this.n % users.length]
-                                            }
-                                            itemId = this.dict[u]
-                                            let help = await this.curl({
-                                                    'form': `appid=jd-super-market&t=1742122986378&functionId=atop_channel_complete_task&client=m&body={"bizCode":"cn_retail_3c_digital","scenario":"sign","assignmentType":"${i.assignmentType}","encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","assistFlag":true,"babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
-                                                    user,
-                                                    algo: {
-                                                        appId: '51113'
-                                                    }
-                                                }
-                                            )
-                                            let subCode = this.haskey(help, 'data.subCode')
-                                            if (subCode == '104') {
-                                                p.log("您已经助力过了")
-                                                isOk = 1
-                                            }
-                                            else if (subCode == '0') {
-                                                p.log("助力成功")
-                                                isOk = 1
-                                            }
-                                            if (subCode == '109') {
-                                                p.log("不能自己给自己助力")
-                                            }
-                                        }
-                                        else {
-                                            isOk = 1
-                                        }
+                                        // let users = Object.keys(this.dict)
+                                        // if (users) {
+                                        //     let itemId = ''
+                                        //     let u = users[this.n % users.length]
+                                        //     this.n++
+                                        //     if (u == user) {
+                                        //         u = users[this.n % users.length]
+                                        //     }
+                                        //     itemId = this.dict[u]
+                                        //     let help = await this.curl({
+                                        //             'form': `appid=jd-super-market&t=1742122986378&functionId=atop_channel_complete_task&client=m&body={"bizCode":"cn_retail_3c_digital","scenario":"sign","assignmentType":"${i.assignmentType}","encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","assistFlag":true,"babelChannel":"ttt1","isJdApp":"1","isWx":"0"}`,
+                                        //             user,
+                                        //             algo: {
+                                        //                 appId: '51113'
+                                        //             }
+                                        //         }
+                                        //     )
+                                        //     let subCode = this.haskey(help, 'data.subCode')
+                                        //     if (subCode == '104') {
+                                        //         p.log("您已经助力过了")
+                                        //         isOk = 1
+                                        //     }
+                                        //     else if (subCode == '0') {
+                                        //         p.log("助力成功")
+                                        //         isOk = 1
+                                        //     }
+                                        //     if (subCode == '109') {
+                                        //         p.log("不能自己给自己助力")
+                                        //     }
+                                        // }
+                                        // else {
+                                        //     isOk = 1
+                                        // }
                                     }
                                     else if (this.haskey(i, `ext.${i.ext.extraType}`)) {
                                         let extra = i.ext[extraType]
