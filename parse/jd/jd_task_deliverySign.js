@@ -51,61 +51,17 @@ export class Main extends Template {
         else {
             p.log(sign)
         }
-        // let home = await this.curl({
-        //         'url': `https://api.m.jd.com/`,
-        //         'form': `functionId=deliverySign_home&appid=signed_wh5_ihub&body={"activityId":"${p.context.activityId}"}&client=apple&clientVersion=13.2.8&d_model=&osVersion=15.1.1`,
-        //         user,
-        //         algo: {
-        //             appId: 'e88fd'
-        //         }
-        //     }
-        // )
-        // if (this.haskey(home, 'data.bizCode', -102)) {
-        //     p.info.jump = true
-        // }
-        // if (this.haskey(home, 'data.result.bubbleList')) {
-        //     for (let i of home.data.result.bubbleList) {
-        //         if (i.status == 1) {
-        //             let sign = await this.curl({
-        //                     'url': `https://api.m.jd.com/`,
-        //                     'form': `functionId=deliverySign_sign&appid=signed_wh5_ihub&body={"activityId":"${p.context.activityId}"}&client=apple&clientVersion=13.2.8&d_model=&osVersion=15.1.1`,
-        //                     user,
-        //                     algo: {
-        //                         appId: 'e88fd'
-        //                     }
-        //                 }
-        //             )
-        //             if (this.haskey(sign, 'data.result.value')) {
-        //                 p.msg(`京豆: ${sign.data.result.value}`)
-        //             }
-        //             else {
-        //                 p.log(this.haskey(sign, 'data.bizMsg') || sign)
-        //             }
-        //             let reward = await this.curl({
-        //                     'url': `https://api.m.jd.com/`,
-        //                     'form': `functionId=deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${p.context.activityId}"}&client=apple&uuid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&clientVersion=13.2.8&d_model=&osVersion=15.1.1`,
-        //                     user,
-        //                     algo: {
-        //                         appId: 'e88fd'
-        //                     }
-        //                 }
-        //             )
-        //             if (this.haskey(reward, 'data.result.value')) {
-        //                 p.msg(`京豆: ${reward.data.result.value}`)
-        //                 p.info.work = true
-        //             }
-        //         }
-        //         else {
-        //             if (this.haskey(i, 'status', 2)) {
-        //                 p.info.work = true
-        //             }
-        //             p.log("暂不可做:", i.text)
-        //         }
-        //     }
-        // }
-        // else {
-        //     p.log("没有获取到数据...")
-        // }
+        let s = await this.curl({
+                'form': `functionId=bean_deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.0.25&d_model=&osVersion=15.1.1`,
+                algo: {
+                    appId: '0cc57'
+                },
+                user
+            }
+        )
+        if (this.haskey(s, 'data.result.value')) {
+            p.award(s.data.result.value, 'bean')
+        }
     }
 }
 
