@@ -70,6 +70,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         if (!context.venderId) {
             p.err("没有获取到该Token的数据,请重试...")
             p.context.jump = true
@@ -80,9 +81,11 @@ export class Main extends Template {
                 form: `appid=interCenter_shopSign&loginType=2&functionId=interact_center_shopSign_signCollectGift&body={"token":"${context.token}","venderId":${context.venderId},"activityId":${context.activityId},"type":56,"actionType":7}`,
                 user,
                 algo: {
-                    appId: '4da33',
-                    version: 'latest',
-                    status: true
+                    ...{
+                        appId: '4da33',
+                        version: 'latest',
+                        status: true
+                    }, ...algo
                 },
             })
             if (this.haskey(sign, 'code', 402)) {

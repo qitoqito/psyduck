@@ -19,6 +19,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         p.log("正在签到:", p.context.name)
         let appid = this.config.appids[this.n % this.config.appids.length]
         let signIn = await this.curl({
@@ -32,13 +33,14 @@ export class Main extends Template {
                 })}&sign=11&t=1710422476977`,
                 user,
                 algo: {
-                    appId: 'e2224',
-                    log: true,
-                    // code: ['0']
-                    expire: {
-                        "subCode": "300"
-                    }
-                }
+                    ...{
+                        appId: 'e2224',
+                        log: true,
+                        expire: {
+                            "subCode": "300"
+                        }
+                    }, ...algo
+                },
             }
         )
         let subCode = this.haskey(signIn, 'subCode')

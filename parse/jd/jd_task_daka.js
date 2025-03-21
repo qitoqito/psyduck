@@ -14,41 +14,22 @@ export class Main extends Template {
     }
 
     async prepare() {
-        // let c = 0
-        // for (let user of this.help) {
-        //     let home = await this.curl({
-        //             'url': `https://api.m.jd.com/?functionId=interact_game_home&_=1740844418368`,
-        //             'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_home&body={}`,
-        //             user
-        //         }
-        //     )
-        //     for (let i of this.haskey(home, 'data.assetInfos.bannerInfos')) {
-        //         if (i.functionId == 'beanSign') {
-        //             c++
-        //             this.shareCode({
-        //                 assignmentId: i.assignmentId,
-        //                 itemId: i.itemId
-        //             })
-        //         }
-        //     }
-        //     if (c) {
-        //         break
-        //     }
-        //     await this.wait(2000)
-        // }
     }
 
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         let sign = await this.curl({
                 'url': `https://api.m.jd.com/?functionId=interact_game_sign&_=1740844423946`,
                 'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_sign&body={"encryptAssignmentId":"${context.assignmentId}","itemId":"${context.itemId}"}`,
                 user,
                 algo: {
-                    expire: {
-                        code: 3
-                    }
+                    ...{
+                        expire: {
+                            code: 3
+                        }
+                    }, ...algo
                 }
             }
         )

@@ -22,16 +22,19 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         let s = await this.curl({
                 'url': `https://api.m.jd.com/client.action`,
                 'form': `functionId=sign&body={"vendorId":"${context.vendorId}","sourceRpc":"shop_app_sign_home"}&client=apple&clientVersion=15.0.1`,
                 user,
                 algo: {
-                    app: true,
-                    expire: {
-                        'code': '1',
-                        status: true
-                    }
+                    ...{
+                        app: true,
+                        expire: {
+                            'code': '1',
+                            status: true
+                        }
+                    }, ...algo
                 }
             }
         )

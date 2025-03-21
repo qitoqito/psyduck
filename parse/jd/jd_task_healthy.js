@@ -36,6 +36,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
+        let algo = context.algo || {}
         let gift = function(a) {
             for (let i of this.haskey(a, ['result.result.prizeInfovo', 'result.result.prizeInfovos']) || {}) {
                 if (i.prizeType == 2) {
@@ -53,10 +54,12 @@ export class Main extends Template {
                 'form': `body={"infoId":"jdhHome_task","channel":"${context.channel}","appKey":"${context.appKey}","encodeId":"${context.encodeId}","imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"56789"}}`,
                 user,
                 algo: {
-                    appId: "8c399",
-                    expire: {
-                        'result.code': -1
-                    }
+                    ...{
+                        appId: "8c399",
+                        expire: {
+                            'result.code': -1
+                        }
+                    }, ...algo
                 }
             }
         )

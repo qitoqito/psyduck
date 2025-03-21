@@ -26,15 +26,18 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user
         let context = p.context
+        let algo = context.algo || {}
         let sign = await this.curl({
                 'url': `https://api.m.jd.com/api`,
                 'form': `functionId=bean_deliverySign_sign&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.0.25&d_model=&osVersion=15.1.1`,
                 user,
                 algo: {
-                    expire: {
-                        'data.bizCode': -102
-                    },
-                    appId: 'e88fd'
+                    ...{
+                        expire: {
+                            'data.bizCode': -102
+                        },
+                        appId: 'e88fd'
+                    }, ...algo
                 }
             }
         )
