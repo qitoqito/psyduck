@@ -17,7 +17,7 @@ export default {
                         },
                         referer: "https://prodev.m.jd.com/",
                         shell: true,
-                        token: true
+                        // token: true
                     },
                     'isvjcloud.com': {
                         cookieJar: true,
