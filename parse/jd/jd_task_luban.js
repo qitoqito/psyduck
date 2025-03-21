@@ -117,22 +117,7 @@ export class Main extends Template {
                 p.log("任务已经完成:", i.assignmentName)
             }
         }
-        for (let i of Array(3)) {
-            let lottery = await this.curl({
-                    'url': `https://api.m.jd.com/?functionId=luban_executeWorkflow`,
-                    'form': `functionId=luban_executeWorkflow&appid=newtry&client=ios&clientVersion=13.2.8&body={"workflowId":"${uuid}","action":2,"completionFlag":true}`,
-                    user,
-                    algo: {
-                        appId: '35fa0'
-                    }
-                }
-            )
-            p.log("抽奖机:", lottery)
-            await this.wait(1000)
-            if (this.haskey(lottery, 'subCode', '-777')) {
-                break
-            }
-        }
+
         if (status) {
             p.info.work = true
         }
