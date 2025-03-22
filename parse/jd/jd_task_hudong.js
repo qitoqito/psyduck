@@ -550,6 +550,10 @@ export class Main extends Template {
                     drawNum--
                     p.lottery(lottery)
                 }
+                else if (this.haskey(lottery, 'success')) {
+                    drawNum--
+                    p.log("啥也没有抽到")
+                }
                 else {
                     p.err("抽奖错误")
                     break
@@ -656,7 +660,7 @@ export class Main extends Template {
             )
             let num = parseInt(this.haskey(lottery, 'chances') || 0)
             if (this.haskey(lottery, 'prizeType')) {
-                p.msg(lottery.prizeName)
+                p.award(lottery.prizeName, 'bean')
             }
             else {
                 p.log(this.haskey(lottery, 'promptMsg') || lottery)
