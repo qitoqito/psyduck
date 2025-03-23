@@ -426,6 +426,10 @@ export class Main extends Template {
                     drawNum--
                     p.lottery(lottery)
                 }
+                else if (this.haskey(lottery, 'success')) {
+                    drawNum--
+                    p.log("啥也没有抽到")
+                }
                 else {
                     p.err("抽奖错误")
                     break
@@ -487,6 +491,10 @@ export class Main extends Template {
                 if (this.haskey(lottery, 'data')) {
                     drawNum--
                     p.lottery(lottery)
+                }
+                else if (this.haskey(lottery, 'success')) {
+                    drawNum--
+                    p.log("啥也没有抽到")
                 }
                 else {
                     p.err("抽奖错误")
@@ -617,6 +625,10 @@ export class Main extends Template {
                 if (this.haskey(lottery, 'data')) {
                     drawNum--
                     p.lottery(lottery)
+                }
+                else if (this.haskey(lottery, 'success')) {
+                    drawNum--
+                    p.log("啥也没有抽到")
                 }
                 else {
                     p.err("抽奖错误")
