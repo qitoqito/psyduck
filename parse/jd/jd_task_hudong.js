@@ -138,7 +138,7 @@ export class Main extends Template {
                 p.award(amount, 'bean')
             }
             else if (prizeType == 5) {
-                p.award(amount, 'reward')
+                p.award(data.prizeDesc || data.prizeName || data.limitStr, 'reward')
             }
             else if (prizeType == 17) {
                 p.log('谢谢参与')
