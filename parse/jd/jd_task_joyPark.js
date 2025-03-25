@@ -88,71 +88,109 @@ export class Main extends Template {
                         case 'BROWSE_CHANNEL':
                         case 'BROWSE_PRODUCT':
                         case 'BROWSE_RTB':
-                            let detail = await this.curl({
-                                'url': `https://api.m.jd.com/`,
-                                'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"openUdId":"","cityId":"1234","provinceId":"16","countyId":"1234","channel":4,"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
-                                user
-                            })
-                            if (this.haskey(detail, 'data.taskItemList')) {
-                                let s = await this.curl({
-                                    'url': `https://api.m.jd.com/`,
-                                    form: `functionId=apDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"openUdId":"","cityId":"1234","provinceId":"16","countyId":"1234","channel":4,"linkId":"${context.linkId}","taskInsert":true,"itemId":"${encodeURIComponent((detail.data.taskItemList[j] || detail.data.taskItemList[0]).itemId)}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
-                                    user,
-                                    algo: {
-                                        appId: 'cd949'
+                            if (i.taskSourceUrl) {
+                                var doTask = await this.curl({
+                                        'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
+                                        'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)},"taskInsert":false,"itemId":"${encodeURIComponent(i.taskSourceUrl)}"}&t=1738480908001&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                        algo: {'appId': '54ed7'},
+                                        user
                                     }
-                                })
-                                if (this.haskey(s, 'success')) {
-                                    let d = await this.curl({
-                                        'url': `https://api.m.jd.com/`,
-                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
-                                        user,
-                                        algo: {
-                                            appId: "55276"
-                                        }
-                                    })
-                                    if (this.haskey(d, 'success')) {
-                                        p.log('任务完成:', d.success)
-                                        if (!p.info.balck) {
-                                            await this.baseInfo(p)
-                                            await this.two(p)
-                                        }
-                                    }
+                                )
+                                if (this.haskey(doTask, 'success')) {
+                                    p.log("任务完成")
                                 }
                                 else {
-                                    p.log(this.haskey(s, 'errMsg') || s)
-                                    break
+                                    p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
+                                }
+                                let award = await this.curl({
+                                        'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                        user,
+                                        algo: {
+                                            appId: 'f0f3f'
+                                        }
+                                    }
+                                )
+                                if (this.haskey(award, 'data')) {
+                                    if (!p.info.balck) {
+                                        await this.baseInfo(p)
+                                        await this.two(p)
+                                    }
                                 }
                             }
                             else {
-                                let s = await this.curl({
-                                    'url': `https://api.m.jd.com/`,
-                                    form: `functionId=apDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"openUdId":"","cityId":"1234","provinceId":"16","countyId":"1234","channel":4,"linkId":"${context.linkId}","taskInsert":true,"itemId":"${encodeURIComponent(i.taskSourceUrl)}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
-                                    user,
-                                    algo: {
-                                        appId: 'cd949'
+                                let apTaskDetail = await this.curl({
+                                        'url': `https://api.m.jd.com/api?functionId=apTaskDetail`,
+                                        'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480907628&appid=activities_platform&client=ios&clientVersion=15.0.11&`,
+                                        user
                                     }
-                                })
-                                if (this.haskey(s, 'success')) {
-                                    let d = await this.curl({
-                                        'url': `https://api.m.jd.com/`,
-                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
-                                        user,
-                                        algo: {
-                                            appId: "55276"
-                                        }
-                                    })
-                                    if (this.haskey(d, 'success')) {
-                                        p.log('任务完成:', d.success)
-                                        if (!p.info.balck) {
-                                            await this.baseInfo(p)
-                                            await this.two(p)
+                                )
+                                let taskItemList = this.haskey(apTaskDetail, 'data.taskItemList')
+                                if (taskItemList) {
+                                    for (let j in Array.from(Array(i.taskLimitTimes - i.taskDoTimes), (_val, index) => index)) {
+                                        if (taskItemList[j] && taskItemList[j].itemId) {
+                                            if (i.timeLimitPeriod) {
+                                                let start = await this.curl({
+                                                        'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
+                                                        'form': `functionId=apStartTaskTime&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
+                                                            ...i.pipeExt, ...taskItemList[j].pipeExt
+                                                        })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                                        user,
+                                                        algo: {
+                                                            appId: 'acb1e'
+                                                        }
+                                                    }
+                                                )
+                                                if (this.haskey(start, 'code', 1)) {
+                                                    p.log("失败了")
+                                                    break
+                                                }
+                                                p.log(`等待${i.timeLimitPeriod}秒...`)
+                                                await this.wait(i.timeLimitPeriod * 1000)
+                                                var doTask = await this.curl({
+                                                    'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
+                                                    'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                                    user,
+                                                    algo: {
+                                                        appId: 'ebecc'
+                                                    }
+                                                })
+                                            }
+                                            else {
+                                                var doTask = await this.curl({
+                                                        'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
+                                                        'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps({
+                                                            ...i.pipeExt, ...taskItemList[j].pipeExt
+                                                        })},"taskInsert":false,"itemId":"${encodeURIComponent(taskItemList[j].itemId)}"}&t=1738480908001&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                        algo: {'appId': '54ed7'},
+                                                        user
+                                                    }
+                                                )
+                                            }
+                                            if (this.haskey(doTask, 'success')) {
+                                                p.log("任务完成", `[${parseInt(j) + 1}/${i.taskLimitTimes - i.taskDoTimes}]`)
+                                            }
+                                            else {
+                                                p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
+                                            }
+                                            let award = await this.curl({
+                                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                    user,
+                                                    algo: {
+                                                        appId: 'f0f3f'
+                                                    }
+                                                }
+                                            )
+                                            if (this.haskey(award, 'data')) {
+                                                if (!p.info.balck) {
+                                                    await this.baseInfo(p)
+                                                    await this.two(p)
+                                                }
+                                            }
+                                            await this.wait(3000)
                                         }
                                     }
-                                }
-                                else {
-                                    p.log(this.haskey(s, 'errMsg') || s)
-                                    break
                                 }
                             }
                             break
