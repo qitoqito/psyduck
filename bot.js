@@ -34,7 +34,7 @@ for (nodePath of nodeList) {
     }
 }
 if (bot.BOT_PROXY) {
-    if (env.BOT_PROXY.toLowerCase().includes("socks")) {
+    if (bot.BOT_PROXY.toLowerCase().includes("socks")) {
         var agent = new SocksProxyAgent(bot.BOT_PROXY.toLowerCase());
         request.agent = agent
     }
@@ -54,7 +54,6 @@ dir.forEach(async function(item, index) {
         }
     }
 });
-//
 !(async () => {
     const bots = new TelegramBot(bot.BOT_TOKEN, {
         polling: true,
@@ -110,8 +109,14 @@ dir.forEach(async function(item, index) {
                 command.stdout.on('data', (data) => {
                     console.log(`stdout: ${data}`);
                     if (data.includes("即将运行")) {
-                        console.log(`正在运行: ${filename} -custom ${tt[2]}`)
-                        sm(chatId, `正在运行: ${filename} -custom ${tt[2]}`, '', 3456)
+                        if (tt[2] == 'start') {
+                            console.log(`正在运行: ${filename}`)
+                            sm(chatId, `正在运行: ${filename}`, '', 3456)
+                        }
+                        else {
+                            console.log(`正在运行: ${filename} -custom ${tt[2]}`)
+                            sm(chatId, `正在运行: ${filename} -custom ${tt[2]}`, '', 3456)
+                        }
                     }
                 });
             }
