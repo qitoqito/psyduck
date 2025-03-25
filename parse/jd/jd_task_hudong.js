@@ -496,6 +496,10 @@ export class Main extends Template {
                     drawNum--
                     p.log("啥也没有抽到")
                 }
+                else if (this.haskey(lottery, "code", 80202)) {
+                    drawNum--
+                    p.log("活动太火爆")
+                }
                 else {
                     p.err("抽奖错误")
                     break
