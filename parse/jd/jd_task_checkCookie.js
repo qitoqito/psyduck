@@ -111,6 +111,9 @@ export class Main extends Template {
                     p.msg("openKey生成失败")
                 }
             }
+            else if (!userData.wskey) {
+                p.log("没有wskey")
+            }
             else {
                 p.msg("账号过期了呀🐶")
             }
