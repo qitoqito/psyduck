@@ -256,6 +256,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
     }else{
         console.log(e)
     }
+    process.exit()
 })`
                                 fs.writeFile(`${abspath}/${filename}.js`, code, function(err, data) {
                                     if (err) {
@@ -320,7 +321,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
     }else{
         console.log(e)
     }
-
+    process.exit()
 })`
                             fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
                                 if (err) {

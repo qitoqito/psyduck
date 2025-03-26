@@ -30,7 +30,6 @@ if (length>2) {
             let main = new psyDuck.Main()
             await main.init(params)
         } catch (e) {
-            // console.log(e)
             if (e == 'End') {
                 console.log("End")
             }
@@ -60,6 +59,7 @@ if (length>2) {
                     console.log("没有可执行的脚本")
                 }
             }
+            process.exit()
         }
     }
 })().catch((e) => {
