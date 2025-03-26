@@ -55,7 +55,7 @@
 ### 1. Sign 服务配置
 ```bash
 # 部署 Sign 服务
-docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart unless-stopped  seansuny/signapi:latest
+docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart unless-stopped  seansuny/jd-sign:latest
 
 # 配置文件添加
 jdSign=http://ip:17840/sign
