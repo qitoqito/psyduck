@@ -21,6 +21,16 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         this.dict[user] = {}
+        let curl = this.curl
+        let reports = setInterval(async function f() {
+            p.log(`正在上报游戏信息...`)
+            let report = await curl({
+                    'url': `functionId=gameHeartbeat&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
+                    user,
+                    delay: 10,
+                }
+            )
+        }, 5000)
         await this.curl({
                 'url': `https://api.m.jd.com/api`,
                 'form': `appid=risk_h5_info&functionId=reportInvokeLog&body={"sdkClient":"handler","sdkVersion":"1.1.0","url":"aHR0cHM6Ly9qb3lwYXJrLmpkLmNvbS8","timestamp":${new Date().getTime()}}`,
@@ -264,6 +274,7 @@ export class Main extends Template {
             }
         }
         p.info.work = true
+        clearInterval(reports)
     }
 
     async one(p) {
