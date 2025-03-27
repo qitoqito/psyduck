@@ -7,7 +7,10 @@ export class Main extends Template {
             title: '京东健康',
             crontab: 3,
             sync: 1,
-            verify: true
+            verify: true,
+            headers: {
+                referer: 'https://laputa.jd.com/'
+            }
         }
     }
 
@@ -19,9 +22,8 @@ export class Main extends Template {
         if (!p.encodeId) {
             for (let i of Array(2)) {
                 let kit = await this.curl({
-                        'url': `https://api.m.jd.com/api?appid=jdh-middle&functionId=jdh_bm_getKitTask&t=1738395115758`,
-                        'form': `body={"channel":"${p.channel}","groupCode":"openkits","m_patch_appKey":"${p.appKey}","imei":"CFFGHFCF"}`,
-                        cookie: this.tester()
+                        'form': `body={"channel":"${p.channel}","groupCode":"openkits","m_patch_appKey":"${p.appKey}","imei":"CFFGHFCF"}&appid=laputa&functionId=jdh_bm_getKitTask&client=wh5&clientVersion=1.0.0&osVersion=1.0.0&uuid=95931165.1741239812003841520103.1741239812.1743018265.1743033002.341`,
+                        cookie: this.tester(),
                     }
                 )
                 if (this.haskey(kit, 'result.encodeId')) {
@@ -50,8 +52,7 @@ export class Main extends Template {
             }
         }
         let sign = await this.curl({
-                'url': `https://api.m.jd.com/api?appid=jdh-middle&functionId=jdh_msoa_doTaskGw&t=1738387986997`,
-                'form': `body={"infoId":"jdhHome_task","channel":"${context.channel}","appKey":"${context.appKey}","encodeId":"${context.encodeId}","imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"56789"}}`,
+                form: `body={"infoId":"jdhHome_task","channel":"${context.channel}","appKey":"${context.appKey}","encodeId":"${context.encodeId}","imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"56789"}}&appid=laputa&functionId=jdh_msoa_doTaskGw&client=wh5&clientVersion=1.0.0&osVersion=1.0.0&uuid=95931165.1741239812003841520103.1741239812.1743018265.1743033002.341`,
                 user,
                 algo: {
                     ...{
@@ -91,15 +92,19 @@ export class Main extends Template {
                 if (j.status == 1) {
                     p.log("正在运行:", i.mainTitle || i.groupName)
                     let doTask = await this.curl({
-                            'url': `https://api.m.jd.com/api?appid=jdh-middle&functionId=jdh_msoa_doTaskGw&t=1738398013872`,
-                            'form': `body={"appKey":"${j.appKey}","channel":"${context.channel}","infoId":"jdhHome_task","encodeId":"${j.encodeId}","imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"45678"}}`,
-                            user
+                            'form': `body={"appKey":"${j.appKey}","channel":"${context.channel}","infoId":"jdhHome_task","encodeId":"${j.encodeId}","imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"45678"}}&appid=laputa&functionId=jdh_msoa_doTaskGw&client=wh5&clientVersion=1.0.0&osVersion=1.0.0&uuid=95931165.1741239812003841520103.1741239812.1743018265.1743033002.341`,
+                            user,
+                            algo: {
+                                appId: "8c399",
+                                expire: {
+                                    'result.code': -1
+                                }
+                            }
                         }
                     )
                     await this.wait(1000)
                     let award = await this.curl({
-                            'url': `https://api.m.jd.com/api?appid=jdh-middle&functionId=jdh_msoa_sendAwardGw&t=1738398403434`,
-                            'form': `body={"appKey":"${j.appKey}","channel":"${context.channel}","infoId":"jdhHome_task","activityId":${j.activityId},"queryToken":"${j.encodeId}","taskId":${j.id},"imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"45678"}}`,
+                            'form': `body={"appKey":"${j.appKey}","channel":"${context.channel}","infoId":"jdhHome_task","activityId":${j.activityId},"queryToken":"${j.encodeId}","taskId":${j.id},"imei":"CFFGHFCF","location":{"province":"16","city":"1234","district":"1234","town":"45678"}}&appid=laputa&functionId=jdh_msoa_sendAwardGw&client=wh5&clientVersion=1.0.0&osVersion=1.0.0&uuid=95931165.1741239812003841520103.1741239812.1743018265.1743033002.341`,
                             user,
                             algo: {
                                 appId: '8c399'

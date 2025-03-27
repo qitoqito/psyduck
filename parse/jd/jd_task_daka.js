@@ -21,14 +21,14 @@ export class Main extends Template {
         let context = p.context;
         let algo = context.algo || {}
         let sign = await this.curl({
-                'url': `https://api.m.jd.com/?functionId=interact_game_sign&_=1740844423946`,
-                'form': `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_sign&body={"encryptAssignmentId":"${context.assignmentId}","itemId":"${context.itemId}"}`,
+                form: `appid=activities_platform&loginType=2&loginWQBiz=&functionId=interact_game_sign&body={"encryptAssignmentId":"${context.assignmentId}","itemId":"${context.itemId}"}&client=apple&osVersion=15.1.1&clientVersion=15.0.65&d_model=iPhone13,3&d_brand=iPhone&networkType=wifi&build=169770&partner=-1`,
                 user,
                 algo: {
                     ...{
                         expire: {
                             code: 3
-                        }
+                        },
+                        appId: '2c4bd'
                     }, ...algo
                 }
             }
