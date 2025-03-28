@@ -252,7 +252,10 @@ export class Main extends Template {
                             let apTaskDetail = await this.curl({
                                     'url': `https://api.m.jd.com/api?functionId=apTaskDetail`,
                                     'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480907628&appid=activities_platform&client=ios&clientVersion=15.0.11&`,
-                                    user
+                                    user,
+                                    algo: {
+                                        expire: {"code": 1000}
+                                    }
                                 }
                             )
                             let taskItemList = this.haskey(apTaskDetail, 'data.taskItemList')
@@ -362,7 +365,7 @@ export class Main extends Template {
                         else {
                             p.err("抽奖领取失败")
                         }
-                        await this.wait(2000)
+                        await this.wait(1000)
                     }
                 }
                 else {
@@ -434,7 +437,7 @@ export class Main extends Template {
                     p.err("抽奖错误")
                     break
                 }
-                await this.wait(2000)
+                await this.wait(1000)
             } catch (e) {
                 p.log(e)
             }
@@ -504,7 +507,7 @@ export class Main extends Template {
                     p.err("抽奖错误")
                     break
                 }
-                await this.wait(2000)
+                await this.wait(1000)
             } catch (e) {
                 p.log(e)
             }
@@ -570,7 +573,7 @@ export class Main extends Template {
                     p.err("抽奖错误")
                     break
                 }
-                await this.wait(2000)
+                await this.wait(1000)
             } catch (e) {
                 p.log(e)
             }
@@ -606,9 +609,9 @@ export class Main extends Template {
             return
         }
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
-        let num = drawNum>5 ? 6 : drawNum
-        p.log("可抽奖次数:", num)
-        for (let i of Array(num)) {
+        // let num = drawNum>5 ? 6 : drawNum
+        p.log("可抽奖次数:", drawNum)
+        for (let i of Array(drawNum)) {
             try {
                 let lottery = await this.curl({
                     url: 'https://api.m.jd.com/api?functionId=lotteryMachineDraw',
@@ -638,12 +641,12 @@ export class Main extends Template {
                     p.err("抽奖错误")
                     break
                 }
-                await this.wait(2000)
+                await this.wait(1000)
             } catch (e) {
                 p.log(e)
             }
         }
-        if (drawNum != 0 && drawNum<6) {
+        if (drawNum != 0) {
             home = await this.curl({
                     'url': `https://api.m.jd.com/api?functionId=lotteryMachineHome`,
                     'form': `functionId=lotteryMachineHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,
@@ -685,7 +688,7 @@ export class Main extends Template {
                 p.info.work = true
                 break
             }
-            await this.wait(2000)
+            await this.wait(1000)
         }
     }
 }
