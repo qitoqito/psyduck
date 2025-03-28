@@ -142,7 +142,7 @@ export class Main extends Template {
         }
         let count = skus.length + packs.length
         let exceed = parseInt(this.profile.exceed || 0)
-        if (exceed && exceed<count) {
+        if (exceed && exceed>count) {
             p.info.work = true
             p.log(`当前购物车数量: ${count},小于指定数量,跳过运行`)
             return
