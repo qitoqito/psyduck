@@ -123,15 +123,20 @@ export class Main extends Template {
                 try {
                     let skus = board.data.result.farmTreeLevels[2].farmLevelTrees[0]
                     p.log("正在种树,选择商品:", skus.skuName)
-                    let tree = await this.curl({
+                    let plantTree = await this.curl({
                             'url': `https://api.m.jd.com/client.action`,
                             'form': `appid=signed_wh5&body=${this.dumps({
-                                "version": 10,
+                                "version": 13,
                                 "channelParam": "1",
                                 "uid": skus.uid,
                                 "type": "plantSku"
                             })}&client=apple&clientVersion=15.0.11&functionId=farm_plant_tree`,
                             user,
+                        }
+                    )
+                    let tree = await this.curl({
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
+                            user
                         }
                     )
                     if (this.haskey(tree, 'data.success')) {
