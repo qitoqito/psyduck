@@ -7,7 +7,8 @@ export class Main extends Template {
             title: '京东删除购物车',
             prompt: {
                 whiteList: '保留关键词,关键词1|关键词2',
-                blackList: '只删除关键词,关键词1|关键词2'
+                blackList: '只删除关键词,关键词1|关键词2',
+                exceed: 'n #超过指定数量才删除'
             },
             headers: {
                 "referer": "https://cart.jd.com/cart_index/",
@@ -139,7 +140,14 @@ export class Main extends Template {
                 }
             }
         }
-        p.log('即将删除购物车数目:', skus.length + packs.length)
+        let count = skus.length + packs.length
+        let exceed = parseInt(this.profile.exceed || 0)
+        if (exceed && exceed<count) {
+            p.info.work = true
+            p.log(`当前购物车数量: ${count},小于指定数量,跳过运行`)
+            return
+        }
+        p.log('即将删除购物车数目:', count)
         if (skus.length>0 || packs.length>0) {
             let cartRemove = await this.curl({
                     'url': `https://api.m.jd.com/api`,
@@ -153,7 +161,7 @@ export class Main extends Template {
                     user
                 }
             )
-            p.msg(`删除购物车: ${skus.length + packs.length}`)
+            p.msg(`删除购物车: ${count}`)
             if (status) {
                 p.info.work = true
             }
