@@ -231,20 +231,23 @@ export class Main extends Template {
                                 p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
                             }
                             if (i.canDrawAwardNum) {
-                                let award = await this.curl({
-                                        'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
-                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                        user,
-                                        algo: {
-                                            appId: 'f0f3f'
+                                for (let kkk of Array(i.canDrawAwardNum)) {
+                                    let award = await this.curl({
+                                            'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                            'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                            user,
+                                            algo: {
+                                                appId: 'f0f3f'
+                                            }
                                         }
+                                    )
+                                    if (this.haskey(award, 'data')) {
+                                        p.log(`抽奖次数+1`)
                                     }
-                                )
-                                if (this.haskey(award, 'data')) {
-                                    p.log(`抽奖次数+1`)
-                                }
-                                else {
-                                    p.err("抽奖领取失败")
+                                    else {
+                                        p.err("抽奖领取失败")
+                                    }
+                                    await this.wait(1000)
                                 }
                             }
                         }
@@ -307,23 +310,25 @@ export class Main extends Template {
                                             p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
                                         }
                                         if (i.canDrawAwardNum) {
-                                            let award = await this.curl({
-                                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
-                                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                                    user,
-                                                    algo: {
-                                                        appId: 'f0f3f'
+                                            for (let kkk of Array(i.canDrawAwardNum)) {
+                                                let award = await this.curl({
+                                                        'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                                        'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                                        user,
+                                                        algo: {
+                                                            appId: 'f0f3f'
+                                                        }
                                                     }
+                                                )
+                                                if (this.haskey(award, 'data')) {
+                                                    p.log(`抽奖次数+1`)
                                                 }
-                                            )
-                                            if (this.haskey(award, 'data')) {
-                                                p.log(`抽奖次数+1`)
+                                                else {
+                                                    p.err("抽奖领取失败")
+                                                }
                                             }
-                                            else {
-                                                p.err("抽奖领取失败")
-                                            }
+                                            await this.wait(1000)
                                         }
-                                        await this.wait(3000)
                                     }
                                 }
                             }
@@ -347,25 +352,27 @@ export class Main extends Template {
             for (let i of this.haskey(apTask, 'data')) {
                 if (i.taskLimitTimes == i.taskDoTimes) {
                     if (i.canDrawAwardNum) {
-                        let award = await this.curl({
-                                'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
-                                'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
-                                user,
-                                algo: {
-                                    appId: 'f0f3f',
-                                    expire: {
-                                        code: 1000
+                        for (let kkk of Array(i.canDrawAwardNum)) {
+                            let award = await this.curl({
+                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                    user,
+                                    algo: {
+                                        appId: 'f0f3f',
+                                        expire: {
+                                            code: 1000
+                                        }
                                     }
                                 }
+                            )
+                            if (this.haskey(award, 'data')) {
+                                p.log(`抽奖次数+1`)
                             }
-                        )
-                        if (this.haskey(award, 'data')) {
-                            p.log(`抽奖次数+1`)
+                            else {
+                                p.err("抽奖领取失败")
+                            }
+                            await this.wait(1000)
                         }
-                        else {
-                            p.err("抽奖领取失败")
-                        }
-                        await this.wait(1000)
                     }
                 }
                 else {
