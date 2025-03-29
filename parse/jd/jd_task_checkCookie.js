@@ -38,7 +38,7 @@ export class Main extends Template {
         let context = p.context;
         var expire = 0
         if (this.haskey(this.profile, 'change', 'all')) {
-            expire = 1
+            expire = 2
         }
         else {
             let s = await this.curl({
@@ -111,11 +111,11 @@ export class Main extends Template {
                     p.msg("openKey生成失败")
                 }
             }
-            else if (!userData.wskey) {
-                p.log("没有wskey")
+            else if (expire == 1) {
+                p.msg("账号过期了呀🐶")
             }
             else {
-                p.msg("账号过期了呀🐶")
+                p.log("没有wskey")
             }
         }
     }
