@@ -55,10 +55,23 @@
 ### 1. Sign 服务配置
 ```bash
 # 部署 Sign 服务
-docker run -dit  -p 17840:17840   -e TZ=Asia/Shanghai  --name Sign  --restart unless-stopped  seansuny/jd-sign:latest
+
+自选一个安装
+https://hub.docker.com/r/qninq/signapi (框架兼容性最好)
+https://hub.docker.com/r/zhx47/jd_sign
+https://hub.docker.com/r/seansuny/jd-sign
+
+注意: N1盒子只能安装:https://hub.docker.com/r/seansuny/signapi
+
+docker run -dit \
+  --name official \
+  --restart always \
+  --hostname official \
+  -p 9527:80 \
+  qninq/signapi:latest
 
 # 配置文件添加
-jdSign=http://ip:17840/sign
+jdSign=http://ip:9527/jd/sign
 ```
 ### 2. Redis 服务配置
 ```bash
