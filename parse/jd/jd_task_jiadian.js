@@ -71,7 +71,7 @@ export class Main extends Template {
             else {
                 status = 0
                 p.log(`正在运行: ${i.assignmentName}`)
-                if (i.assignmentName == "完成浏览会场任务") {
+                if (i.assignmentName == "完成浏览会场任务" || i.assignmentName == '完成浏览互动任务') {
                     let extraType = i.ext.extraType
                     if (this.haskey(i, `ext.${i.ext.extraType}`)) {
                         let extra = i.ext[extraType]
