@@ -94,7 +94,7 @@ export class Main extends Template {
                     user
                 }
             )
-            let status = 1
+            let status = 0
             let counts = [0]
             for (let i of this.haskey(list, 'data.taskInfos')) {
                 if (i.status != 2) {
@@ -105,6 +105,7 @@ export class Main extends Template {
                 for (let i of this.haskey(list, 'data.taskInfos')) {
                     if (i.status == 2) {
                         if (_ == 0) {
+                            status = 1
                             p.log("任务已完成:", i.taskName)
                         }
                     }
@@ -142,9 +143,10 @@ export class Main extends Template {
                             await this.wait(2000)
                         }
                         else {
+                            let info = this.haskey(i, ['subTaskVOS.0', 'simpleRecordInfoVo'])
                             let reward = await this.curl({
                                     'url': `https://api.m.jd.com/client.action`,
-                                    'form': `functionId=beanDoTask&body={"actionType":0,"taskToken":"${i.subTaskVOS[0].taskToken}"}&appid=signed_wh5_ihub&client=apple&screen=390*676&networkType=wifi&openudid=&uuid=&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
+                                    'form': `functionId=beanDoTask&body={"actionType":0,"taskToken":"${info.taskToken}"}&appid=signed_wh5_ihub&client=apple&screen=390*676&networkType=wifi&openudid=&uuid=&clientVersion=15.0.25&d_model=0-2-999&osVersion=15.1.1`,
                                     user
                                 }
                             )
