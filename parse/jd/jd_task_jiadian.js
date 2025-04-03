@@ -6,7 +6,9 @@ export class Main extends Template {
         this.profile = {
             title: '京东家电家居超级抓抓机',
             crontab: 3,
-            help: 'main'
+            help: 'main',
+            sync: 1,
+            verify: 1
         }
     }
 
@@ -24,7 +26,7 @@ export class Main extends Template {
         let context = p.context;
         let info = await this.curl({
                 'url': `https://api.m.jd.com/client.action?functionId=queryInteractiveInfo`,
-                'form': `appid=home-channel&functionId=queryInteractiveInfo&body={"encryptProjectId":"6pvWvhxzcHzeEiWsqP5oKgUbHEy","sourceCode":"ace454250","ext":{"needNum":10,"rewardEncryptAssignmentId":"2oGxy3iBrKw3YFG2Z7DGWFNXxVkT","assistEncryptAssignmentId":"36a4jWTk5hyZS5fq76FhWKHGHm9a","assistInfoFlag":4,"assistNum":5}}`,
+                'form': `appid=home-channel&functionId=queryInteractiveInfo&body={"encryptProjectId":"${context.encryptProjectId}","sourceCode":"ace454250"}`,
                 user,
                 algo: {
                     appId: "684f0"
@@ -51,7 +53,7 @@ export class Main extends Template {
                     }
                     itemId = this.dict[u]
                     let help = await this.curl({
-                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body={"encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","encryptProjectId":"6pvWvhxzcHzeEiWsqP5oKgUbHEy"}`,
+                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body={"encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","encryptProjectId":"${context.encryptProjectId}"}`,
                             user,
                             algo: {
                                 appId: '4afaa',
@@ -71,7 +73,7 @@ export class Main extends Template {
             else {
                 status = 0
                 p.log(`正在运行: ${i.assignmentName}`)
-                if (i.assignmentName == "完成浏览会场任务" || i.assignmentName == '完成浏览互动任务') {
+                if ([0, 3, 4, 1].includes(i.assignmentType)) {
                     let extraType = i.ext.extraType
                     if (this.haskey(i, `ext.${i.ext.extraType}`)) {
                         let extra = i.ext[extraType]
@@ -90,7 +92,7 @@ export class Main extends Template {
                                                 {
                                                     "encryptAssignmentId": i.encryptAssignmentId,
                                                     "itemId": j.itemId,
-                                                    "encryptProjectId": "6pvWvhxzcHzeEiWsqP5oKgUbHEy"
+                                                    "encryptProjectId": context.encryptProjectId
                                                 }
                                             )}`,
                                             user, algo: {
@@ -116,15 +118,45 @@ export class Main extends Template {
                             }
                         }
                     }
+                    else {
+                        let fi = await this.curl({
+                                'url': `https://api.m.jd.com/client.action`,
+                                'form': `appid=home-channel&functionId=mt.zzj.DoTaskColorJsf.finishTask&body=${this.dumps(
+                                    {
+                                        "encryptAssignmentId": i.encryptAssignmentId,
+                                        "itemId": 1,
+                                        "encryptProjectId": context.encryptProjectId
+                                    }
+                                )}`,
+                                user, algo: {
+                                    appId: '4afaa',
+                                    expire: {
+                                        "code": 3,
+                                    }
+                                }
+                            }
+                        )
+                        if (this.haskey(fi, 'data.subCode', '1403')) {
+                            p.log(fi.data.msg)
+                            return
+                        }
+                        if (this.haskey(fi, 'code', 10003)) {
+                            p.log(fi.msg)
+                            break
+                        }
+                        p.log("获得金币:", this.haskey(fi, 'data.rewardsDetail'))
+                        status = 1
+                    }
                 }
                 else {
+                    // console.log(i)
                     let fi = await this.curl({
                             'url': `https://api.m.jd.com/client.action`,
                             'form': `appid=home-channel&functionId=mt.zzj.DoTaskColorJsf.finishTask&body=${this.dumps(
                                 {
                                     "encryptAssignmentId": i.encryptAssignmentId,
                                     "itemId": 1,
-                                    "encryptProjectId": "6pvWvhxzcHzeEiWsqP5oKgUbHEy"
+                                    "encryptProjectId": context.encryptProjectId
                                 }
                             )}`,
                             user, algo: {
