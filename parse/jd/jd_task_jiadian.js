@@ -25,11 +25,10 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         let info = await this.curl({
-                'url': `https://api.m.jd.com/client.action?functionId=queryInteractiveInfo`,
                 'form': `appid=home-channel&functionId=queryInteractiveInfo&body={"encryptProjectId":"${context.encryptProjectId}","sourceCode":"ace454250"}`,
                 user,
                 algo: {
-                    appId: "684f0"
+                    appId: "74333"
                 }
             }
         )
@@ -56,7 +55,7 @@ export class Main extends Template {
                             'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body={"encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","encryptProjectId":"${context.encryptProjectId}"}`,
                             user,
                             algo: {
-                                appId: '4afaa',
+                                appId: '74333',
                                 expire: {
                                     "code": 3,
                                 }
@@ -87,8 +86,8 @@ export class Main extends Template {
                             for (let j of extra.slice(0, i.assignmentTimesLimit)) {
                                 if (['shoppingActivity', 'productsInfo', 'browseShop', 'addCart', 'followShop', 'followChannel'].includes(extraType)) {
                                     let fi = await this.curl({
-                                            'url': `https://api.m.jd.com/client.action`,
-                                            'form': `appid=home-channel&functionId=mt.zzj.DoTaskColorJsf.finishTask&body=${this.dumps(
+                                            url: "https://api.m.jd.com/client.action?functionId=home.zzj.DoTask.finishTask",
+                                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body=${this.dumps(
                                                 {
                                                     "encryptAssignmentId": i.encryptAssignmentId,
                                                     "itemId": j.itemId,
@@ -96,10 +95,13 @@ export class Main extends Template {
                                                 }
                                             )}`,
                                             user, algo: {
-                                                appId: '4afaa',
+                                                appId: '74333',
                                                 expire: {
                                                     "code": 3,
-                                                }
+                                                },
+                                                error: {
+                                                    code: 10003,
+                                                },
                                             }
                                         }
                                     )
@@ -120,18 +122,22 @@ export class Main extends Template {
                     }
                     else {
                         let fi = await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
-                                'form': `appid=home-channel&functionId=mt.zzj.DoTaskColorJsf.finishTask&body=${this.dumps(
+                                'url': `https://api.m.jd.com/client.action?functionId=home.zzj.DoTask.finishTask`,
+                                'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body=${this.dumps(
                                     {
                                         "encryptAssignmentId": i.encryptAssignmentId,
                                         "itemId": 1,
                                         "encryptProjectId": context.encryptProjectId
                                     }
                                 )}`,
-                                user, algo: {
-                                    appId: '4afaa',
+                                user,
+                                algo: {
+                                    appId: '74333',
                                     expire: {
                                         "code": 3,
+                                    },
+                                    error: {
+                                        code: 10003,
                                     }
                                 }
                             }
@@ -152,7 +158,7 @@ export class Main extends Template {
                     // console.log(i)
                     let fi = await this.curl({
                             'url': `https://api.m.jd.com/client.action`,
-                            'form': `appid=home-channel&functionId=mt.zzj.DoTaskColorJsf.finishTask&body=${this.dumps(
+                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body=${this.dumps(
                                 {
                                     "encryptAssignmentId": i.encryptAssignmentId,
                                     "itemId": 1,
@@ -160,9 +166,12 @@ export class Main extends Template {
                                 }
                             )}`,
                             user, algo: {
-                                appId: '4afaa',
+                                appId: '74333',
                                 expire: {
                                     "code": 3,
+                                },
+                                error: {
+                                    code: 10003,
                                 }
                             }
                         }
