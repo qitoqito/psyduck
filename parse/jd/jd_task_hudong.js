@@ -467,6 +467,22 @@ export class Main extends Template {
     async _inviteFission(p) {
         let user = p.data.user;
         let context = p.context;
+        await this.curl({
+                'url': `http://api.m.jd.com/api`,
+                form: `functionId=inviteFissionBeforeHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                user,
+                algo: {
+                    appId: '02f8d'
+                }
+            }
+        )
+        await this.curl({
+                'url': `https://api.m.jd.com/api`,
+                'form': `functionId=inviteFissionHome&body={"linkId":"${context.linkId}","taskId":"","inviter":""}&t=1738481450815&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                user,
+                algo: {'appId': 'eb67b', status: true},
+            }
+        )
         let doIt = await this.doTask(p)
         let home = await this.curl({
                 'url': `https://api.m.jd.com/api`,
