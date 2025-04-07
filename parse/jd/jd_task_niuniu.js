@@ -108,20 +108,35 @@ export class Main extends Template {
                                 }
                                 for (let j in Array.from(Array(i.taskLimitTimes - i.taskDoTimes), (_val, index) => index)) {
                                     if (taskItemList[j] && taskItemList[j].itemId) {
-                                        let start = await this.curl({
-                                                'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
-                                                'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemId":"${encodeURIComponent(taskItemList[j].itemId)}","taskInsert":true,"channel":4}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
-                                                user,
-                                                algo: {
-                                                    appId: 'acb1e'
+                                        if (taskItemList[j].pipeExt) {
+                                            var start = await this.curl({
+                                                    'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemType":"${taskItemList[j].itemType}","itemId":"${encodeURIComponent(taskItemList[j].itemId)}","channel":4,"pipeExt":${this.dumps({
+                                                        ...i.pipeExt, ...taskItemList[j].pipeExt
+                                                    })}}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                                    user,
+                                                    algo: {
+                                                        appId: 'acb1e'
+                                                    }
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
+                                        else {
+                                            var start = await this.curl({
+                                                    'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemId":"${encodeURIComponent(taskItemList[j].itemId)}","taskInsert":true,"channel":4}&t=1738483884373&appid=activity_platform_se&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                                    user,
+                                                    algo: {
+                                                        appId: 'acb1e'
+                                                    }
+                                                }
+                                            )
+                                        }
                                         if (this.haskey(start, 'code', 1)) {
                                             p.log("失败了")
                                             break
                                         }
-                                        await this.wait(6000)
+                                        if (i.timeLimitPeriod) {
+                                            await this.wait(i.timeLimitPeriod * 1000)
+                                        }
                                         var doTask = await this.curl({
                                             'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
                                             'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
