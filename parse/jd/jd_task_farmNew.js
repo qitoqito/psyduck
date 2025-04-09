@@ -180,7 +180,7 @@ export class Main extends Template {
                 }
                 else if (i.mainTitle.includes("下单")) {
                 }
-                else if (i.taskType.match("WECHAT_SHARE|JOIN_OTHER_ACT")) {
+                else if (i.taskType.match("WECHAT_SHARE|JOIN_OTHER_ACT|BROWSE_SEARCH")) {
                 }
                 else if (i.mainTitle.includes("浇水")) {
                     if (i.taskDoTimes != i.taskLimitTimes) {
