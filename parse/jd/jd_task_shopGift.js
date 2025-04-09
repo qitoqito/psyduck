@@ -9,11 +9,26 @@ export class Main extends Template {
             display: true,
             tempExpire: 8640000,
             verify: 1,
-            crontab: `${this.rand(5, 10)},${this.rand(35, 40)} 9-23 * * *`
+            crontab: `${this.rand(5, 10)},${this.rand(35, 40)} 9-23 * * *`,
+            prompt: {
+                id: 'venderId_shopId_activityId'
+            },
+            readme: '不支持通过url获取,如需自定义请自行抓包:venderId,shopId,activityId'
         }
     }
 
     async prepare() {
+        await this.field('id')
+    }
+
+    async batch(p) {
+        if (p.id) {
+            let [venderId, shopId, activityId] = p.id.split("_")
+            p = {
+                ...p, ...{venderId, shopId, activityId}
+            }
+        }
+        return p
     }
 
     async main(p) {
