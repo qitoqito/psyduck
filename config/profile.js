@@ -1,7 +1,8 @@
 export default {
     env: {
         index: true,
-        salt: 'psyDuck'
+        salt: 'psyDuck',
+        saveCycle: 300
     },
     global: {},
     psyDuck: {
