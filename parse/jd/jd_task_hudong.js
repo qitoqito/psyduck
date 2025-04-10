@@ -702,7 +702,15 @@ export class Main extends Template {
             )
             let num = parseInt(this.haskey(lottery, 'chances') || 0)
             if (this.haskey(lottery, 'prizeType')) {
-                p.award(lottery.prizeName, 'bean')
+                if (lottery.prizeName.includes("京豆")) {
+                    p.award(lottery.prizeName, 'bean')
+                }
+                else if (lottery.prizeName.includes("优惠券")) {
+                    p.award(lottery.prizeName, 'coupon')
+                }
+                else {
+                    p.log(lottery.prizeName)
+                }
             }
             else {
                 p.log(this.haskey(lottery, 'promptMsg') || lottery)
