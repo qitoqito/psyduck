@@ -36,7 +36,7 @@ export class Main extends Template {
             }
         )
         if (this.haskey(home, 'content.mangroveFiveIntegral')) {
-            p.log("当前京豆:", home.content.mangroveFiveIntegral)
+            p.log("当前养成京豆:", home.content.mangroveFiveIntegral)
         }
         let environment = await this.curl({
                 'url': `https://lop-proxy.jd.com/UserEnvironmentApi/pageEnvironment`,
@@ -71,7 +71,7 @@ export class Main extends Template {
             }
         )
         let interactiveTime = this.haskey(mangrove, 'content.interactiveTime')
-        if (this.haskey(mangrove, 'content.id') && !interactiveTime) {
+        if (this.haskey(mangrove, 'content.id') && (!interactiveTime || interactiveTime<new Date().getTime())) {
             let water = await this.curl({
                     'url': `https://lop-proxy.jd.com/UserMangroveApi/userMangroveInteractive`,
                     json: [{
