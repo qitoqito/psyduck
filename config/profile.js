@@ -35,6 +35,9 @@ export default {
                     },
                     'p.m.jd.com': {
                         shell: true
+                    },
+                    'lop-proxy.jd.com': {
+                        shell: true
                     }
                 },
                 referer: "https://prodev.m.jd.com/",
