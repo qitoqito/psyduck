@@ -5,14 +5,13 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东店铺签到',
-            crontab: `${this.rand(0, 59)} 0,${this.rand(1, 12)} * * *`,
+            crontab: 4,
             sync: 1,
             verify: 1,
             tempExpire: 7 * 86400,
             prompt: {
                 token: "店铺签到token|token1"
-            },
-            libressl: true
+            }
         }
     }
 
@@ -91,6 +90,7 @@ export class Main extends Template {
             if (this.haskey(sign, 'code', 402)) {
                 p.log('当前不存在有效的活动')
                 p.context.jump = true
+                await this.hsetTemp(context.pid, 'expired', true)
                 return
             }
             if (this.haskey(sign, 'code', [403030023, 200])) {
@@ -101,6 +101,10 @@ export class Main extends Template {
                 else {
                     p.log(sign.msg)
                 }
+            }
+            else if (this.haskey(sign, 'code', 404130026)) {
+                p.log('用户达到签到上限')
+                p.info.complete = true
             }
         }
     }
