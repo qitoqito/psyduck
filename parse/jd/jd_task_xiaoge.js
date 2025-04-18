@@ -13,6 +13,7 @@ export class Main extends Template {
             crontab: 5,
             interval: 2000,
             keyExpire: 14400,
+            public: 'xiaoge'
         }
     }
 
@@ -37,6 +38,21 @@ export class Main extends Template {
         )
         if (this.haskey(home, 'content.mangroveFiveIntegral')) {
             p.log("当前养成京豆:", home.content.mangroveFiveIntegral)
+        }
+        let isSign = await p.getPublic('sign')
+        if (!isSign) {
+            let sign = await this.curl({
+                    'url': `https://lop-proxy.jd.com/UserSignInApi/signNow`,
+                    json: [{
+                        "pin": ""
+                    }],
+                    user,
+                }
+            )
+            if (this.haskey(sign, 'content.jinBeanNum')) {
+                p.award(sign.content.jinBeanNum, 'bean')
+                await p.setPublic('sign', 1, parseInt(86400 - (new Date().getTime() - new Date().setHours(0, 0, 0, 0)) / 1000))
+            }
         }
         let environment = await this.curl({
                 'url': `https://lop-proxy.jd.com/UserEnvironmentApi/pageEnvironment`,
