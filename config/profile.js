@@ -42,6 +42,7 @@ export default {
                 },
                 referer: "https://prodev.m.jd.com/",
                 url: "https://api.m.jd.com/api",
+                clientVersion: '15.1.0',
                 timer: {
                     params: {
                         'url':
