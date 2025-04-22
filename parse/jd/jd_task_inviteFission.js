@@ -131,7 +131,7 @@ export class Main extends Template {
                 }
                 else if (helpResult == 2) {
                     p.log("活动火爆...")
-                    p.info.jump = true
+                    p.info.complete = true
                 }
                 else {
                     p.log("助力错误...")
