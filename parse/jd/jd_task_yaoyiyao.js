@@ -20,7 +20,7 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        for (let i = 0; i<20; i++) {
+        for (let i = 0; i<11; i++) {
             let s = await this.curl({
                     'url': `https://api.m.jd.com/?functionId=superRedBagDraw&body={"linkId":"${context.linkId}"}&appid=activities_platform`,
                     user,
@@ -33,7 +33,40 @@ export class Main extends Template {
                 }
             )
             if (this.haskey(s, 'data.prizeDrawVo')) {
-                p.log(`抽奖获得: ${s.data.prizeDrawVo.prizeDesc} ${s.data.prizeDrawVo.amount}`)
+                let data = s.data.prizeDrawVo
+                let prizeType = data.prizeType || data.rewardType
+                let amount = data.amount || data.rewardValue
+                if (prizeType == 0) {
+                    p.log('没抽到奖品')
+                }
+                else if (prizeType == 1) {
+                    p.log('优惠券:', data.limitStr || data.codeDesc || data.prizeCode, data.prizeDesc || data.prizeName)
+                }
+                else if (prizeType == 2) {
+                    p.award(amount, 'redpacket')
+                }
+                else if (prizeType == 3) {
+                    p.award(amount, 'bean')
+                }
+                else if (prizeType == 5) {
+                    p.award(data.prizeDesc || data.prizeName || data.limitStr, 'reward')
+                }
+                else if (prizeType == 17) {
+                    p.log('谢谢参与')
+                }
+                else if (prizeType == 18) {
+                    p.log(`水滴: ${amount}`)
+                }
+                else if (prizeType == 22) {
+                    p.award(amount, 'card')
+                }
+                else if (prizeType) {
+                    p.draw(`抽到类型: ${prizeType} ${data.limitStr || data.codeDesc || data.prizeCode || ''} ${data.prizeDesc || data.prizeName}`)
+                }
+                else {
+                    p.log("什么也没有")
+                }
+                p.info.work = true
             }
             else {
                 if (this.haskey(s, 'code', 20005)) {
