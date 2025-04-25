@@ -86,6 +86,43 @@ export class Main extends Template {
                             }
                             break
                         case 'BROWSE_CHANNEL':
+                            let start = await this.curl({
+                                    'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
+                                    'form': `functionId=apStartTaskTime&body={"linkId":"${context.linkId}","taskId":${i.id},"itemId":"${encodeURIComponent(i.taskSourceUrl)}","channel":4,"pipeExt":${this.dumps(i.pipeExt)}}&t=1745578816952&appid=activity_platform_se&client=ios&clientVersion=15.1.14&platform=3`,
+                                    user,
+                                    algo: {
+                                        appId: 'acb1e'
+                                    }
+                                }
+                            )
+                            if (i.timeLimitPeriod) {
+                                p.log(`等待${i.timeLimitPeriod}秒...`)
+                                await this.wait(i.timeLimitPeriod * 1000)
+                            }
+                            var doTask = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
+                                'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
+                                user,
+                                algo: {
+                                    appId: 'ebecc'
+                                }
+                            })
+                            let award = await this.curl({
+                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                    user,
+                                    algo: {
+                                        appId: 'f0f3f'
+                                    }
+                                }
+                            )
+                            if (this.haskey(award, 'data')) {
+                                if (!p.info.balck) {
+                                    await this.baseInfo(p)
+                                    await this.two(p)
+                                }
+                            }
+                            break
                         case 'BROWSE_PRODUCT':
                         case 'BROWSE_RTB':
                             if (i.taskSourceUrl) {
