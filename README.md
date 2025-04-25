@@ -174,9 +174,9 @@ node main.js filename [-help n -custom x -thread x]
 ```ini
 [示例脚本]
 # 基础配置
-task=1,2,3          # 执行 1、2、3 号账户
-thread=3            # 3个任务并发执行
-interval=1000       # 每个账户执行间隔1秒
+task=1             # 执行1号账户
+thread=3           # 3个任务并发执行
+interval=1000      # 每个账户执行间隔1秒
 
 # 时间控制
 startTime=2025-02-05 08:00:00  # 指定开始时间
@@ -200,7 +200,7 @@ proxy=                           # 代理ip
 
 > proxyUrl,proxyGroup,proxy自选一个使用,无需同时设置
 > 
-> 使用proxyUrl模式,pool参数必须同时设置
+> 使用proxyUrl模式,pool,seconds参数必须同时设置
 > 
 > 在config.ini设置为全局参数,如只想作用于某个脚本,可在脚本节点单独设置
 ### 5. 注意事项
