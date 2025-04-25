@@ -10,9 +10,9 @@ export class Main extends Template {
                 'appparams': '{"appid":158,"ticket_type":"m"}',
                 referer: 'https://jchd.jd.com/'
             },
-            crontab: 5,
+            crontab: 6,
             interval: 2000,
-            keyExpire: 14400,
+            keyExpire: 12000,
             public: 'xiaoge'
         }
     }
@@ -87,7 +87,20 @@ export class Main extends Template {
             }
         )
         let interactiveTime = this.haskey(mangrove, 'content.interactiveTime')
-        if (this.haskey(mangrove, 'content.id') && (!interactiveTime || interactiveTime<new Date().getTime())) {
+        let t = new Date().getTime()
+        let wait = 0
+        if (interactiveTime>t && (interactiveTime - t) / 1000<60) {
+            p.log("正在等待:", (interactiveTime - t) / 1000)
+            await this.wait(interactiveTime - t)
+            wait = 1
+        }
+        else if (t>interactiveTime) {
+            wait = 1
+        }
+        else if (!interactiveTime) {
+            wait = 1
+        }
+        if (this.haskey(mangrove, 'content.id') && wait) {
             let water = await this.curl({
                     'url': `https://lop-proxy.jd.com/UserMangroveApi/userMangroveInteractive`,
                     json: [{
