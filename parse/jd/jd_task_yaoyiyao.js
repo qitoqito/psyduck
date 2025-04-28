@@ -9,7 +9,8 @@ export class Main extends Template {
                 linkId: '活动linkId'
             },
             sync: 1,
-            verify: 1
+            verify: 1,
+            crontab: `${this.rand(5, 35)} 19 * * *`,
         }
     }
 
