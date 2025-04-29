@@ -8,8 +8,7 @@ export class Main extends Template {
             crontab: 3,
             sync: 1,
             verify: 1,
-            model: 'user',
-            display: true,
+            model: 'user'
         }
     }
 
@@ -54,6 +53,10 @@ export class Main extends Template {
         }
         else if (subCode == '300') {
             p.log(signIn.msg)
+            p.info.jump = true
+        }
+        else if (subCode == '1403') {
+            p.log("风险等级未通过")
             p.info.jump = true
         }
         else if (this.haskey(signIn, 'code', '31')) {
