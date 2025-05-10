@@ -1,4 +1,6 @@
 import {Template} from '../../template.js'
+import CryptoJS from 'crypto-js'
+import nodeEnc from 'node-jsencrypt'
 
 export class Main extends Template {
     constructor() {
@@ -8,7 +10,8 @@ export class Main extends Template {
             headers: {
                 'lop-dn': 'activity.jd.com',
                 'appparams': '{"appid":158,"ticket_type":"m"}',
-                referer: 'https://jchd.jd.com/'
+                referer: 'https://jchd.jd.com/',
+                clientinfo: '{"appName":"marketing","client":"m"}'
             },
             crontab: 6,
             interval: 2000,
@@ -18,6 +21,36 @@ export class Main extends Template {
     }
 
     async prepare() {
+        this.rsa = new nodeEnc()
+        this.rsa.setPublicKey("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCCcxl3qbmy25mQa2sPt2AxkRsuUA8UiXMyg7/P6oWhHdf1y5oARnmdpH7h24EDK2WPanC10hBTgR/FC+QkHBl8ENdEJ5AnJ3PsfIXMQjNryi+37wGNDylB9qTUXKufa428vMYTgoxp95+qv6AuX55JDBsbGlivJCiR3mtDKFisnQIDAQAB")
+    }
+
+    async cc(p) {
+        let url = p.url
+        if (!url.includes("Enhance")) {
+            url = `${p.url}Enhance`
+        }
+        var t = this.uuid(16),
+            r = this.uuid(16)
+        let data = CryptoJS.AES.encrypt(JSON.stringify(p.json), CryptoJS.enc.Utf8.parse(t), {
+            iv: CryptoJS.enc.Utf8.parse(r),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        }).toString()
+        let req = {
+            url,
+            data,
+            headers: {
+                ...this.profile.headers,
+                ...{
+                    "report-time": new Date().getTime(),
+                    pkid: 11470,
+                    ciphertext: this.rsa.encrypt("".concat(t).concat(r)),
+                }
+            },
+            user: p.user
+        }
+        return await this.curl(req)
     }
 
     async main(p) {
@@ -41,8 +74,8 @@ export class Main extends Template {
         }
         let isSign = await p.getPublic('sign')
         if (!isSign) {
-            let sign = await this.curl({
-                    'url': `https://lop-proxy.jd.com/UserSignInApi/signNow`,
+            let sign = await this.cc({
+                    'url': `https://lop-proxy.jd.com/UserSignInApi/signNowEnhance`,
                     json: [{
                         "pin": ""
                     }],
@@ -101,7 +134,7 @@ export class Main extends Template {
             wait = 1
         }
         if (this.haskey(mangrove, 'content.id') && wait) {
-            let water = await this.curl({
+            let water = await this.cc({
                     'url': `https://lop-proxy.jd.com/UserMangroveApi/userMangroveInteractive`,
                     json: [{
                         "pin": "",
