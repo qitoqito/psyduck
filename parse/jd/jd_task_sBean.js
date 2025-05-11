@@ -17,13 +17,19 @@ export class Main extends Template {
         let context = p.context;
         let show = await this.curl({
                 'form': `functionId=secEntryBenefitShow&body={"channelId":"2","actSecTraffic":"1"}&appid=signed_wh5&client=ios&screen=390*844&networkType=wifi&clientVersion=15.0.25&d_model=iPhone13%2C3&osVersion=15.1.1`,
-                user
+                user,
+                algo: {
+                    appId: '5923d'
+                }
             }
         )
         if (this.haskey(show, 'data.result.currentTime')) {
             let s = await this.curl({
                     'form': `functionId=secEntryBenefitReceive&body={"channelId":"2","actSecTraffic":"1"}&appid=signed_wh5&client=ios&screen=390*676&networkType=wifi&clientVersion=15.0.25&d_model=iPhone13%2C3&osVersion=15.1.1`,
-                    user
+                    user,
+                    algo: {
+                        appId: '8f29c'
+                    }
                 }
             )
             if (this.haskey(s, 'data.result.awardList')) {
