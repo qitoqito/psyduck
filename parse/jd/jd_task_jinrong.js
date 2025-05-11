@@ -52,12 +52,13 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         const aar = this.crypto.aar
+        let info = await this.getInfo(user, 'jsTk')
         let device = {
             deviceInfo: {
                 "jsToken": "",
                 "fp": this.md5(new Date().getTime().toString()),
-                "sdkToken": `jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567`,
-                "eid": `FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U`,
+                "sdkToken":info.token|| `jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567`,
+                "eid": info.eid || `FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U`,
             },
         }
         var nonce = aar.nonce()
@@ -65,24 +66,22 @@ export class Main extends Template {
             "channelCode": context.channelCode,
             PIN: user
         }), nonce)
-        let queryMission = await this.curl({
-            'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMission`,
-            'json': {
-                "reqData": {
-                    "channelCode": context.channelCode,
-                    "deviceInfo": device.deviceInfo,
-                    "nonce": nonce,
-                    "signature": signature
-                }
-            },
-            algo: {
-                expire: {
-                    "resultCode": 3,
-                }
-            },
-            user
-        })
-        let data = this.haskey(queryMission, 'resultData.data')
+        let mile = await this.curl({
+                'url': `https://ms.jr.jd.com/gw2/generic/Mission/h5/m/queryMilePost`,
+                json: {
+                    "reqData": {
+                        "source": "mdH5Pagedeploy",
+                        "token": "TVBaZRYGYS",
+                        "channelCode": context.channelCode,
+                        "milePostIdList": [87],
+                        "queryMissionFlag": 2,
+                        "deviceInfo": device.deviceInfo
+                    }
+                },
+                user
+            }
+        )
+        let data = this.haskey(mile, 'resultData.data.0.missionList')
         let status = 1
         if (data) {
             for (let i of data) {
