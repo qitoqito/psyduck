@@ -119,8 +119,7 @@ export class Main extends Template {
         }
     }
 
-    async main(p) {
-        return
+    async main(p) { 
         let user = p.data.user
         let context = p.context;
         let algo = context.algo || {}
