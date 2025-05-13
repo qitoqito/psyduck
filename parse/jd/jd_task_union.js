@@ -331,8 +331,13 @@ export class Main extends Template {
                                     algo: {
                                         appId: 'c822a',
                                         store,
-                                        token: false
-                                    }
+                                        token: false,
+                                        expire: {
+                                            "code": -2,
+                                        }
+                                    },
+                                    ua,
+                                    referer: linkUrl
                                 }
                             )
                             let getCoupons2 = await this.curl({
@@ -342,8 +347,13 @@ export class Main extends Template {
                                     algo: {
                                         appId: 'c822a',
                                         store,
-                                        token: false
-                                    }
+                                        token: false,
+                                        expire: {
+                                            "code": -2,
+                                        }
+                                    },
+                                    ua,
+                                    referer: linkUrl
                                 }
                             )
                             gift.call(this, getCoupons2)
@@ -420,8 +430,13 @@ export class Main extends Template {
                         algo: {
                             appId: 'c822a',
                             store,
-                            token: false
-                        }
+                            token: false,
+                            expire: {
+                                "code": -2,
+                            }
+                        },
+                        ua,
+                        referer: linkUrl
                     }
                 )
                 gift.call(this, getCoupons)
