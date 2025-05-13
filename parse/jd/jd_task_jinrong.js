@@ -52,12 +52,12 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         const aar = this.crypto.aar
-        let info = await this.getInfo(user, 'jsTk')
+        let info = await this.getInfo(user, 'jsTk') || {}
         let device = {
             deviceInfo: {
                 "jsToken": "",
                 "fp": this.md5(new Date().getTime().toString()),
-                "sdkToken":info.token|| `jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567`,
+                "sdkToken": info.token || `jdd016DZNHFZEX6ISWPRAZUKJDKGFIRQJ5MRXPZHLTK3ZIVKLBTD4SEZNDR6S${this.rand(10, 99)}JO2TLV${this.rand(10, 99)}HB5MV6JW52RVAZNXKEXXHGYDCX5MIJ7NSC4DY01234567`,
                 "eid": info.eid || `FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U`,
             },
         }
