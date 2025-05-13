@@ -14,7 +14,8 @@ export class Main extends Template {
                 shareUrl: '京享红包分享链接',
             },
             readme: ["风控较严,算法经常变动,锁佣需谨慎,如订单一直异常,请停用此脚本", "默认获取前3个账号分享码"],
-            crontab: 1
+            crontab: 1,
+            interval: 8000
         }
     }
 
@@ -272,10 +273,13 @@ export class Main extends Template {
                             if (this.match(/\d+秒/, i.info)) {
                                 let ts = (this.match(/(\d+)秒/, i.info))
                                 try {
-                                    let z = await this.sign.jdCurl({
+                                    let z = await this.curl({
                                         url: 'https://api.m.jd.com/client.action',
                                         form: `functionId=apResetTiming&body={"timerId":"${i.componentId}","uniqueId":"${i.taskId}"}&build=169498&client=${client}&clientVersion=13.2.8&d_brand=apple&d_model=iPhone13%2C3&ef=1`,
-                                        user
+                                        user,
+                                        algo: {
+                                            sign: true
+                                        }
                                     })
                                     p.log("等待", ts)
                                     await this.wait(parseInt(ts) * 1000)
@@ -326,7 +330,7 @@ export class Main extends Template {
                             )
                             let getCoupons = await this.curl({
                                     url: `https://api.m.jd.com/api`,
-                                    form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":8,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1,"taskId":"${i.taskId}","agreeState":0}&client=${client}&clientVersion=1.1.0&osVersion=iOS&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=&openudid=&uuid=17165464753211715186324&aid=&oaid=&ext={"idfa":""}&x-api-eid-token=`,
+                                    form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":8,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1,"taskId":"${i.taskId}","agreeState":0}&client=${client}&clientVersion=1.1.0&stk=appid,body,client,clientVersion,functionId`,
                                     user,
                                     algo: {
                                         appId: 'c822a',
@@ -342,7 +346,7 @@ export class Main extends Template {
                             )
                             let getCoupons2 = await this.curl({
                                     url: `https://api.m.jd.com/api`,
-                                    form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":8,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1,"taskId":"${i.taskId}","agreeState":1}&client=${client}&clientVersion=1.1.0&osVersion=iOS&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=&openudid=&uuid=17165464753211715186324&aid=&oaid=&ext={"idfa":""}&x-api-eid-token=`,
+                                    form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":8,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1,"taskId":"${i.taskId}","agreeState":1}&client=${client}&clientVersion=1.1.0&stk=appid,body,client,clientVersion,functionId`,
                                     user,
                                     algo: {
                                         appId: 'c822a',
@@ -400,7 +404,7 @@ export class Main extends Template {
                                 }
                             }
                             let comp = await this.curl({
-                                    'url': `https://api.m.jd.com/api?functionId=completeUnionTask&appid=u_activity_h5&loginType=2&client=${client}&clientVersion=&body={"unionActTask":"${(unionActTask)}"}&x-api-eid-token=jdd01VD3JGEPGE54ERTF24JG43RNNY4NFEDZITDT3FYE6NYXFV2B27GNMA6R4QVHVRDBZKC7HS3BHZCRRFX2NBBN5TASNAQRGAFOZFYBTBDI01234567`,
+                                    'url': `https://api.m.jd.com/api?functionId=completeUnionTask&appid=u_activity_h5&loginType=2&client=${client}&clientVersion=&body={"unionActTask":"${(unionActTask)}"}`,
                                     // 'form':``,
                                     user,
                                     algo: {
@@ -416,31 +420,29 @@ export class Main extends Template {
                     }
                 }
             }
-            if (this.help.includes(user)) {
-                qry = await this.curl({
-                        'url': `https://api.m.jd.com/api?functionId=queryFullGroupInfoMap&appid=u_hongbao&_=1716946027013&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","taskType":1,"prstate":0}&client=${client}&clientVersion=15.6.10&osVersion=15.1.1&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=wifi&openudid=&aid=&oaid=`,
-                        user,
-                        algo: {appId: '7b74b'}
-                    }
-                )
-                let getCoupons = await this.curl({
-                        url: `https://api.m.jd.com/api`,
-                        form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":3,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1}&client=${client}&clientVersion=1.1.0&osVersion=iOS&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=&openudid=&uuid=17165464753211715186324&aid=&oaid=&ext={"idfa":""}&x-api-eid-token=`,
-                        user,
-                        algo: {
-                            appId: 'c822a',
-                            store,
-                            token: false,
-                            expire: {
-                                "code": -2,
-                            }
-                        },
-                        ua,
-                        referer: linkUrl
-                    }
-                )
-                gift.call(this, getCoupons)
-            }
+            qry = await this.curl({
+                    'url': `https://api.m.jd.com/api?functionId=queryFullGroupInfoMap&appid=u_hongbao&_=1716946027013&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","taskType":1,"prstate":0}&client=${client}&clientVersion=15.6.10&osVersion=15.1.1&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=wifi&openudid=&aid=&oaid=`,
+                    user,
+                    algo: {appId: '7b74b'}
+                }
+            )
+            let getCoupons = await this.curl({
+                    url: `https://api.m.jd.com/api`,
+                    form: `functionId=getCoupons&appid=u_hongbao&_=1716912812082&loginType=2&body={"actId":"${actId}","unionActId":"${unionActId}","platform":5,"d":"${d}","unionShareId":"","type":3,"qdPageId":"MO-J2011-1","mdClickId":"jxhongbao_ck","actType":1}&client=${client}&clientVersion=1.1.0&stk=appid,body,client,clientVersion,functionId`,
+                    user,
+                    algo: {
+                        appId: 'c822a',
+                        store,
+                        token: false,
+                        expire: {
+                            "code": -2,
+                        }
+                    },
+                    ua,
+                    referer: linkUrl
+                }
+            )
+            gift.call(this, getCoupons)
         } catch (e) {
         }
     }
