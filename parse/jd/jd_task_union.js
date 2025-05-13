@@ -133,7 +133,7 @@ export class Main extends Template {
         try {
             var {ua, h5st} = await this.uuaa()
             var client = ua.includes('Android') ? 'android' : 'apple'
-            var store, actId, unionActId, d
+            var store, actId, unionActId, d, linkUrl
             let getCode = await this.shareId(context)
             for (let code of getCode) {
                 store = ''
@@ -160,7 +160,7 @@ export class Main extends Template {
                         }
                     }
                 )
-                let linkUrl = scheme.location
+                linkUrl = scheme.location
                 let query = (this.query(linkUrl, '&', 'split'))
                 actId = this.match(/active\/(\w+)/, linkUrl)
                 var {
