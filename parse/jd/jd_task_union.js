@@ -12,6 +12,7 @@ export class Main extends Template {
             sync: 1,
             prompt: {
                 shareUrl: '京享红包分享链接',
+                unionShareId: '可选项,自定义unionShareId,请确保该id是基于shareUrl生成'
             },
             readme: ["风控较严,算法经常变动,锁佣需谨慎,如订单一直异常,请停用此脚本", "默认获取前3个账号分享码"],
             crontab: 1,
@@ -81,22 +82,29 @@ export class Main extends Template {
                 let d = this.match(/com\/(\w+)/, shareUrl)
                 let unionShareId = []
                 let client = ua.includes('Android') ? 'android' : 'apple'
-                for (let user of this.help) {
-                    let shareUnion = await this.curl({
-                            'url': `https://api.m.jd.com/api?functionId=shareUnionCoupon&appid=u_hongbao&_=1716943673297&loginType=2&body={"unionActId":"${unionActId}","actId":"${actId}","platform":5,"unionShareId":"","d":"${d}","supportPic":2}&client=${client}&clientVersion=1.1.0&osVersion=15.1.1&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=wifi&openudid=`,
-                            algo: {
-                                appId: 'c10dc',
-                                store: cookie,
-                            },
-                            referer: linkUrl,
-                            ua,
-                            user
-                        }
-                    )
-                    if (this.haskey(shareUnion, 'data.shareUrl')) {
-                        let shareId = this.match(/s=(\w+)/, shareUnion.data.shareUrl)
-                        this.log("获取账户", user, shareId)
+                if (this.profile.unionShareId) {
+                    for (let shareId of this.profile.unionShareId.split("|")) {
                         unionShareId.push(shareId)
+                    }
+                }
+                else {
+                    for (let user of this.help) {
+                        let shareUnion = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=shareUnionCoupon&appid=u_hongbao&_=1716943673297&loginType=2&body={"unionActId":"${unionActId}","actId":"${actId}","platform":5,"unionShareId":"","d":"${d}","supportPic":2}&client=${client}&clientVersion=1.1.0&osVersion=15.1.1&screen=390*844&d_brand=iPhone&d_model=iPhone&lang=zh-CN&networkType=wifi&openudid=`,
+                                algo: {
+                                    appId: 'c10dc',
+                                    store: cookie,
+                                },
+                                referer: linkUrl,
+                                ua,
+                                user
+                            }
+                        )
+                        if (this.haskey(shareUnion, 'data.shareUrl')) {
+                            let shareId = this.match(/s=(\w+)/, shareUnion.data.shareUrl)
+                            this.log("获取账户", user, shareId)
+                            unionShareId.push(shareId)
+                        }
                     }
                 }
                 this.shareCode({
@@ -112,6 +120,7 @@ export class Main extends Template {
     }
 
     async main(p) {
+        return
         let user = p.data.user
         let context = p.context;
         let algo = context.algo || {}
@@ -443,6 +452,9 @@ export class Main extends Template {
                 }
             )
             gift.call(this, getCoupons)
+            if (this.haskey(getCoupons, 'data.couponList.0.discount')) {
+                p.info.work = true
+            }
         } catch (e) {
         }
     }
