@@ -2,7 +2,8 @@ export default {
     env: {
         index: true,
         salt: 'psyDuck',
-        saveCycle: 300
+        saveCycle: 300,
+        invoke: true
     },
     global: {},
     psyDuck: {
