@@ -68,6 +68,7 @@ export class Main extends Template {
                         }
                         else {
                             p.log("答案未更新...")
+                            this.jump = true
                         }
                     }
                 }
@@ -75,7 +76,7 @@ export class Main extends Template {
         }
         else {
             status = 0
-            console.log('没有获取到数据...')
+            p.log('没有获取到数据...')
         }
         if (status) {
             p.info.work = true
