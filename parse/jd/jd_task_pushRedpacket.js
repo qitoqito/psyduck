@@ -73,6 +73,9 @@ export class Main extends Template {
                         case 'BROWSE_RTB':
                         case 'ADD_PURCHASE':
                         case 'BROWSE_SHOP':
+                        case 'FOLLOW_CHANNEL':
+                        case 'FOLLOW_SHOP':
+                        case 'XHS_SHARE':
                             let detail = await this.curl({
                                 'url': `https://api.m.jd.com/`,
                                 'form': `functionId=apTaskDetail&body={"taskType":"${i.taskType}","taskId":${i.id},"openUdId":"","cityId":"1234","provinceId":"16","countyId":"1234","channel":4,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
