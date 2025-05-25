@@ -227,6 +227,32 @@ export class Main extends Template {
                             if (this.haskey(doTask, 'success')) {
                                 p.log("任务完成")
                             }
+                            else if (this.haskey(doTask, "code", 2018)) {
+                                let st = await this.curl({
+                                        'url': `https://api.m.jd.com/api?functionId=apStartTaskTime`,
+                                        'form': `functionId=apStartTaskTime&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)},"taskInsert":false,"itemId":"${encodeURIComponent(i.taskSourceUrl)}"}&t=1748099560933&appid=activity_platform_se&client=ios&clientVersion=15.1.25`,
+                                        user,
+                                        algo: {
+                                            appId: 'acb1e'
+                                        }
+                                    }
+                                )
+                                if (this.haskey(st, 'success') && st.data) {
+                                    if (i.timeLimitPeriod) {
+                                        p.log("正在等待:", i.timeLimitPeriod)
+                                        await this.wait(i.timeLimitPeriod * 1000)
+                                        await this.curl({
+                                                'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
+                                                'form': `functionId=apDoLimitTimeTask&body={"linkId":"1sPvvx2KAcIQ8otdQ_3pvQ"}&t=1748099576535&appid=activities_platform&client=ios&clientVersion=15.1.25&platform=3&loginType=2&loginWQBiz=wegame`,
+                                                user,
+                                                algo: {
+                                                    appId: 'ebecc'
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                             else {
                                 p.log("任务失败:", this.haskey(doTask, 'errMsg') || doTask)
                             }
@@ -690,7 +716,7 @@ export class Main extends Template {
         while (true) {
             let lottery = await this.curl({
                     'url': `https://api.m.jd.com/client.action?functionId=babelGetLottery`,
-                    'form': `body=%7B%22enAwardK%22%3A%22${encodeURIComponent(context.enAwardK)}%22%2C%22awardSource%22%3A%221%22%2C%22srv%22%3A%22%7B%5C%22bord%5C%22%3A%5C%220%5C%22%2C%5C%22fno%5C%22%3A%5C%220-0-2%5C%22%2C%5C%22mid%5C%22%3A%5C%22${context.mid}%5C%22%2C%5C%22bi2%5C%22%3A%5C%222%5C%22%2C%5C%22bid%5C%22%3A%5C%220%5C%22%2C%5C%22aid%5C%22%3A%5C%22${context.aid}%5C%22%7D%22%2C%22encryptProjectId%22%3A%22${context.encryptProjectId}%22%2C%22encryptAssignmentId%22%3A%22${context.encryptAssignmentId}%22%2C%22authType%22%3A%222%22%2C%22riskParam%22%3A%7B%22platform%22%3A%223%22%2C%22orgType%22%3A%222%22%2C%22openId%22%3A%22-1%22%2C%22pageClickKey%22%3A%22Babel_WheelSurf%22%2C%22eid%22%3A%22UT42BFT33TGS6GOIOWXCCOFR2T5UM44HG27BZ3JBLL5TQWMEHHCGMANY7T3YNDDBPISS4SS7Z7C7T3OFBOP5QFT2KI%22%2C%22fp%22%3A%2272e488edc504c9c767b6866b3576387c%22%2C%22shshshfp%22%3A%22c23f1c90f0550b5c54792f20fb6ba35b%22%2C%22shshshfpa%22%3A%22dc7ab86b-e448-fce6-09f4-bc6cbb608517-1711437197%22%2C%22shshshfpb%22%3A%22BApXcqszQTOpAjBZ7Fg8SUrs91RsApjTNBlMCdrhW9xJ1NN1Sb4LRlxX-7i2a%22%2C%22childActivityUrl%22%3A%22https%253A%252F%252Fpro.m.jd.com%252Fmall%252Factive%252F${context.id}%252Findex.html%253Fstath%253D47%2526navh%253D44%2526tttparams%253DTMjLskeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIwLjAwMDAwMCIsInBvc0xhdCI6IjIzLjkzOTE5MiIsInBvc0xuZyI6IjExNy42MTEyMyIsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IjAuMDAwMDAwIiwidWVtcHMiOiIwLTAtMCIsImdMbmciOiIxMTcuNjExMjMiLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn60%25253D%22%2C%22userArea%22%3A%22-1%22%2C%22client%22%3A%22%22%2C%22clientVersion%22%3A%22%22%2C%22uuid%22%3A%22%22%2C%22osVersion%22%3A%22%22%2C%22brand%22%3A%22%22%2C%22model%22%3A%22%22%2C%22networkType%22%3A%22%22%2C%22jda%22%3A%22-1%22%7D%2C%22siteClient%22%3A%22apple%22%2C%22mitemAddrId%22%3A%22%22%2C%22geo%22%3A%7B%22lng%22%3A%220.000000%22%2C%22lat%22%3A%220.000000%22%7D%2C%22addressId%22%3A%22%22%2C%22posLng%22%3A%22123.61123%22%2C%22posLat%22%3A%2223.969192%22%2C%22un_area%22%3A%2216_1234_1314_44750%22%2C%22gps_area%22%3A%220_0_0_0%22%2C%22homeLng%22%3A%22123.61123%22%2C%22homeLat%22%3A%2223.969192%22%2C%22homeCityLng%22%3A%22%22%2C%22homeCityLat%22%3A%22%22%2C%22focus%22%3A%22%22%2C%22innerAnchor%22%3A%22%22%2C%22cv%22%3A%222.0%22%2C%22gLng1%22%3A%22%22%2C%22gLat1%22%3A%22%22%2C%22head_area%22%3A%22%22%2C%22fullUrl%22%3A%22https%3A%2F%2Fpro.m.jd.com%2Fmall%2Factive%2F34oVq6LqN9Yshb8Y841RXHG3Nzf7%2Findex.html%3Fstath%3D47%26navh%3D44%26tttparams%3DTMjLskeyJnTGF0IjoiMjMuOTM5MTkyIiwidW5fYXJlYSI6IjE2XzEzNDFfMTM0N180NDc1MCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6Ijc2NTc3NTQ4ODIiLCJsYXQiOiIwLjAwMDAwMCIsInBvc0xhdCI6IjIzLjkzOTE5MiIsInBvc0xuZyI6IjExNy42MTEyMyIsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IjAuMDAwMDAwIiwidWVtcHMiOiIwLTAtMCIsImdMbmciOiIxMTcuNjExMjMiLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn60%253D%22%7D&screen=1170*2259&client=wh5&clientVersion=15.1.1&appid=wh5&functionId=babelGetLottery`,
+                    'form': `body=%7B%22enAwardK%22%3A%22${encodeURIComponent(context.enAwardK)}%22%2C%22awardSource%22%3A%221%22%2C%22srv%22%3A%22%7B%5C%22bord%5C%22%3A%5C%220%5C%22%2C%5C%22fno%5C%22%3A%5C%220-0-2%5C%22%2C%5C%22mid%5C%22%3A%5C%22${context.mid}%5C%22%2C%5C%22bi2%5C%22%3A%5C%222%5C%22%2C%5C%22bid%5C%22%3A%5C%220%5C%22%2C%5C%22aid%5C%22%3A%5C%22${context.aid}%5C%22%7D%22%2C%22encryptProjectId%22%3A%22${context.encryptProjectId}%22%2C%22encryptAssignmentId%22%3A%22${context.encryptAssignmentId}%22%2C%22authType%22%3A%222%22%7D&screen=1170*2259&client=wh5&clientVersion=15.1.1&appid=wh5&functionId=babelGetLottery`,
                     user,
                     algo: {
                         appId: '35fa0',
