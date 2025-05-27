@@ -112,6 +112,20 @@ export class Main extends Template {
                 p.encryptProjectId = this.match(/"encryptProjectId"\s*:\s*"(\w+)"/, html)
                 p.category = 'babelGet'
             }
+            else if (lids) {
+                for (let linkId of lids) {
+                    let s = await this.curl({
+                            'url': `https://api.m.jd.com/api?functionId=apTaskList`,
+                            'form': `functionId=apTaskList&body={"linkId":"${linkId}","queryType":0,"channel":4}&t=1748310951632&appid=activities_platform&client=ios&clientVersion=15.1.25`,
+                            cookie: this.tester()
+                        }
+                    )
+                    if (this.haskey(s, 'data.0')) {
+                        p.category = 'apTask'
+                        p.linkId = linkId
+                    }
+                }
+            }
             else {
             }
         }
@@ -194,7 +208,7 @@ export class Main extends Template {
             }
             else {
                 isOk = 0
-                p.log(`正在运行:`, i.taskTitle, i.taskType)
+                p.log(`正在运行:`, i.taskTitle || i.subTitle, i.taskType)
                 switch (i.taskType) {
                     case 'SIGN':
                         let sign = await this.curl({
@@ -395,7 +409,30 @@ export class Main extends Template {
                                 p.log(`抽奖次数+1`)
                             }
                             else {
-                                p.err("抽奖领取失败")
+                                if (i.subTitle && i.pipeExt) {
+                                    let award = await this.curl({
+                                            'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                            'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                            user,
+                                            algo: {
+                                                appId: 'f0f3f'
+                                            }
+                                        }
+                                    )
+                                    if (this.haskey(award, 'data')) {
+                                        for (let kk of award.data) {
+                                            if (kk.awardTitle.includes("京豆")) {
+                                                p.award(kk.awardGivenNumber, 'bean')
+                                            }
+                                            else {
+                                                p.log(kk)
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        p.err("抽奖领取失败")
+                                    }
+                                }
                             }
                             await this.wait(1000)
                         }
@@ -420,6 +457,15 @@ export class Main extends Template {
         }
         return {
             finish: isOk
+        }
+    }
+
+    async _apTask(p) {
+        let user = p.data.user;
+        let context = p.context;
+        let doIt = await this.doTask(p)
+        if (doIt.finish) {
+            p.info.work = true
         }
     }
 
