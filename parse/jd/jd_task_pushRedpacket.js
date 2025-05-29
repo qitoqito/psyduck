@@ -206,7 +206,7 @@ export class Main extends Template {
                     p.info.work = true
                 }
             }
-            let data = lottery.data.pushPrizeVo
+            let data = this.haskey(lottery, 'data.pushPrizeVo')||{}
             let prizeType = data.prizeType || data.rewardType
             let amount = data.amount || data.rewardValue || data.prizeDesc
             if (prizeType == 0) {
