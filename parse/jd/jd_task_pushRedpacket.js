@@ -29,6 +29,60 @@ export class Main extends Template {
                 }
             }
         )
+        for (let i of this.haskey(home, 'data.cumulativeSessionInfo.awardLists')) {
+            if (this.haskey(i, 'commonRewardInfo.clickType', 3)) {
+                p.log("正在领取:", i.level)
+                let reward = await this.curl({
+                        'url': `https://api.m.jd.com/api?functionId=pushRedPocketAwardPrize`,
+                        'form': `functionId=pushRedPocketAwardPrize&body={"envType":1,"linkId":"${context.linkId}","sourceKey":"${i.commonRewardInfo.encryptStr}"}&t=1748609238263&appid=activities_platform&client=android&clientVersion=15.1.35&platform=3`,
+                        user,
+                        algo: {
+                            appId: 'f62ba'
+                        }
+                    }
+                )
+                if (this.haskey(reward, 'data.prizeConfigName')) {
+                    p.log("领取成功....")
+                    if (reward.data.prizeConfigName == '红包') {
+                        p.award(reward.data.amount, 'redpacket')
+                    }
+                }
+                else {
+                    p.log("领取失败....")
+                }
+                await this.wait(2000)
+            }
+        }
+        let beat = await this.curl({
+                'url': `https://api.m.jd.com/api?functionId=pushRedPocketHeartbeat`,
+                'form': `functionId=pushRedPocketHeartbeat&body={"envType":1,"linkId":"${context.linkId}"}&t=1748609960123&appid=activities_platform&client=android&clientVersion=15.1.35&platform=3&loginType=2&loginWQBiz=wegame`,
+                user,
+                algo: {
+                    appId: '2971f'
+                }
+            }
+        )
+
+        if (this.haskey(beat, 'data.piggyBankInfo.encryptStr')) {
+            let draw = await this.curl({
+                    'url': `https://api.m.jd.com/api?functionId=giftBombDrawPrize`,
+                    'form': `functionId=giftBombDrawPrize&body={"linkId":"Y0bZtkOu-_Vr2nNHEReHuA","lotteryKey":"${beat.data.piggyBankInfo.encryptStr}","area":"0_0_0_0"}&t=1748609967386&appid=activities_platform&client=android&clientVersion=15.1.35&platform=3&loginType=2`,
+                    user,
+                    algo: {
+                        appId: 'a9449'
+                    }
+                }
+            )
+            if (this.haskey(draw, 'data.prizeConfigName')) {
+                p.log("领取成功....")
+                if (draw.data.prizeConfigName == '红包') {
+                    p.log(draw.data.amount, 'redpacket')
+                }
+            }
+            else {
+                p.log("领取失败....")
+            }
+        }
         let list = await this.curl({
             'url': `https://api.m.jd.com/`,
             'form': `functionId=apTaskList&body={"linkId":"${context.linkId}"}&t=1741137369937&appid=activities_platform&client=ios&clientVersion=15.0.25`,
@@ -202,11 +256,11 @@ export class Main extends Template {
                 break
             }
             else {
-                if (lottery.data.prizeNum>3) {
+                if (lottery.data.prizeNum>6) {
                     p.info.work = true
                 }
             }
-            let data = this.haskey(lottery, 'data.pushPrizeVo')||{}
+            let data = this.haskey(lottery, 'data.pushPrizeVo') || {}
             let prizeType = data.prizeType || data.rewardType
             let amount = data.amount || data.rewardValue || data.prizeDesc
             if (prizeType == 0) {
