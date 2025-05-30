@@ -5,7 +5,8 @@ export class Main extends Template {
         super()
         this.profile = {
             title: '京东天天推红包',
-            crontab: 3
+            crontab: 3,
+            // keyExpire: 24000,
         }
     }
 
@@ -62,7 +63,6 @@ export class Main extends Template {
                 }
             }
         )
-
         if (this.haskey(beat, 'data.piggyBankInfo.encryptStr')) {
             let draw = await this.curl({
                     'url': `https://api.m.jd.com/api?functionId=giftBombDrawPrize`,
@@ -242,6 +242,45 @@ export class Main extends Template {
             }
             else {
                 p.log(`任务完成`, i.subTitle)
+            }
+        }
+        let end = 0
+        for (let i of Array(3)) {
+            if (end) {
+                break
+            }
+            let lib = await this.curl({
+                    'url': `https://api.m.jd.com/api?functionId=lbsHome`,
+                    'form': `functionId=lbsHome&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"1_2802_54751_0","longitude":"116.412041","latitude":"39.899313",}&t=1748611142069&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3&loginType=2`,
+                    user,
+                    alog: {
+                        appId: "f3a26"
+                    }
+                }
+            )
+            if (this.haskey(lib, 'data.radarShowList')) {
+                for (let i of lib.data.radarShowList) {
+                    if (i.nickName) {
+                        p.log("正在夺取:", i.nickName)
+                        let seek = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=lbsSeek`,
+                                'form': `functionId=lbsSeek&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"16_1341_1347_44750","longitude":"117.613112","latitude":"23.94006","seekType":${i.type},"encryptId":"${i.encryptId}"}&t=1748611415910&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3`,
+                                user,
+                                algo: {
+                                    appId: 'f3a26'
+                                }
+                            }
+                        )
+                        if (this.haskey(seek, 'data.seekAwardInfo.prizeNum')) {
+                            p.log("夺取红包个数:", seek.data.seekAwardInfo.prizeNum)
+                        }
+                        if (this.haskey(seek, "code", 109005)) {
+                            p.log('今日夺宝次数已达上限')
+                            end++
+                            break
+                        }
+                    }
+                }
             }
         }
         while (1) {
