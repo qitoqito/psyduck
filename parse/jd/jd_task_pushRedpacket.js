@@ -245,14 +245,16 @@ export class Main extends Template {
             }
         }
         let end = 0
-        let area = this.profile.area || "1_2802_54751_0"
+        let area = this.profile.area || "16_1341_1347_44750"
+        let longitude = `${this.rand(116, 118)}.${this.rand(80000, 99999)}`
+        let latitude = `${this.rand(23, 39)}.${this.rand(80000, 99999)}`
         for (let i of Array(3)) {
             if (end) {
                 break
             }
             let lib = await this.curl({
                     'url': `https://api.m.jd.com/api?functionId=lbsHome`,
-                    'form': `functionId=lbsHome&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}"}&t=1748611142069&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3&loginType=2`,
+                    'form': `functionId=lbsHome&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}","longitude":"${longitude}","latitude":"${latitude}"}&t=1748611142069&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3&loginType=2`,
                     user,
                     alog: {
                         appId: "f3a26"
