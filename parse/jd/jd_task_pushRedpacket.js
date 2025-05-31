@@ -245,13 +245,14 @@ export class Main extends Template {
             }
         }
         let end = 0
+        let area = this.profile.area || "1_2802_54751_0"
         for (let i of Array(3)) {
             if (end) {
                 break
             }
             let lib = await this.curl({
                     'url': `https://api.m.jd.com/api?functionId=lbsHome`,
-                    'form': `functionId=lbsHome&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"1_2802_54751_0","longitude":"116.412041","latitude":"39.899313",}&t=1748611142069&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3&loginType=2`,
+                    'form': `functionId=lbsHome&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}"}&t=1748611142069&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3&loginType=2`,
                     user,
                     alog: {
                         appId: "f3a26"
@@ -264,7 +265,7 @@ export class Main extends Template {
                         p.log("正在夺取:", i.nickName)
                         let seek = await this.curl({
                                 'url': `https://api.m.jd.com/api?functionId=lbsSeek`,
-                                'form': `functionId=lbsSeek&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"16_1341_1347_44750","longitude":"117.613112","latitude":"23.94006","seekType":${i.type},"encryptId":"${i.encryptId}"}&t=1748611415910&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3`,
+                                'form': `functionId=lbsSeek&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}","seekType":${i.type},"encryptId":"${i.encryptId}"}&t=1748611415910&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3`,
                                 user,
                                 algo: {
                                     appId: 'f3a26'
@@ -281,6 +282,9 @@ export class Main extends Template {
                         }
                     }
                 }
+            }
+            else {
+                end++
             }
         }
         while (1) {
