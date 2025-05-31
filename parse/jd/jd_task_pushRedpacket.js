@@ -263,11 +263,11 @@ export class Main extends Template {
             )
             if (this.haskey(lib, 'data.radarShowList')) {
                 for (let i of lib.data.radarShowList) {
-                    if (i.nickName) {
+                    if (i.nickName && i.type != 5) {
                         p.log("正在夺取:", i.nickName)
                         let seek = await this.curl({
                                 'url': `https://api.m.jd.com/api?functionId=lbsSeek`,
-                                'form': `functionId=lbsSeek&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}","seekType":${i.type},"encryptId":"${i.encryptId}"}&t=1748611415910&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3`,
+                                'form': `functionId=lbsSeek&body={"envType":1,"linkId":"eC4evMxiFrTo0SiIE1GNlA","area":"${area}","seekType":${i.type},"encryptId":"${i.encryptId}","longitude":"${longitude}","latitude":"${latitude}"}&t=1748611415910&appid=activities_platform&client=ios&clientVersion=15.1.35&platform=3`,
                                 user,
                                 algo: {
                                     appId: 'f3a26'
@@ -276,6 +276,9 @@ export class Main extends Template {
                         )
                         if (this.haskey(seek, 'data.seekAwardInfo.prizeNum')) {
                             p.log("夺取红包个数:", seek.data.seekAwardInfo.prizeNum)
+                        }
+                        else if (this.haskey(seek, "code", 109012)) {
+                            p.log("当前用户已开启保护罩模式")
                         }
                         if (this.haskey(seek, "code", 109005)) {
                             p.log('今日夺宝次数已达上限')
