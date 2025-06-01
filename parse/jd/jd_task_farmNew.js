@@ -64,8 +64,7 @@ export class Main extends Template {
         if (this.turnCount == 0) {
             if (this.turnCount == 0) {
                 let signIn = await this.curl({
-                        'url': `https://api.m.jd.com/client.action`,
-                        'form': `functionId=dongDongFarmSignIn&body={"linkId":"LCH-fV7hSnChB-6i5f4ayw"}&t=1740546479554&appid=activities_platform&client=ios&clientVersion=15.0.20&&build=169736&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&lang=zh_CN&osVersion=15.1.1&partner=-1&cthr=1`,
+                        'form': `functionId=dongDongFarmSignIn&body={"linkId":"LCH-fV7hSnChB-6i5f4ayw"}&t=1740546479554&appid=activities_platform&client=ios&clientVersion=15.0.20&build=169736&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&lang=zh_CN&osVersion=15.1.1&partner=-1&cthr=1`,
                         user, algo: {
                             appId: '65f9d'
                         }
@@ -77,7 +76,7 @@ export class Main extends Template {
                 else if (this.haskey(signIn, 'code', 210000)) {
                     p.log('非东东农场用户/树种植状态异常!')
                     let tree = await this.curl({
-                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":18,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
                             user
                         }
                     )
@@ -87,9 +86,13 @@ export class Main extends Template {
                     p.log(this.haskey(signIn, 'errMsg') || '签到失败')
                 }
             }
+            await this.curl({
+                    'form': `appid=signed_wh5&client=apple&clientVersion=15.1.35&body={"version":18,"channelParam":"1","noviceGuidanceShouldShow":false,"pageVisit":true,"babelChannel":"ttt85","showDesktopTask":true,"lbsSwitch":true}&functionId=farm_red_dot`,
+                    user
+                }
+            )
             let farmHome = await this.curl({
-                    'url': `https://api.m.jd.com/client.action`,
-                    'form': `appid=signed_wh5&body={"version":9,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
+                    'form': `appid=signed_wh5&body={"version":18,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
                     user,
                     algo: {
                         appId: 'c57f6',
@@ -115,8 +118,7 @@ export class Main extends Template {
             if (treeFullStage == 5 && this.profile.tree) {
                 p.log('没有种树')
                 let board = await this.curl({
-                        'url': `https://api.m.jd.com/client.action`,
-                        'form': `appid=signed_wh5&body={"version":13,"channelParam":"1","boardType":"level"}&client=apple&clientVersion=15.0.11&functionId=farm_tree_board`,
+                        'form': `appid=signed_wh5&body={"version":18,"channelParam":"1","boardType":"level"}&client=apple&clientVersion=15.0.11&functionId=farm_tree_board`,
                         user,
                     }
                 )
@@ -124,7 +126,6 @@ export class Main extends Template {
                     let skus = board.data.result.farmTreeLevels[2].farmLevelTrees[0]
                     p.log("正在种树,选择商品:", skus.skuName)
                     let plantTree = await this.curl({
-                            'url': `https://api.m.jd.com/client.action`,
                             'form': `appid=signed_wh5&body=${this.dumps({
                                 "version": 13,
                                 "channelParam": "1",
@@ -135,14 +136,13 @@ export class Main extends Template {
                         }
                     )
                     let tree = await this.curl({
-                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":13,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&body={"version":18,"channelParam":"1","level":3,"type":"plantLevel"}&functionId=farm_plant_tree`,
                             user
                         }
                     )
                     if (this.haskey(tree, 'data.success')) {
                         farmHome = await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
-                                'form': `appid=signed_wh5&body={"version":13,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
+                                'form': `appid=signed_wh5&body={"version":18,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
                                 user,
                                 algo: {
                                     appId: 'c57f6',
@@ -166,8 +166,7 @@ export class Main extends Template {
             let bottleWater = home.bottleWater
             p.log("当前进度:", home.waterTips)
             let taskList = await this.curl({
-                    'url': `https://api.m.jd.com/client.action`,
-                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&t=1740322939720&body={"version":13,"channelParam":"1","channel":0,"pushSwitch":false,"showSubscribe":true,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_task_list&rfs=0000`,
+                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&t=1740322939720&body={"version":18,"channelParam":"1","channel":0,"pushSwitch":false,"showSubscribe":true,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_task_list&rfs=0000`,
                     user
                 }
             )
@@ -182,6 +181,27 @@ export class Main extends Template {
                 }
                 else if (i.taskType.match("WECHAT_SHARE|JOIN_OTHER_ACT|BROWSE_SEARCH")) {
                 }
+                else if (i.taskType == 'FIXED_CHANNEL_DRAINAGE') {
+                    let report = await this.curl({
+                            'form': `appid=signed_wh5_ihub&client=apple&clientVersion=15.1.50&screen=390*2723&wqDefault=false&build=169892&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1748760248487&body={"version":18,"channelParam":"1","taskType":"FIXED_CHANNEL_DRAINAGE","taskId":${i.taskId},"popType":"fixChannelReward","babelChannel":"ttt6"}&functionId=farm_pop_window_show_report`,
+                            user
+                        }
+                    )
+                    await this.curl({
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.1.50&screen=390*2723&wqDefault=false&build=169892&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&t=1748760247773&body={"version":18,"channelParam":"1","noviceGuidanceShouldShow":false,"pageVisit":true,"babelChannel":"ttt6","showDesktopTask":true,"lbsSwitch":true}&functionId=farm_red_dot`,
+                            user
+                        }
+                    )
+                    let award = await this.curl({
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0,"pipeExt":${this.dumps(i.pipeExt)}}&functionId=farm_task_receive_award`,
+                            user,
+                            algo: {'appId': '33e0f'},
+                        }
+                    )
+                    if (this.haskey(award, 'data.result.taskAward')) {
+                        p.log(award.data.result.taskAward)
+                    }
+                }
                 else if (i.mainTitle.includes("浇水")) {
                     if (i.taskDoTimes != i.taskLimitTimes) {
                         p.log("正在运行:", i.mainTitle)
@@ -189,8 +209,7 @@ export class Main extends Template {
                         status = 0
                         for (let n of Array(parseInt((i.taskLimitTimes - i.taskDoTimes) / 5))) {
                             let water = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
-                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":13,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
+                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&body={"version":18,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
                                         appId: '28981'
@@ -215,8 +234,7 @@ export class Main extends Template {
                         }
                         for (let n of Array(((i.taskLimitTimes - i.taskDoTimes) % 5))) {
                             let water = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
-                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":13,"channelParam":"1","waterType":1,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
+                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.20&body={"version":18,"channelParam":"1","waterType":1,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                     user,
                                     algo: {
                                         appId: '28981'
@@ -240,8 +258,7 @@ export class Main extends Template {
                         }
                         if (isOk) {
                             let award = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
-                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740323796058&body={"version":13,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
+                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
                                     user,
                                     algo: {'appId': '33e0f'},
                                 }
@@ -276,8 +293,7 @@ export class Main extends Template {
                     }
                     else {
                         let detail = await await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
-                                'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&body={"version":13,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_detail`,
+                                'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_detail`,
                                 user
                             }
                         )
@@ -291,8 +307,7 @@ export class Main extends Template {
                             await this.wait(i.timePeriod * 1000)
                         }
                         let doTask = await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
-                                'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740323572547&body={"version":13,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"taskInsert":${kk.taskInsert || false},"itemId":"${new Buffer.from(kk.itemId).toString('base64')}","channel":0}&functionId=farm_do_task`,
+                                'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"taskInsert":${kk.taskInsert || false},"itemId":"${new Buffer.from(kk.itemId).toString('base64')}","channel":0}&functionId=farm_do_task`,
                                 user,
                                 algo: {
                                     appId: '28981'
@@ -301,8 +316,7 @@ export class Main extends Template {
                         )
                         if (this.haskey(doTask, 'data.success')) {
                             let award = await this.curl({
-                                    'url': `https://api.m.jd.com/client.action`,
-                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740323796058&body={"version":13,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
+                                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
                                     user, algo: {'appId': '33e0f'},
                                 }
                             )
@@ -327,8 +341,7 @@ export class Main extends Template {
                 }
                 else if (i.taskStatus == 2) {
                     let award = await this.curl({
-                            'url': `https://api.m.jd.com/client.action`,
-                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&screen=390*812&wqDefault=false&build=169720&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740323796058&body={"version":13,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.15&body={"version":18,"channelParam":"1","taskType":"${i.taskType}","taskId":${i.taskId},"channel":0}&functionId=farm_task_receive_award`,
                             user,
                             algo: {'appId': '33e0f'},
                         }
@@ -365,9 +378,8 @@ export class Main extends Template {
                     while (true) {
                         s1 = 0
                         let water = await this.curl({
-                                'url': `https://api.m.jd.com/client.action`,
                                 'form':
-                                    `appid=signed_wh5&client=apple&clientVersion=15.0.20&screen=390*812&wqDefault=false&build=169736&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&openudid=674ce0d97511f5ed054c3dc0af093b3b245ab68d&t=1740546580076&body={"version":13,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
+                                    `appid=signed_wh5&client=apple&clientVersion=15.0.20&body={"version":18,"channelParam":"1","waterType":2,"babelChannel":"ttt6","lbsSwitch":false}&functionId=farm_water`,
                                 user,
                                 algo:
                                     {
@@ -403,7 +415,6 @@ export class Main extends Template {
             }
             else {
                 let help = await this.curl({
-                        'url': `https://api.m.jd.com/client.action`,
                         'form': `appid=signed_wh5&body=${this.dumps({
                             "version": 9,
                             "inviteCode": context.inviteCode,
@@ -502,7 +513,7 @@ export class Main extends Template {
                         case 'SIGN':
                             let sign = await this.curl({
                                     'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
-                                    'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480459228&appid=activities_platform&client=ios&clientVersion=15.0.11&loginType=2&loginWQBiz=wegame`,
+                                    'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${linkId}","pipeExt":${this.dumps(i.pipeExt)}}&appid=activities_platform&client=ios&clientVersion=15.0.11&loginType=2&loginWQBiz=wegame`,
                                     algo: {
                                         appId: '54ed7'
                                     },
@@ -680,8 +691,7 @@ export class Main extends Template {
         }
         else if (this.turnCount == 1) {
             let helpInfo = await this.curl({
-                    'url': `https://api.m.jd.com/client.action`,
-                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&screen=820*1110&wqDefault=false&build=169714&osVersion=16.6&networkType=wifi&d_brand=iPhone&d_model=iPad13,18&partner=&t=1740556273015&body={"version":13,"channelParam":"1"}&functionId=farm_assist_init_info`,
+                    'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&screen=820*1110&wqDefault=false&build=169714&osVersion=16.6&networkType=wifi&d_brand=iPhone&d_model=iPad13,18&partner=&t=1740556273015&body={"version":18,"channelParam":"1"}&functionId=farm_assist_init_info`,
                     user
                 }
             )
@@ -694,8 +704,7 @@ export class Main extends Template {
             for (let i of this.haskey(helpInfo, 'data.result.assistStageList')) {
                 if (i.stageStaus == 2) {
                     let award = await this.curl({
-                            'url': `https://api.m.jd.com/client.action`,
-                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&screen=820*1110&wqDefault=false&build=169714&osVersion=16.6&networkType=wifi&d_brand=iPhone&d_model=iPad13,18&partner=&t=1740556273015&body={"version":13,"channelParam":"1"}&functionId=farm_assist_receive_award`,
+                            'form': `appid=signed_wh5&client=apple&clientVersion=15.0.11&screen=820*1110&wqDefault=false&build=169714&osVersion=16.6&networkType=wifi&d_brand=iPhone&d_model=iPad13,18&partner=&t=1740556273015&body={"version":18,"channelParam":"1"}&functionId=farm_assist_receive_award`,
                             user,
                             algo: {'appId': 'c4332'},
                         }
