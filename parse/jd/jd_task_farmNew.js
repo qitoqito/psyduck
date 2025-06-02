@@ -188,8 +188,30 @@ export class Main extends Template {
                         }
                     )
                     await this.curl({
+                            'form': `appid=signed_wh5&body={"version":18,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
+                            user,
+                            algo: {
+                                appId: 'c57f6',
+                                expire: {
+                                    code: -30001
+                                }
+                            }
+                        }
+                    )
+                    await this.curl({
                             'form': `appid=signed_wh5&client=apple&clientVersion=15.1.50&screen=390*2723&wqDefault=false&build=169892&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&t=1748760247773&body={"version":18,"channelParam":"1","noviceGuidanceShouldShow":false,"pageVisit":true,"babelChannel":"ttt6","showDesktopTask":true,"lbsSwitch":true}&functionId=farm_red_dot`,
                             user
+                        }
+                    )
+                    await this.curl({
+                            'form': `appid=signed_wh5&body={"version":18,"channelParam":"1"}&client=apple&clientVersion=15.0.11&functionId=farm_home`,
+                            user,
+                            algo: {
+                                appId: 'c57f6',
+                                expire: {
+                                    code: -30001
+                                }
+                            }
                         }
                     )
                     let award = await this.curl({
@@ -405,6 +427,18 @@ export class Main extends Template {
                 }
             }
             await this.setTemp(user, inviteCode)
+            let detail = await this.curl({
+                    'form': `appid=signed_wh5&client=apple&clientVersion=15.1.50&screen=390*2754&wqDefault=false&build=169892&osVersion=15.1.1&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&partner=&t=1748907985657&body={"version":18,"channelParam":"1","type":1}&functionId=farm_award_detail`,
+                    user
+                }
+            )
+            if (this.haskey(detail, 'data.result.plantAwards')) {
+                for (let i of detail.data.result.plantAwards) {
+                    if (i.awardStatus == 1) {
+                        p.msg("当前还有实物奖品可兑换")
+                    }
+                }
+            }
             if (status && s1) {
                 p.info.work = true
             }
