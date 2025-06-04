@@ -20,8 +20,6 @@ export class Main extends Template {
                 this.dict[user] = itemId
             }
         }
-        this.algo.bill = function() {
-        }
     }
 
     async main(p) {
@@ -173,7 +171,6 @@ export class Main extends Template {
                             await this.wait(1000)
                         }
                     } catch (e) {
-                        p.log(e)
                     }
                 }
                 else {
