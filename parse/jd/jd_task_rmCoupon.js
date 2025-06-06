@@ -1,4 +1,5 @@
 import {Template} from '../../template.js'
+// import jsonic from 'jsonic'
 
 export class Main extends Template {
     constructor() {
@@ -39,15 +40,17 @@ export class Main extends Template {
                 }
             }
         )
+        // if (typeof list == 'string') {
+        //     list = jsonic.parse(list)
+        // }
         let rm = []
         let reg = new RegExp(context.blackList)
         let status = 0
         // console.log(list)
         if (this.haskey(list, 'coupon.useable')) {
             status++
-
             for (let i of list.coupon.useable) {
-                if (this.match(reg, i.limitStr)) {
+                if (this.match(reg, i.limitStr) || this.match(reg, i.couponTitle)) {
                     rm.push(i.couponid)
                 }
             }
