@@ -25,7 +25,7 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         let info = await this.curl({
-                'form': `appid=home-channel&functionId=queryInteractiveInfo&body={"encryptProjectId":"${context.encryptProjectId}","sourceCode":"ace454250"}`,
+                'form': `appid=home-channel&functionId=queryInteractiveInfo&body={"encryptProjectId":"${context.encryptProjectId}","sourceCode":"ace454250"}&clientVersion=15.1.1`,
                 user,
                 algo: {
                     appId: "74333"
@@ -52,7 +52,7 @@ export class Main extends Template {
                     }
                     itemId = this.dict[u]
                     let help = await this.curl({
-                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body={"encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","encryptProjectId":"${context.encryptProjectId}"}`,
+                            'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body={"encryptAssignmentId":"${i.encryptAssignmentId}","itemId":"${itemId}","encryptProjectId":"${context.encryptProjectId}"}&clientVersion=15.1.1`,
                             user,
                             algo: {
                                 appId: '74333',
@@ -68,6 +68,8 @@ export class Main extends Template {
                 lotteryId = i.encryptAssignmentId
             }
             else if (i.assignmentDesc.match(/duihuan/)) {
+            }
+            else if (i.assignmentName.match(/国补|首页|补贴/)) {
             }
             else {
                 status = 0
@@ -85,15 +87,42 @@ export class Main extends Template {
                         else {
                             for (let j of extra.slice(0, i.assignmentTimesLimit)) {
                                 if (['shoppingActivity', 'productsInfo', 'browseShop', 'addCart', 'followShop', 'followChannel'].includes(extraType)) {
+                                    if (j.biclk) {
+                                        let wait = Math.max(...[parseInt(this.match(/\d+/, j.biclk) || 1) + 1, 6])
+                                        let doIt = await this.curl({
+                                                url: "https://api.m.jd.com/client.action?functionId=home.zzj.DoTask.finishTask",
+                                                'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body=${this.dumps(
+                                                    {
+                                                        "encryptAssignmentId": i.encryptAssignmentId,
+                                                        "itemId": j.itemId,
+                                                        "actionType": 1,
+                                                        "ext": {"jumpUrl": encodeURIComponent(j.url)},
+                                                        "encryptProjectId": context.encryptProjectId,
+                                                    }
+                                                )}&clientVersion=15.1.1`,
+                                                user, algo: {
+                                                    appId: '74333',
+                                                    expire: {
+                                                        "code": 3,
+                                                    },
+                                                    error: {
+                                                        code: 10003,
+                                                    },
+                                                }
+                                            }
+                                        )
+                                        p.log(`正在等待: ${wait}秒`)
+                                        await this.wait(wait * 1000)
+                                    }
                                     let fi = await this.curl({
                                             url: "https://api.m.jd.com/client.action?functionId=home.zzj.DoTask.finishTask",
                                             'form': `appid=home-channel&functionId=home.zzj.DoTask.finishTask&body=${this.dumps(
                                                 {
                                                     "encryptAssignmentId": i.encryptAssignmentId,
-                                                    "itemId": j.itemId,
+                                                    "itemId": j.itemId, "ext": {"jumpUrl": encodeURIComponent(j.url)},
                                                     "encryptProjectId": context.encryptProjectId
                                                 }
-                                            )}`,
+                                            )}&clientVersion=15.1.1`,
                                             user, algo: {
                                                 appId: '74333',
                                                 expire: {
@@ -129,7 +158,7 @@ export class Main extends Template {
                                         "itemId": 1,
                                         "encryptProjectId": context.encryptProjectId
                                     }
-                                )}`,
+                                )}&clientVersion=15.1.1`,
                                 user,
                                 algo: {
                                     appId: '74333',
@@ -164,7 +193,7 @@ export class Main extends Template {
                                     "itemId": 1,
                                     "encryptProjectId": context.encryptProjectId
                                 }
-                            )}`,
+                            )}&clientVersion=15.1.1`,
                             user, algo: {
                                 appId: '74333',
                                 expire: {
