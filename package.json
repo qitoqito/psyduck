@@ -9,6 +9,8 @@
     "https": "^1.0.0",
     "ini": "^5.0.0",
     "jsdom": "^26.0.0",
+    "json5": "^2.2.3",
+    "jsonic": "^2.16.0",
     "lodash": "^4.17.21",
     "node-jsencrypt": "^1.0.0",
     "node-schedule": "^2.1.1",
