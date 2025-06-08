@@ -226,6 +226,7 @@ export class Main extends Template {
                     case 'ORDER_MARK':
                     case 'SUBSCRIBE_WITH_RECEIVE':
                     case 'FOLLOW_CHANNEL':
+                    case 'JOIN_BRAND':
                         break
                     case 'BROWSE_CHANNEL':
                     case  'BROWSE_PRODUCT':
@@ -253,8 +254,8 @@ export class Main extends Template {
                                 )
                                 if (this.haskey(st, 'success') && st.data) {
                                     if (i.timeLimitPeriod) {
-                                        p.log("正在等待:", i.timeLimitPeriod)
-                                        await this.wait(i.timeLimitPeriod * 1000)
+                                        p.log(`等待${context.timeLimitPeriod || i.timeLimitPeriod}秒...`)
+                                        await this.wait((context.timeLimitPeriod || i.timeLimitPeriod) * 1000)
                                         await this.curl({
                                                 'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
                                                 'form': `functionId=apDoLimitTimeTask&body={"linkId":"1sPvvx2KAcIQ8otdQ_3pvQ"}&t=1748099576535&appid=activities_platform&client=ios&clientVersion=15.1.25&platform=3&loginType=2&loginWQBiz=wegame`,
@@ -321,8 +322,8 @@ export class Main extends Template {
                                                 p.log("失败了")
                                                 break
                                             }
-                                            p.log(`等待${i.timeLimitPeriod}秒...`)
-                                            await this.wait(i.timeLimitPeriod * 1000)
+                                            p.log(`等待${context.timeLimitPeriod || i.timeLimitPeriod}秒...`)
+                                            await this.wait((context.timeLimitPeriod || i.timeLimitPeriod) * 1000)
                                             var doTask = await this.curl({
                                                 'url': `https://api.m.jd.com/api?functionId=apDoLimitTimeTask`,
                                                 'form': `functionId=apDoLimitTimeTask&body={"linkId":"${context.linkId}"}&t=1738483906048&appid=activities_platform&client=ios&clientVersion=15.0.11&platform=3&loginType=2&loginWQBiz=wegame`,
@@ -444,6 +445,8 @@ export class Main extends Template {
                         case 'SHARE_INVITE':
                         case 'SUBSCRIBE_WITH_RECEIVE':
                         case 'FOLLOW_CHANNEL':
+                        case 'JOIN_BRAND':
+                        case 'FOLLOW_SHOP':
                             break
                         case  'BROWSE_CHANNEL':
                             isOk = userFinishedTimes ? 1 : 0
