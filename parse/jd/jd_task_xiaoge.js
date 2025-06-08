@@ -27,6 +27,7 @@ export class Main extends Template {
 
     async cc(p) {
         let url = p.url
+        let user = p.user
         if (!url.includes("Enhance")) {
             url = `${p.url}Enhance`
         }
@@ -37,6 +38,7 @@ export class Main extends Template {
             mode: CryptoJS.mode.CBC,
             padding: CryptoJS.pad.Pkcs7
         }).toString()
+        let info = await this.getInfo(user, 'jsTk')
         let req = {
             url,
             data,
@@ -46,6 +48,11 @@ export class Main extends Template {
                     "report-time": new Date().getTime(),
                     pkid: 11470,
                     ciphertext: this.rsa.encrypt("".concat(t).concat(r)),
+                    eid: info.token,
+                    "biz-type": "service-monitor",
+                    "source-client": 2,
+                    access: "H5",
+                    forcebot: 0
                 }
             },
             user: p.user
@@ -85,6 +92,13 @@ export class Main extends Template {
             if (this.haskey(sign, 'content.jinBeanNum')) {
                 p.award(sign.content.jinBeanNum, 'bean')
                 await p.setPublic('sign', 1, parseInt(86400 - (new Date().getTime() - new Date().setHours(0, 0, 0, 0)) / 1000))
+            }
+            else if (this.haskey(sign, 'code', -1)) {
+                p.err(sign.msg)
+                if (sign.msg.includes("火爆")) {
+                    p.info.complete = true
+                    return
+                }
             }
         }
         let environment = await this.curl({
@@ -138,6 +152,7 @@ export class Main extends Template {
                     'url': `https://lop-proxy.jd.com/UserMangroveApi/userMangroveInteractive`,
                     json: [{
                         "pin": "",
+                        clientIp: "$cooMrdGatewayIp$",
                         "userMangroveDevelopId": mangrove.content.id,
                         "mangroveInteractiveId": mangrove.content.mangroveInteractiveDto.id
                     }],
