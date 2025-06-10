@@ -3,7 +3,6 @@ export default {
         index: true,
         salt: 'psyDuck',
         saveCycle: 300,
-        invoke: true
     },
     global: {},
     psyDuck: {
@@ -91,6 +90,13 @@ export default {
                     'publicUseApi',
                     'newtry'
                 ],
+                h5st: {
+                    params: {
+                        js: "5.1"
+                    },
+                    extend: {},
+                    storage: {}
+                }
             }
         },
         map: {
