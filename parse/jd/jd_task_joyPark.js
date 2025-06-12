@@ -8,7 +8,7 @@ export class Main extends Template {
             crontab: 3,
             keyExpire: 12000,
             prompt: {
-                merge: '1 # 执行购买与合成任务',
+                // merge: '1 # 执行购买与合成任务',
             },
         }
     }
@@ -553,7 +553,8 @@ export class Main extends Template {
     async two(p) {
         let user = p.data.user
         let context = p.context
-        if (this.profile.merge) {
+        // if (this.profile.merge) {
+        if (1) {
             await this.one(p)
             let joy = this.dict[user].joy || {}
             for (let i = 0; i<30; i++) {
