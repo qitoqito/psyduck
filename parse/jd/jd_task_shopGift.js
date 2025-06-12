@@ -11,9 +11,10 @@ export class Main extends Template {
             verify: 1,
             crontab: `${this.rand(5, 10)},${this.rand(35, 40)} 9-23 * * *`,
             prompt: {
-                id: 'venderId_shopId_activityId'
+                id: '可使用venderId_shopId_activityId,或者venderId,或3.cn链接,或u.jd.com链接',
             },
-            readme: '不支持通过url获取,如需自定义请自行抓包:venderId,shopId,activityId'
+            readme: '通过url和venderId获取,可能会获取不到activityId,如想准确获取activityId请自行抓包:venderId,shopId,activityId',
+            help: 't3'
         }
     }
 
@@ -23,9 +24,93 @@ export class Main extends Template {
 
     async batch(p) {
         if (p.id) {
-            let [venderId, shopId, activityId] = p.id.split("_")
-            p = {
-                ...p, ...{venderId, shopId, activityId}
+            if (p.id.split("_").length == 3) {
+                let [venderId, shopId, activityId] = p.id.split("_")
+                p = {
+                    ...p, ...{venderId, shopId, activityId}
+                }
+            }
+            else {
+                let url
+                let shopId, venderId
+                if (!isNaN(p.id)) {
+                    venderId = p.id
+                }
+                else {
+                    if (p.id.includes("u.jd.com")) {
+                        let j = `https://union-click.jd.com/api?time=1633480440000&url=${p.id}&source=10&type=2&platform=6&token=oFEhgxRz1cKD2AR6sFKBmg--&jdUuid=a3b4e844090b28d5c38e7629af8115172079be5d&appVersion=100720&sourceValue=other`;
+                        let s = await this.curl({
+                                'url': j,
+                            }
+                        )
+                        if (this.haskey(s, 'url')) {
+                            url = decodeURIComponent(s.url)
+                        }
+                    }
+                    else {
+                        let j = await this.curl({
+                                'url': p.id,
+                                maxRedirects: 0,
+                                scheme: 'http',
+                                response: 'all'
+                            }
+                        )
+                        if (this.haskey(j, 'location')) {
+                            url = j.location
+                        }
+                    }
+                }
+                if (url) {
+                    let query = new URL(url).searchParams
+                    shopId = query.get('shopId')
+                    venderId = query.get('venderId ')
+                }
+                if (!(shopId && venderId)) {
+                    let info = await this.curl({
+                            'url': `https://api.m.jd.com/client.action?functionId=getShopHomeBaseInfo`,
+                            'form': `functionId=getShopHomeBaseInfo&body=${this.dumps({
+                                shopId,
+                                "source": "app-shop",
+                                venderId,
+                                "sourceRpc": "shop_app_home_home",
+                                "RNVersion": "0.72.3",
+                                "navigationAbTest": "1"
+                            })}&uuid=a68fbedf6e53dad6&client=apple&clientVersion=15.1.53&st=1749714653347&sv=111&sign=d8b3b3c457a791ea5a6dc6ea03b922a3`,
+                            algo: {
+                                sign: true
+                            }
+                        }
+                    )
+                    if (this.haskey(info, 'result.shopInfo')) {
+                        venderId = info.result.shopInfo.venderId
+                        shopId = info.result.shopInfo.shopId
+                        p.shopName = info.result.shopInfo.shopName
+                    }
+                }
+                if (venderId) {
+                    for (let user of this.help) {
+                        let s = await this.curl({
+                                'url': `https://api.m.jd.com/client.action?functionId=getShopHomeActivityInfo`,
+                                'form': `avifSupport=0&body=${this.dumps({
+                                    "source": "app-shop",
+                                    "sourceRpc": "shop_app_home_home",
+                                    shopId,
+                                    venderId,
+                                })}&build=169896&client=apple&clientVersion=15.1.53`,
+                                user,
+                                algo: {
+                                    sign: true
+                                }
+                            }
+                        )
+                        if (this.haskey(s, 'result.activityId')) {
+                            p.activityId = s.result.activityId
+                            p.shopId = shopId
+                            p.venderId = venderId
+                            break
+                        }
+                    }
+                }
             }
         }
         return p
@@ -34,8 +119,8 @@ export class Main extends Template {
     async main(p) {
         let user = p.data.user;
         let context = p.context;
-        let shopId = context.shopId
-        let venderId = context.venderId
+        let shopId = context.shopId || ''
+        let venderId = context.venderId || ''
         let headers = context.headers || {}
         let algo = context.algo || {range: 6}
         let body = {
