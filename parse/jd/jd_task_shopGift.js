@@ -132,21 +132,22 @@ export class Main extends Template {
         }
         let activityId = context.activityId || await this.getTemp(context.venderId)
         let status = 0
-        if (!activityId) {
-            var s = await this.curl({
-                    'url': `https://api.m.jd.com/client.action?functionId=getShopHomeActivityInfo`,
-                    'form': `avifSupport=0&body=${this.dumps(body)}&build=169736&client=apple&clientVersion=15.0.20&d_brand=apple`,
-                    user,
-                    algo: {
-                        sign: true
-                    }
-                }
-            )
-            activityId = this.haskey(s, 'result.giftBagDataResult.activityId') || this.haskey(s, 'result.activityId')
-            if (activityId) {
-                await this.setTemp(venderId, activityId)
-            }
-        }
+        //
+        // if (!activityId) {
+        //     var s = await this.curl({
+        //             'url': `https://api.m.jd.com/client.action?functionId=getShopHomeActivityInfo`,
+        //             'form': `avifSupport=0&body=${this.dumps(body)}&build=169736&client=apple&clientVersion=15.0.20&d_brand=apple`,
+        //             user,
+        //             algo: {
+        //                 sign: true
+        //             }
+        //         }
+        //     )
+        //     activityId = this.haskey(s, 'result.giftBagDataResult.activityId') || this.haskey(s, 'result.activityId')
+        //     if (activityId) {
+        //         await this.setTemp(venderId, activityId)
+        //     }
+        // }
         if (activityId) {
             let body2 = {
                 "follow": 0,
@@ -174,7 +175,8 @@ export class Main extends Template {
                 p.log("正在关注", this.haskey(drawShopGift, 'result.giftDesc') || '没有领取到')
                 for (let g of this.haskey(drawShopGift, 'result.alreadyReceivedGifts') || []) {
                     if (g.prizeType == 4) {
-                        p.msg(`京豆: ${g.redWord}`)
+                        // p.msg(`京豆: ${g.redWord}`)
+                        p.award(g.redWord, 'bean')
                     }
                 }
                 await this.curl({
@@ -190,7 +192,7 @@ export class Main extends Template {
             }
         }
         else {
-            p.log("没获取到...")
+            p.log("没获取到activityId...")
             let unfollow = await this.curl({
                 'url': 'https://api.m.jd.com/client.action?g_ty=ls&g_tk=518274330',
                 'form': `functionId=whx_followShop&body={"shopId":"${context.shopId}","follow":"false"}&t=1670345201521&appid=wx_mini_app&clientVersion=11.0.0&client=wh5&uuid=0040a1e96b5d357ae888a0f18bb23968`,
