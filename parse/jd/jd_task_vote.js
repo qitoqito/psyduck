@@ -10,12 +10,14 @@ export class Main extends Template {
     }
 
     async prepare() {
-        let date = new Date();
-        let options = {year: 'numeric', month: '2-digit', day: '2-digit'};
-        let formattedDate = date.toLocaleDateString('zh-CN', options).replace(/\//g, '-');
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0');
+        let day = String(today.getDate()).padStart(2, '0');
+        let dateStr = `${year}-${month}-${day}`;
         for (let i of Array(3)) {
             let rank = await this.curl({
-                    'form': `functionId=hc_boss_queryBossRanking&body={"type":2,"rankingDay":"${formattedDate}"}&appid=home-marketing&client=apple&&clientVersion=15.1.53`,
+                    'form': `functionId=hc_boss_queryBossRanking&body={"type":2,"rankingDay":"${dateStr}"}&appid=home-marketing&client=apple&&clientVersion=15.1.53`,
                     cookie: this.tester()
                 }
             )
