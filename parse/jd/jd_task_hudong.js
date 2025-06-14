@@ -16,8 +16,7 @@ export class Main extends Template {
                 'x-rp-client': "h5_1.0.0",
                 'request-from': 'native',
                 referer: 'https://h5.m.jd.com/pb/015686010/Bc9WX7MpCW7nW9QjZ5N3fFeJXMH/index.html'
-            },
-            libressl: true
+            }
         }
     }
 
@@ -176,6 +175,9 @@ export class Main extends Template {
                 await this[`_${context.category}`](p)
             } catch (e) {
             }
+        }
+        else {
+            p.context.jump = true
         }
         if (p.prize.length) {
             p.prize.unshift(`linkId: ${context.linkId}`)
@@ -444,6 +446,7 @@ export class Main extends Template {
                         case'ORDER_MARK':
                         case 'SHARE_INVITE':
                         case 'SUBSCRIBE_WITH_RECEIVE':
+                        case 'JOIN_OTHER_ACT':
                         case 'FOLLOW_CHANNEL':
                         case 'JOIN_BRAND':
                         case 'FOLLOW_SHOP':
@@ -485,6 +488,7 @@ export class Main extends Template {
         )
         if (this.haskey(home, 'code', 12)) {
             p.context.finish = true
+            await this.hsetTemp(context.pid, 'expired', true)
             return
         }
         let drawNum = this.haskey(home, 'data.lotteryChances') || 0
@@ -568,6 +572,7 @@ export class Main extends Template {
         )
         if (this.haskey(home, 'code', 12)) {
             p.context.finish = true
+            await this.hsetTemp(context.pid, 'expired', true)
             return
         }
         let drawNum = this.haskey(home, 'data.prizeNum') || 0
@@ -638,6 +643,7 @@ export class Main extends Template {
         )
         if (this.haskey(home, 'code', 12)) {
             p.context.finish = true
+            await this.hsetTemp(context.pid, 'expired', true)
             return
         }
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
@@ -704,6 +710,7 @@ export class Main extends Template {
         )
         if (this.haskey(home, 'code', 12)) {
             p.context.finish = true
+            await this.hsetTemp(context.pid, 'expired', true)
             return
         }
         let drawNum = this.haskey(home, 'data.remainTimes') || 0
