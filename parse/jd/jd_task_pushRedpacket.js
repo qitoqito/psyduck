@@ -30,6 +30,26 @@ export class Main extends Template {
                 }
             }
         )
+        if (this.haskey(home, 'data.dailySessionInfo.encryptStr')) {
+            let draw = await this.curl({
+                    'url': `https://api.m.jd.com/api?functionId=pushRedPocketAwardPrize`,
+                    'form': `functionId=pushRedPocketAwardPrize&body={"linkId":"${context.linkId}","sourceKey":"${home.data.dailySessionInfo.encryptStr}","area":"0_0_0_0"}&t=1748609967386&appid=activities_platform&client=android&clientVersion=15.1.35&platform=3&loginType=2`,
+                    user,
+                    algo: {
+                        appId: 'a9449'
+                    }
+                }
+            )
+            if (this.haskey(draw, 'data.prizeConfigName')) {
+                p.log("领取成功....")
+                if (draw.data.prizeConfigName == '红包') {
+                    p.award(draw.data.amount, 'redpacket')
+                }
+            }
+            else {
+                p.log("领取失败....")
+            }
+        }
         for (let i of this.haskey(home, 'data.cumulativeSessionInfo.awardLists')) {
             if (this.haskey(i, 'commonRewardInfo.clickType', 3)) {
                 p.log("正在领取:", i.level)
@@ -76,7 +96,7 @@ export class Main extends Template {
             if (this.haskey(draw, 'data.prizeConfigName')) {
                 p.log("领取成功....")
                 if (draw.data.prizeConfigName == '红包') {
-                    p.log(draw.data.amount, 'redpacket')
+                    p.award(draw.data.amount, 'redpacket')
                 }
             }
             else {
