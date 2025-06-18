@@ -14,6 +14,7 @@ class Ql {
         const abspath = path.dirname(dirpath)
         let iniText = fs.readFileSync(`${abspath}/config/config.ini`, 'UTF-8')
         let obj = ini.parse(iniText)
+        this.panelJson = JSON.parse(fs.readFileSync(`${abspath}/config/panel.json`, 'UTF-8'))
         this.env = obj.env
         if (this.env.QINGLONG_ClientId) {
             this.config = {
@@ -175,6 +176,22 @@ class Ql {
         }
     }
 
+    async delCron(command) {
+        const token = this.token
+        try {
+            const response = await axios.delete(`${this.config.baseURL}/open/crons`, {
+                data: [command.id || command._id],
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('[Error] 删除定时任务失败:', error);
+            throw error;
+        }
+    }
+
     async wait(t) {
         return new Promise(e => setTimeout(e, t))
     }
@@ -207,7 +224,10 @@ class Ql {
         }
         let dicts = {}
         let dir = fs.readdirSync(`${abspath}/parse`);
+        let panelJson = this.panelJson 
         dir.forEach(async function(item, index) {
+            let config = panelJson.script[item] || {}
+            let delList = config.delete || []
             let stat = fs.lstatSync(`${abspath}/parse/` + item)
             if (stat.isDirectory() === true) {
                 if (fs.existsSync(`${iniPath}/${item}.ini`)) {
@@ -282,13 +302,22 @@ import {fileURLToPath, pathToFileURL} from 'url';
                     }
                 }
                 for (let script of fs.readdirSync(`${abspath}/parse/${item}`)) {
-                    try {
-                        if (script.match(/\w+\_\w+\_\w/)) {
-                            let imp = await
-                                import (`${abspath}/parse/${item}/${script}`)
-                            let psyDuck = new imp.Main()
-                            let crontab = psyDuck.crontab()
-                            let code = `
+                    if (delList.includes(script)) {
+                        for (let obj of cronData) {
+                            if (obj.command.includes(script)) {
+                                console.log(`🦊🐼 删除任务:`, script)
+                                await this.delCron(obj)
+                            }
+                        }
+                    }
+                    else {
+                        try {
+                            if (script.match(/\w+\_\w+\_\w/)) {
+                                let imp = await
+                                    import (`${abspath}/parse/${item}/${script}`)
+                                let psyDuck = new imp.Main()
+                                let crontab = psyDuck.crontab()
+                                let code = `
 import path from 'path';
 import {fileURLToPath, pathToFileURL} from 'url';
 !(async () => {
@@ -323,30 +352,31 @@ import {fileURLToPath, pathToFileURL} from 'url';
     }
     process.exit()
 })`
-                            fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
-                                if (err) {
-                                    throw err;
-                                }
-                                console.log(`🐯‍❄️ 写入成功: ${script}`)
-                            })
-                            if (!data[script]) {
-                                dicts[script] = {
-                                    name: `PsyDuck_${psyDuck.profile.title}`,
-                                    schedule: crontab,
-                                    command: `task qitoqito_psyduck/${script}`,
-                                    // labels: label ? [`PsyDuck`] : ''
-                                }
-                                if (label) {
-                                    dicts[script].labels = [`PsyDuck`]
+                                fs.writeFile(`${abspath}/${script}`, code, function(err, data) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    console.log(`🐯‍❄️ 写入成功: ${script}`)
+                                })
+                                if (!data[script]) {
+                                    dicts[script] = {
+                                        name: `PsyDuck_${psyDuck.profile.title}`,
+                                        schedule: crontab,
+                                        command: `task qitoqito_psyduck/${script}`,
+                                        // labels: label ? [`PsyDuck`] : ''
+                                    }
+                                    if (label) {
+                                        dicts[script].labels = [`PsyDuck`]
+                                    }
                                 }
                             }
+                        } catch (e) {
+                            console.log(`🐽🐽️ 写入失败: ${script}`)
                         }
-                    } catch (e) {
-                        console.log(`🐽🐽️ 写入失败: ${script}`)
                     }
                 }
             }
-        })
+        }.bind(this))
         await this.wait(20000)
         let commands = Object.values(dicts)
         for (let i in dicts) {

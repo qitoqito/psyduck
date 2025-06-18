@@ -1,0 +1,13 @@
+{
+    "script": {
+        "jd": {
+            "delete": [
+                "jd_task_niuniu.js",
+                "jd_task_bSignin.js",
+                "jd_task_dsSignin.js",
+                "jd_task_baoxian.js",
+                "jd_task_laputaSignin.js"
+            ]
+        }
+    }
+}
