@@ -36,7 +36,7 @@ export class Main extends Template {
                     url: j.includes('http') ? j : `https://${j}`
                 })
             }
-            let lids = this.unique(this.matchAll(/"linkId"\s*:\s*"([^\"]+)"/g, html))
+            let lids = this.unique(this.matchAll([/"linkId"\s*:\s*"([^\"]+)"/g, /"linkid"\s*:\s*"([^\"]+)"/g], html))
             if (html.includes('lottery-machine')) {
                 for (let linkId of lids) {
                     let lottery = await this.curl({
@@ -162,6 +162,9 @@ export class Main extends Template {
             else if (prizeType == 22) {
                 p.award(amount, 'card')
             }
+            else if (prizeType == 24) {
+                p.log('奖票:', data.prizeName)
+            }
             else if (prizeType) {
                 p.draw(`抽到类型: ${prizeType} ${data.limitStr || data.codeDesc || data.prizeCode} ${data.prizeDesc || data.prizeName}`)
             }
@@ -212,6 +215,55 @@ export class Main extends Template {
                 isOk = 0
                 p.log(`正在运行:`, i.taskTitle || i.subTitle, i.taskType)
                 switch (i.taskType) {
+                    case 'SUBSCRIBE':
+                        let getSub = await this.curl({
+                                'form': `appid=MessageCenter&avifSupport=0&body={"subId":"${this.haskey(i, 'pipeExt.itemId')}"}&build=169896&client=apple&clientVersion=15.1.53&functionId=getSubContent`,
+                                algo: {
+                                    encrypt: true
+                                },
+                                user
+                            }
+                        )
+                        let sub = await this.curl({
+                                'form': `functionId=querySubStatus&body={"subId":"${this.haskey(i, 'pipeExt.itemId')}"}&t=1750345993057&appid=activities_platform&client=ios&clientVersion=15.1.53&platform=3&loginType=2`,
+                                user
+                            }
+                        )
+                        let dt = await this.curl({
+                                'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
+                                'form': `functionId=apsDoTask&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}","pipeExt":${this.dumps(i.pipeExt)}}&t=1738480459228&appid=activities_platform&client=ios&clientVersion=15.0.11&loginType=2&loginWQBiz=wegame`,
+                                algo: {
+                                    appId: '54ed7'
+                                },
+                                user
+                            }
+                        )
+                        if (this.haskey(dt, 'data.userFinishedTimes')) {
+                            p.log("任务完成")
+                            let aw = await this.curl({
+                                    'url': `https://api.m.jd.com/api?functionId=apTaskDrawAward`,
+                                    'form': `functionId=apTaskDrawAward&body={"taskType":"${i.taskType}","taskId":${i.id},"channel":4,"checkVersion":true,"linkId":"${context.linkId}"}&t=1739360342034&appid=activities_platform&client=ios&clientVersion=15.0.11`,
+                                    user,
+                                    algo: {
+                                        appId: 'f0f3f'
+                                    }
+                                }
+                            )
+                            if (this.haskey(aw, 'data.0')) {
+                                for (let j of aw.data) {
+                                    if (j.awardName == "BEAN") {
+                                        p.award(j.awardGivenNumber, 'bean')
+                                    }
+                                    else if (j.awardName == "REDPACKET") {
+                                        p.award(j.awardGivenNumber, 'redpacket')
+                                    }
+                                    else {
+                                        p.log(j)
+                                    }
+                                }
+                            }
+                        }
+                        break
                     case 'SIGN':
                         let sign = await this.curl({
                                 'url': `https://api.m.jd.com/api?functionId=apsDoTask`,
