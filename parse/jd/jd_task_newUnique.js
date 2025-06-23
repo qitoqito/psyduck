@@ -1,5 +1,4 @@
 import {Template} from '../../template.js'
-import * as cheerio from 'cheerio';
 
 export class Main extends Template {
     constructor() {
@@ -23,11 +22,8 @@ export class Main extends Template {
                     user
                 }
             )
-            let $ = cheerio.load(html);
-            let scriptTags = $('script').toArray();
             let data = []
-            for (let script of scriptTags) {
-                let content = $(script).html();
+            for (let content of this.matchAll(/<script>([^\<]+)<\/script>/g, html)) {
                 if (content && content.includes('__react_data__')) {
                     var window = {}
                     eval(content)
