@@ -11,7 +11,8 @@ export class Main extends Template {
                 referer: 'https://pro.m.jd.com/mall/active/4Va8jNzzHPqgTUhxwiTn9PHyVZCB/index.html'
             },
             help: 'main',
-            verify: true
+            verify: true,
+            readme: '如果出现无数据,可能当前主号是黑号,无法获取到数据,请自行设置help为白号pin'
         }
     }
 
@@ -111,7 +112,7 @@ export class Main extends Template {
                                 }
                                 if (this.haskey(doIt, 'data.result.awardTimes')) {
                                     status = 1
-                                    p.log("获取票数:", doIt.data.result.awardTime)
+                                    p.log("获取票数:", doIt.data.result.awardTimes)
                                 }
                                 else {
                                     let reward = await this.curl({
@@ -123,7 +124,7 @@ export class Main extends Template {
                                         }
                                     )
                                     if (this.haskey(reward, 'data.result')) {
-                                        p.log("获取票数:", reward.data.result.awardTime)
+                                        p.log("获取票数:", reward.data.result.awardTimes)
                                         status = 1
                                     }
                                     else {
