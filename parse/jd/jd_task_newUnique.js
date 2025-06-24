@@ -134,31 +134,34 @@ export class Main extends Template {
                         status = 1
                     }
                     else if (extraType == 'assistTaskDetail') {
-                        if (this.help.includes(user)) {
-                            await this.setTemp(user, extra.itemId)
-                        }
-                        if (this.inviter) {
-                            let cc = this.inviter[this.n % this.inviter.length]
-                            this.n++
-                            if (cc.user == user) {
-                                cc = this.inviter[this.n % this.inviter.length]
+                        try {
+                            if (this.help.includes(user)) {
+                                await this.setTemp(user, extra.itemId)
                             }
-                            p.log("正在助力:", cc.user)
-                            let doIt = await this.curl({
-                                    'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${cc.itemId}","assignmentId":"${i.encryptAssignmentId}","tType":"1"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
-                                    user,
-                                    algo: {
-                                        appId: 'ba62b'
-                                    }
+                            if (this.inviter.length) {
+                                let cc = this.inviter[this.n % this.inviter.length]
+                                this.n++
+                                if (cc.user == user && this.inviter[this.n % this.inviter.length]) {
+                                    cc = this.inviter[this.n % this.inviter.length]
                                 }
-                            )
-                            if (this.haskey(doIt, 'data.result.score')) {
-                                status = 1
-                                p.log("助力成功:", doIt.data.result.score)
+                                p.log("正在助力:", cc.user)
+                                let doIt = await this.curl({
+                                        'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${cc.itemId}","assignmentId":"${i.encryptAssignmentId}","tType":"1"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
+                                        user,
+                                        algo: {
+                                            appId: 'ba62b'
+                                        }
+                                    }
+                                )
+                                if (this.haskey(doIt, 'data.result.score')) {
+                                    status = 1
+                                    p.log("助力成功:", doIt.data.result.score)
+                                }
+                                else {
+                                    p.log(this.haskey(doIt, 'data.bizMsg') || doIt)
+                                }
                             }
-                            else {
-                                p.log(this.haskey(doIt, 'data.bizMsg') || doIt)
-                            }
+                        } catch (e) {
                         }
                         status = 1
                     }
