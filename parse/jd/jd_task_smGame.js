@@ -32,17 +32,26 @@ export class Main extends Template {
                 user
             }
         )
-        let getToken = await this.curl({
-                'url': `https://api.m.jd.com/api/arvr_getRequestToken`,
-                'form': `appid=commonActivity&functionId=arvr_getRequestToken&body=${this.getBody({
-                    "rewardType": 6,
-                    "activityId": "ba6e852dd2bc05a1de75b2d2dc9fda305096bcc0",
-                    "appId": "app_440",
-                })}&t=1713402797485`,
-                user
+        for (let i of Array(2)) {
+            var getToken = await this.curl({
+                    'url': `https://api.m.jd.com/api/arvr_getRequestToken`,
+                    'form': `appid=commonActivity&functionId=arvr_getRequestToken&body=${this.getBody({
+                        "rewardType": 6,
+                        "activityId": "ba6e852dd2bc05a1de75b2d2dc9fda305096bcc0",
+                        "appId": "app_440",
+                    })}&t=1713402797485`,
+                    user
+                }
+            )
+            if (this.haskey(getToken, 'data')) {
+                break
             }
-        )
+        }
         let accessToken = this.haskey(getToken, 'data')
+        if (!accessToken) {
+            p.err("获取accessToken失败...")
+            return
+        }
         // 奖项目-正式
         let info3 = await this.curl({
                 'url': `https://api.m.jd.com/api/arvr_queryInteractiveInfoNew`,
