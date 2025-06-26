@@ -136,7 +136,7 @@ export class Main extends Template {
                     else if (extraType == 'assistTaskDetail') {
                         try {
                             if (this.help.includes(user)) {
-                                await this.setTemp(user, extra.itemId)
+                                await this.setTemp(user, extra.itemId, 8640000)
                             }
                             if (this.inviter.length) {
                                 let cc = this.inviter[this.n % this.inviter.length]
