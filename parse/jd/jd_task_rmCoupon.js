@@ -1,5 +1,4 @@
 import {Template} from '../../template.js'
-// import jsonic from 'jsonic'
 
 export class Main extends Template {
     constructor() {
@@ -40,9 +39,9 @@ export class Main extends Template {
                 }
             }
         )
-        // if (typeof list == 'string') {
-        //     list = jsonic.parse(list)
-        // }
+        if (typeof list == 'string') {
+            eval(`list=${list}`)
+        }
         let rm = []
         let reg = new RegExp(context.blackList)
         let status = 0

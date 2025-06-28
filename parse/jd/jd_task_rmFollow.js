@@ -36,6 +36,9 @@ export class Main extends Template {
                     }
                 }
             )
+            if (typeof s == 'string') {
+                eval(`s=${s}`)
+            }
             if (this.haskey(s, 'result.showShopList')) {
                 s = s.result
                 p.log("当前店铺收藏数:", s.totalCount)

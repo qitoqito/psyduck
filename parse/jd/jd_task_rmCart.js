@@ -30,6 +30,9 @@ export class Main extends Template {
                 }
             }
         )
+        if (typeof cart == 'string') {
+            eval(`cart=${cart}`)
+        }
         if (!this.haskey(cart, 'resultData.cartInfo.vendors')) {
             p.err("没有获取到购物车数据")
             return

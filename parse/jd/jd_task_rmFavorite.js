@@ -34,6 +34,9 @@ export class Main extends Template {
                     }
                 }
             )
+            if (typeof s == 'string') {
+                eval(`s=${s}`)
+            }
             if (this.haskey(s, 'followProductList')) {
                 p.log("当前商品收藏数:", s.totalNum)
                 if (s.totalNum>0) {
