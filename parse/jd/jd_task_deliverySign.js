@@ -14,7 +14,7 @@ export class Main extends Template {
             interval: 2000,
             verify: 1,
             headers: {
-                referer: 'https://pro.m.jd.com/mall/active/2dFZxAZeNGpViWwEb5P9J1SE8e2q/index.html'
+                referer: 'https://pro.m.jd.com/mall/active/3Q5H8xmBy4GyPT8xUgqwYYnAa2ns/index.html'
             }
         }
     }
@@ -29,14 +29,14 @@ export class Main extends Template {
         let algo = context.algo || {}
         let sign = await this.curl({
                 'url': `https://api.m.jd.com/api`,
-                'form': `functionId=bean_deliverySign_sign&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.0.25&d_model=&osVersion=15.1.1`,
+                'form': `functionId=bean_deliverySign_sign&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.0.25&d_model=&osVersion=15.1.53`,
                 user,
                 algo: {
                     ...{
                         expire: {
                             'data.bizCode': -102
                         },
-                        appId: 'e88fd'
+                        appId: '987dd'
                     }, ...algo
                 }
             }
@@ -55,7 +55,7 @@ export class Main extends Template {
             p.log(sign)
         }
         let s = await this.curl({
-                'form': `functionId=bean_deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.0.25&d_model=&osVersion=15.1.1`,
+                'form': `functionId=bean_deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.1.53&d_model=&osVersion=15.1.1`,
                 algo: {
                     appId: '0cc57'
                 },
