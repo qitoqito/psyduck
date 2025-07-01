@@ -11,9 +11,11 @@ export class Main extends Template {
             },
             help: 'main',
             verify: true,
-            sync: 1,
+            sync: 3,
             tempKey: 8640000000,
-            turn: 2
+            turn: 2,
+            temp: 't6',
+            readme: "如果没有获取到数据,可能是前面几个号黑号无法获取,请自行设置temp为可运行账号pin",
         }
     }
 
@@ -43,40 +45,40 @@ export class Main extends Template {
                 })
             }
         }
-        // for (let user of this.help.slice(0, 3)) {
-        //     let html = await this.curl({
-        //             'url': `https://pro.m.jd.com/mall/active/4Va8jNzzHPqgTUhxwiTn9PHyVZCB/index.html?utm_medium=tuiguang&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=&utm_source=kong&cu=true`,
-        //             user
-        //         }
-        //     )
-        //     let data = []
-        //     for (let content of this.matchAll(/<script>([^\<]+)<\/script>/g, html)) {
-        //         if (content && content.includes('__react_data__')) {
-        //             var window = {}
-        //             eval(content)
-        //             for (let i of this.haskey(window, '__react_data__.activityData.floorList')) {
-        //                 if (i.template == "SsrCodeTemplate") {
-        //                     data = i
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     if (this.haskey(data, 'providerData.data.result')) {
-        //         let result = data.providerData.data.result
-        //         if (this.haskey(result, 'roundConfig.roundId')) {
-        //             this.code = result.skuList
-        //             let startTime = new Date(result.roundConfig.roundStartTime).getTime() / 1000;
-        //             let endTime = new Date(result.roundConfig.roundEndTime).getTime() / 1000;
-        //             this.shareCode({
-        //                 "roundId": result.roundConfig.roundId,
-        //                 startTime,
-        //                 endTime,
-        //                 title: result.roundConfig.currAwardReserve.title
-        //             })
-        //         }
-        //         break
-        //     }
-        // }
+        for (let user of this.random(this.temp, 3)) {
+            let html = await this.curl({
+                    'url': `https://pro.m.jd.com/mall/active/4Va8jNzzHPqgTUhxwiTn9PHyVZCB/index.html?utm_medium=tuiguang&tttparams=zZ1qguleyJnTGF0IjozOS45NjEwNTQsInVuX2FyZWEiOiIxXzI4MDBfNTU4MzhfMCIsImRMYXQiOiIiLCJwcnN0YXRlIjoiMCIsImFkZHJlc3NJZCI6IjUzODg3NDg3NyIsImxhdCI6IiIsInBvc0xhdCI6MzkuOTYxMDU0LCJwb3NMbmciOjExNi4zMjIwNjEsImdwc19hcmVhIjoiMF8wXzBfMCIsImxuZyI6IiIsInVlbXBzIjoiMC0wLTAiLCJnTG5nIjoxMTYuMzIyMDYxLCJtb2RlbCI6ImlQaG9uZTEzLDMiLCJkTG5nIjoiIn70=&utm_source=kong&cu=true`,
+                    user
+                }
+            )
+            let data = []
+            for (let content of this.matchAll(/<script>([^\<]+)<\/script>/g, html)) {
+                if (content && content.includes('__react_data__')) {
+                    var window = {}
+                    eval(content)
+                    for (let i of this.haskey(window, '__react_data__.activityData.floorList')) {
+                        if (i.template == "SsrCodeTemplate") {
+                            data = i
+                        }
+                    }
+                }
+            }
+            if (this.haskey(data, 'providerData.data.result')) {
+                let result = data.providerData.data.result
+                if (this.haskey(result, 'roundConfig.roundId')) {
+                    this.code = result.skuList
+                    let startTime = new Date(result.roundConfig.roundStartTime).getTime() / 1000;
+                    let endTime = new Date(result.roundConfig.roundEndTime).getTime() / 1000;
+                    this.shareCode({
+                        "roundId": result.roundConfig.roundId,
+                        startTime,
+                        endTime,
+                        title: result.roundConfig.currAwardReserve.title
+                    })
+                }
+                break
+            }
+        }
     }
 
     async main(p) {
