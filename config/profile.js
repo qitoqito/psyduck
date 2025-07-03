@@ -91,7 +91,9 @@ export default {
                     'newtry'
                 ],
                 h5st: {
-                    encrypt: '5cddd8a9dd485cddec1dacdd482e9a8d3ea561ab592828ddec1dacdd5cddc859dd3d2afcec3ddc3dec4a',
+                    xcx: '4.9',
+                    latest: '5.1',
+                    encrypt: 'dd3dfcec5cddd8a9dd485cddec1dacdd4856a5f8281ab2923b2828ddec1dacdd5cddc859dd3ddc5cdde968dd3dec5cdde978',
                     extend: {},
                     storage: {}
                 }
