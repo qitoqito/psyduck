@@ -121,158 +121,177 @@ export class Main extends Template {
             p.info.complete = true
             return
         }
-        let status = 1
-        for (let i of this.haskey(list, 'data.result.taskList')) {
-            if (i.completionFlag) {
-                p.log("任务完成:", i.assignmentName)
-                status = 1
+        else if (this.haskey(list, "data.bizCode", -1002)) {
+            p.log("活动已结束,等待开奖")
+            let reward = await this.curl({
+                    'form': `functionId=newunique_get_reward&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}"}&client=ios&clientVersion=15.0.80`,
+                    user,
+                    algo: {
+                        appId: 'ba62b'
+                    }
+                }
+            )
+            if (this.haskey(reward, 'dasta.result.awwardInfo.beanNum')) {
+                p.award(reward.data.result.awardInfo.beanNum, 'bean')
             }
             else {
-                status = 0
-                let extraType = i.ext.extraType
-                if (this.haskey(i, `ext.${i.ext.extraType}`)) {
-                    let extra = i.ext[extraType]
-                    if (extraType == 'sign1') {
-                        status = 1
-                    }
-                    else if (extraType == 'assistTaskDetail') {
-                        try {
-                            if (this.help.includes(user)) {
-                                await this.setTemp(user, extra.itemId, 8640000)
-                            }
-                            if (this.inviter.length) {
-                                let cc = this.inviter[this.n % this.inviter.length]
-                                this.n++
-                                if (cc.user == user && this.inviter[this.n % this.inviter.length]) {
-                                    cc = this.inviter[this.n % this.inviter.length]
-                                }
-                                p.log("正在助力:", cc.user)
-                                let doIt = await this.curl({
-                                        'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${cc.itemId}","assignmentId":"${i.encryptAssignmentId}","tType":"1"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
-                                        user,
-                                        algo: {
-                                            appId: 'ba62b'
-                                        }
-                                    }
-                                )
-                                if (this.haskey(doIt, 'data.result.score')) {
-                                    status = 1
-                                    p.log("助力成功:", doIt.data.result.score)
-                                }
-                                else {
-                                    p.log(this.haskey(doIt, 'data.bizMsg') || doIt)
-                                }
-                            }
-                        } catch (e) {
+                p.log(this.haskey(reward, 'data.bizMsg') || reward)
+            }
+        }
+        else {
+            let status = 1
+            for (let i of this.haskey(list, 'data.result.taskList')) {
+                if (i.completionFlag) {
+                    p.log("任务完成:", i.assignmentName)
+                    status = 1
+                }
+                else {
+                    status = 0
+                    let extraType = i.ext.extraType
+                    if (this.haskey(i, `ext.${i.ext.extraType}`)) {
+                        let extra = i.ext[extraType]
+                        if (extraType == 'sign1') {
+                            status = 1
                         }
-                        status = 1
-                    }
-                    else if (['shoppingActivity', 'productsInfo', 'browseShop', 'addCart', 'followShop', 'followChannel'].includes(extraType)) {
-                        p.log("正在运行:", i.assignmentName)
-                        for (let j of extra) {
-                            let doIt = await this.curl({
-                                    'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${j.itemId}","assignmentId":"${i.encryptAssignmentId}","actionType":1,"jumpUrl":"${encodeURIComponent(j.url)}"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
-                                    user,
-                                    algo: {
-                                        appId: 'ba62b'
+                        else if (extraType == 'assistTaskDetail') {
+                            try {
+                                if (this.help.includes(user)) {
+                                    await this.setTemp(user, extra.itemId, 8640000)
+                                }
+                                if (this.inviter.length) {
+                                    let cc = this.inviter[this.n % this.inviter.length]
+                                    this.n++
+                                    if (cc.user == user && this.inviter[this.n % this.inviter.length]) {
+                                        cc = this.inviter[this.n % this.inviter.length]
                                     }
-                                }
-                            )
-                            if (this.haskey(doIt, 'data.result')) {
-                                if (i.ext.waitDuration) {
-                                    p.log("正在等待:", i.ext.waitDuration)
-                                    await this.wait(i.ext.waitDuration * 1000)
-                                }
-                                if (this.haskey(doIt, 'data.result.awardTimes')) {
-                                    status = 1
-                                    p.log("获取票数:", doIt.data.result.awardTimes)
-                                }
-                                else {
-                                    let reward = await this.curl({
-                                            'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${j.itemId}","assignmentId":"${i.encryptAssignmentId}","actionType":0,"jumpUrl":"${encodeURIComponent(j.url)}"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
+                                    p.log("正在助力:", cc.user)
+                                    let doIt = await this.curl({
+                                            'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${cc.itemId}","assignmentId":"${i.encryptAssignmentId}","tType":"1"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
                                             user,
                                             algo: {
                                                 appId: 'ba62b'
                                             }
                                         }
                                     )
-                                    if (this.haskey(reward, 'data.result')) {
-                                        p.log("获取票数:", reward.data.result.awardTimes)
+                                    if (this.haskey(doIt, 'data.result.score')) {
                                         status = 1
+                                        p.log("助力成功:", doIt.data.result.score)
                                     }
                                     else {
-                                        status = 0
-                                        p.log(this.haskey(reward, 'bizMsg') || reward)
+                                        p.log(this.haskey(doIt, 'data.bizMsg') || doIt)
                                     }
                                 }
+                            } catch (e) {
                             }
-                            else {
-                                status = 0
-                                p.log(this.haskey(doIt, 'bizMsg') || doIt)
+                            status = 1
+                        }
+                        else if (['shoppingActivity', 'productsInfo', 'browseShop', 'addCart', 'followShop', 'followChannel'].includes(extraType)) {
+                            p.log("正在运行:", i.assignmentName)
+                            for (let j of extra) {
+                                let doIt = await this.curl({
+                                        'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${j.itemId}","assignmentId":"${i.encryptAssignmentId}","actionType":1,"jumpUrl":"${encodeURIComponent(j.url)}"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
+                                        user,
+                                        algo: {
+                                            appId: 'ba62b'
+                                        }
+                                    }
+                                )
+                                if (this.haskey(doIt, 'data.result')) {
+                                    if (i.ext.waitDuration) {
+                                        p.log("正在等待:", i.ext.waitDuration)
+                                        await this.wait(i.ext.waitDuration * 1000)
+                                    }
+                                    if (this.haskey(doIt, 'data.result.awardTimes')) {
+                                        status = 1
+                                        p.log("获取票数:", doIt.data.result.awardTimes)
+                                    }
+                                    else {
+                                        let reward = await this.curl({
+                                                'form': `functionId=newunique_do_task&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","itemId":"${j.itemId}","assignmentId":"${i.encryptAssignmentId}","actionType":0,"jumpUrl":"${encodeURIComponent(j.url)}"}&eu=8366530373630343&fv=2346134393666303&client=ios&clientVersion=13.2.9`,
+                                                user,
+                                                algo: {
+                                                    appId: 'ba62b'
+                                                }
+                                            }
+                                        )
+                                        if (this.haskey(reward, 'data.result')) {
+                                            p.log("获取票数:", reward.data.result.awardTimes)
+                                            status = 1
+                                        }
+                                        else {
+                                            status = 0
+                                            p.log(this.haskey(reward, 'bizMsg') || reward)
+                                        }
+                                    }
+                                }
+                                else {
+                                    status = 0
+                                    p.log(this.haskey(doIt, 'bizMsg') || doIt)
+                                }
                             }
                         }
-                    }
-                    else {
-                    }
-                }
-            }
-        }
-        if (code) {
-            let ary = []
-            for (let i of code) {
-                if (i.voteInfo.status) {
-                    ary.push(i)
-                }
-            }
-            if (ary.length<2) {
-                let ranCode = this.random(code, 2 - ary.length)
-                ary = [...ary, ...ranCode]
-            }
-            for (let _ of this.range(0, 1)) {
-                let i = code[_]
-                p.log("正在投票:", i.name)
-                let pop = await this.curl({
-                        'form': `functionId=newunique_popup&appid=signed_wh5&body={"channelId":"3","skuId":"${i.skuId}","roundId":"${context.roundId}"}&client=ios&clientVersion=15.0.80`,
-                        user,
-                        algo: {
-                            appId: 'ba62b'
+                        else {
                         }
                     }
-                )
-                let count = this.haskey(pop, 'data.result.myVotes')
-                if (_ == 0) {
-                    count = parseInt(count / 2)
                 }
-                for (let _ of this.range(1, count)) {
-                    let vote = await this.curl({
-                            'form': `functionId=newunique_vote&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","skuId":"${i.skuId}"}&client=ios&clientVersion=15.1.53`,
+            }
+            if (code) {
+                let ary = []
+                for (let i of code) {
+                    if (i.voteInfo.status) {
+                        ary.push(i)
+                    }
+                }
+                if (ary.length<2) {
+                    let ranCode = this.random(code, 2 - ary.length)
+                    ary = [...ary, ...ranCode]
+                }
+                for (let _ of this.range(0, 1)) {
+                    let i = code[_]
+                    p.log("正在投票:", i.name)
+                    let pop = await this.curl({
+                            'form': `functionId=newunique_popup&appid=signed_wh5&body={"channelId":"3","skuId":"${i.skuId}","roundId":"${context.roundId}"}&client=ios&clientVersion=15.0.80`,
                             user,
                             algo: {
                                 appId: 'ba62b'
                             }
                         }
                     )
-                    if (this.haskey(vote, 'data.bizCode', -1005)) {
-                        p.log("投票商品数已达上限")
-                        break
+                    let count = this.haskey(pop, 'data.result.myVotes')
+                    if (_ == 0) {
+                        count = parseInt(count / 2)
                     }
-                    else if (this.haskey(vote, 'data.bizCode', -1018)) {
-                        p.log("当前已无可用票数")
-                        break
+                    for (let _ of this.range(1, count)) {
+                        let vote = await this.curl({
+                                'form': `functionId=newunique_vote&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}","skuId":"${i.skuId}"}&client=ios&clientVersion=15.1.53`,
+                                user,
+                                algo: {
+                                    appId: 'ba62b'
+                                }
+                            }
+                        )
+                        if (this.haskey(vote, 'data.bizCode', -1005)) {
+                            p.log("投票商品数已达上限")
+                            break
+                        }
+                        else if (this.haskey(vote, 'data.bizCode', -1018)) {
+                            p.log("当前已无可用票数")
+                            break
+                        }
+                        else if (this.haskey(vote, 'data.result')) {
+                            p.log("投票成功")
+                        }
+                        else {
+                            p.log(vote)
+                            break
+                        }
+                        await this.wait(500)
                     }
-                    else if (this.haskey(vote, 'data.result')) {
-                        p.log("投票成功")
-                    }
-                    else {
-                        p.log(vote)
-                        break
-                    }
-                    await this.wait(500)
                 }
             }
-        }
-        if (status) {
-            p.info.work = true
+            if (status) {
+                p.info.work = true
+            }
         }
     }
 }
