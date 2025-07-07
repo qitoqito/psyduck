@@ -96,7 +96,10 @@ export class Main extends Template {
                 else if (r.roundState == 2) {
                     let re = await this.curl({
                             'url': `https://api.m.jd.com/client.action?functionId=receiveNutrients&body={"monitor_refer":"plant_receiveNutrients","monitor_source":"plant_app_plant_index","roundId":"${r.roundId}","version":"9.2.4.6"}&client=apple&clientVersion=13.2.8&&uuid=0721076da75ec3ea8e5f481e6d68bb4b7420c38d&appid=signed_wh5&partner=&d_brand=iPhone&d_model=iPhone13%2C3&clientVersion=13.1.0&osVersion=13.1.0&client=apple&screen=844*390`,
-                            user
+                            user,
+                            algo: {
+                                appId: 'b56b8'
+                            }
                         }
                     )
                     for (let j of r.bubbleInfos) {
