@@ -16,6 +16,9 @@ export class Main extends Template {
             turn: 2,
             temp: 't6',
             readme: "如果没有获取到数据,可能是前面几个号黑号无法获取,请自行设置temp为可运行账号pin",
+            prompt: {
+                shuffle: `true # 随机选择两个商品进行投票,默认按照算法排序投票`
+            }
         }
     }
 
@@ -243,11 +246,19 @@ export class Main extends Template {
                     }
                 }
                 if (ary.length<2) {
-                    let ranCode = this.random(code, 2 - ary.length)
+                    if (this.profile.shuffle) {
+                        var ranCode = this.random(code, 2 - ary.length)
+                    }
+                    else {
+                        let column = (this.column(code, '', 'skuId'))
+                        let keys = Object.keys(column)
+                        keys.sort()
+                        var ranCode = [column[keys[0]], column[keys[1]]]
+                    }
                     ary = [...ary, ...ranCode]
                 }
                 for (let _ of this.range(0, 1)) {
-                    let i = code[_]
+                    let i = ary[_]
                     p.log("正在投票:", i.name)
                     let pop = await this.curl({
                             'form': `functionId=newunique_popup&appid=signed_wh5&body={"channelId":"3","skuId":"${i.skuId}","roundId":"${context.roundId}"}&client=ios&clientVersion=15.0.80`,
