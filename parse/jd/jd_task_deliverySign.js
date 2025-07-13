@@ -54,18 +54,16 @@ export class Main extends Template {
         else {
             p.log(sign)
         }
-        if (context.award) {
-            let s = await this.curl({
-                    'form': `functionId=bean_deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.1.53&d_model=&osVersion=15.1.1`,
-                    algo: {
-                        appId: '0cc57'
-                    },
-                    user
-                }
-            )
-            if (this.haskey(s, 'data.result.value')) {
-                p.award(s.data.result.value, 'bean')
+        let s = await this.curl({
+                'form': `functionId=bean_deliverySign_continue_award&appid=signed_wh5_ihub&body={"activityId":"${context.activityId}"}&rfs=0000&client=apple&uuid=&build=169743&clientVersion=15.1.53&d_model=&osVersion=15.1.1`,
+                algo: {
+                    appId: '0cc57'
+                },
+                user
             }
+        )
+        if (this.haskey(s, 'data.result.value')) {
+            p.award(s.data.result.value, 'bean')
         }
     }
 }
