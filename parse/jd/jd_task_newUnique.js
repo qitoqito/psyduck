@@ -15,9 +15,9 @@ export class Main extends Template {
             tempKey: 8640000000,
             turn: 2,
             temp: 't6',
-            readme: "如果没有获取到数据,可能是前面几个号黑号无法获取,请自行设置temp为可运行账号pin",
             prompt: {
-                shuffle: `true # 随机选择两个商品进行投票,默认按照算法排序投票`
+                shuffle: `true # 随机选择两个商品进行投票,默认按照算法排序投票`,
+                temp: ' #如果没有获取到数据,可能是前面几个号黑号无法获取,请自行设置为可运行账号pin'
             }
         }
     }
@@ -112,7 +112,7 @@ export class Main extends Template {
             }
         }
         let list = await this.curl({
-                'form': `functionId=newunique_task_panel&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}"}&client=android&clientVersion=13.2.9`,
+                'form': `functionId=newunique_task_panel&appid=signed_wh5&body={"channelId":"3","roundId":"${context.roundId}"}&client=ios&clientVersion=13.2.9`,
                 user,
                 algo: {
                     appId: 'ba62b'
@@ -134,7 +134,7 @@ export class Main extends Template {
                     }
                 }
             )
-            if (this.haskey(reward, 'dasta.result.awwardInfo.beanNum')) {
+            if (this.haskey(reward, 'data.result.awardInfo.beanNum')) {
                 p.award(reward.data.result.awardInfo.beanNum, 'bean')
             }
             else {
