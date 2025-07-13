@@ -169,9 +169,9 @@ export class Main extends Template {
                         }
                     )
                 }
-                if (i.rewardType) {
-                    p.log("已完成:", i.assignmentName, i.type)
-                }
+                    // if (i.rewardType) {
+                    //     p.log("已完成:", i.assignmentName, i.type)
+                // }
                 else if (i.type == 24) {
                     p.log("正在运行:", i.assignmentName, i.type)
                     let accept = await this.curl({
@@ -216,6 +216,9 @@ export class Main extends Template {
                             }
                         }
                     )
+                }
+                else if (i.status == 2) {
+                    p.log("已完成:", i.assignmentName)
                 }
                 else {
                     status = 0
