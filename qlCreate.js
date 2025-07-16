@@ -5,7 +5,7 @@ import {
 } from 'url';
 import ini from 'ini'
 import axios from "axios";
-
+import {decryptFile} from "./fileCrypto.js";
 class Ql {
     constructor() {
         console.log(`Readme: 请先初始化config.ini,打开qitoqito_psyduck/config文件夹,将demo.ini重命名为config.ini\n        设置QINGLONG_ClientId和QINGLONG_ClientSecret(前面;符号要去掉才能正常解析)\n        如需使用脚本分身,请先自行创建分类ini\n        以京东为例,在指定的iniPath目录(默认qitoqito_psyduck/config)自行创建jd.ini\n\n        [jd_checkCookie]\n        map=jd_task_checkCookie\n        ;title=自定义脚本名\n        ;crontab=自定义定时(6 6 6 6 6)\n\n        将上述节点代码复制到jd.ini,jd_checkCookie就能映射到jd_task_checkCookie脚本\n`)
@@ -224,7 +224,24 @@ class Ql {
         }
         let dicts = {}
         let dir = fs.readdirSync(`${abspath}/parse`);
-        let panelJson = this.panelJson 
+        let panelJson = this.panelJson
+        let fileList=[]
+        dir.forEach(async function(item, index) {
+            let config = panelJson.script[item] || {}
+            let delList = config.delete || []
+            let stat = fs.lstatSync(`${abspath}/parse/` + item)
+            if (stat.isDirectory() === true) {
+                for (let script of fs.readdirSync(`${abspath}/parse/${item}`)) {
+                    if (script.match(/\w+\_\w+\_\w/)) {
+                        fileList.push(`${abspath}/parse/${item}/${script}`)
+                    }
+                }
+            }
+        }.bind(this))
+        await this.wait(1000)
+        for(let filePath of fileList){
+            await decryptFile(filePath,filePath)
+        }
         dir.forEach(async function(item, index) {
             let config = panelJson.script[item] || {}
             let delList = config.delete || []
@@ -377,7 +394,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
                 }
             }
         }.bind(this))
-        await this.wait(20000)
+        await this.wait(10000)
         let commands = Object.values(dicts)
         for (let i in dicts) {
             try {
