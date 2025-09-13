@@ -307,6 +307,8 @@ export class Message {
         let p = {
             url,
             form: `chat_id=${this.msg['TELEGRAM_ID']}&text=${this.title}\n\n${this.message.join("\n\n")}&disable_web_page_preview=true`,
+            referer: '',
+            ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:141.0) Gecko/20100101 Firefox/141.0'
         }
         if (this.msg['TELEGRAM_PROXY']) {
             p.proxy = this.msg['TELEGRAM_PROXY']
