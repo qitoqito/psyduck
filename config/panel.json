@@ -10,7 +10,9 @@
                 "jd_task_vote.js",
                 "jd_task_pcSign.js",
                 "jd_task_pcLottery.js",
-                "jd_task_pushRedpacket.js"
+                "jd_task_pushRedpacket.js",
+                "jd_task_union",
+                "jd_task_oSign"
             ]
         }
     }
