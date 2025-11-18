@@ -18,13 +18,13 @@ export default {
                         },
                         referer: "https://prodev.m.jd.com/",
                         shell: true,
-                        request: true,
+                        // request: true,
                         // token: true
                     },
                     'isvjcloud.com': {
                         cookieJar: true,
                         shell: true,
-                        request: true
+                        // request: true
                     },
                     'kai.jd.com': {
                         shell: true
