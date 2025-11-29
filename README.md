@@ -203,7 +203,12 @@ proxy=                           # 代理ip
 > 使用proxyUrl模式,pool,seconds参数必须同时设置
 > 
 > 在config.ini设置为全局参数,如只想作用于某个脚本,可在脚本节点单独设置
-### 5. 注意事项
+### 5. relayApi安装
+> 项目地址: https://github.com/xoyoxoyo/relayApi
+>
+> 该项目实现本地数据转发,解决部分脚本因IP引起的运行问题
+
+### 6. 注意事项
 - 订阅时禁用自动任务管理
 - 确保配置文件格式正确
 - 注意权限设置
