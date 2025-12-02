@@ -47,7 +47,7 @@ export default {
                 },
                 referer: "https://prodev.m.jd.com/",
                 url: "https://api.m.jd.com/api",
-                clientVersion: '15.1.0',
+                clientVersion: '15.2.72',
                 timer: {
                     params: {
                         'url':
@@ -95,7 +95,7 @@ export default {
                 h5st: {
                     xcx: '4.9',
                     latest: '5.2',
-                    encrypt: 'd8dd3dfcec5cddd8a9dd485cdddc1dacdd3d28ec2d5cddbca8d9dd3ddd7c1dec1dacdd5cdd9899dd3dddec1dacdd5cddc859dd3ddc5cdde968dd3d9c5cdde978dd3decec5cddd8a9dd485cddec1dacdd48f25f630cdb05b149282828ddfcdd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28bcec5cddfceca8d9dd485cddc8b919a9b878a9dd3dddcc1ddc1dacdd5cdd9899dd3ddddc1dacdd5cddc859dd3ddc5cdde968dd3d9c5cdde978dd3d6c5cdde9',
+                    encrypt: 'dde9d8dd3dccec5cddd8a9dd485cdddc1dacdd3d28ec2d5cddbca8d9dd3ddd7c1dec1dacdd5cdd9899dd3dddec1dacdd5cddc859dd3ddc5cdde968dd3d9c5cdde978dd3decec5cddd8a9dd485cddec1dacdd481ee6a2454a6fc21e282828ddec2ddd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28bcec5cddfceca8d9dd485cddc8b919a9b878a9dd3dddbc1ddc1dacdd5cdd9899dd3dddbc1ddc1dacdd5cddc859dd3ddc5cdde968dd3d9c5cdde978dd3ddcec5c',
                     extend: {},
                     storage: {}
                 }
