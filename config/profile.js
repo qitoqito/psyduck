@@ -95,7 +95,7 @@ export default {
                 h5st: {
                     xcx: '4.9',
                     latest: '5.2',
-                    encrypt: 'd3ddd9c1ddc1dacdd5cddc859dd3ddc5cdde968dd3dbc5cdde978dd3dfcec5cdde9d8dd3d6c5cddd8a9dd485cdddc1dacdd482fc53da267fe68f2282828ddfcdd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28bcec5cddfceca8d9dd485cddc8b919a9b878a9dd3ddd9c1ddc1dacdd5cdd9899d',
+                    encrypt: '3ddd8c1ddc1dacdd5cddc859dd3ddc5cdde968dd3dcc5cdde978dd3decec5cdde9d8dd3ddcec5cddd8a9dd485cdddc1dacdd4814784e9dac2387a6282828ddfcdd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28bcec5cddfceca8d9dd485cddc8b919a9b878a9dd3ddd8c1ddc1dacdd5cdd9899dd',
                     extend: {},
                     storage: {}
                 }
