@@ -1,6 +1,7 @@
 
 ## 一、快速开始 🚀
-
+### 0. 一键安装(bug龙终端执行)
+```git clone https://github.com/qitoqito/onekey.git && cd onekey && sh ./psyduck.sh```
 ### 1. 订阅配置
 ```markdown
 仓库地址：https://github.com/qitoqito/psyduck.git
