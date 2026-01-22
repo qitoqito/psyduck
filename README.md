@@ -23,7 +23,7 @@
    QINGLONG_ClientId=your_client_id
    QINGLONG_ClientSecret=your_client_secret
    ```
-   > 获取路径：青龙面板 → 系统设置 → 应用设置 → 创建应用 → 权限 → 环境变量,定时任务
+   > 获取路径：青龙面板 → 系统设置 → 应用设置 → 创建应用 → 权限 → 环境变量,定时任务,订阅管理
    ```ini
    [cache]
    type=缓存类型
