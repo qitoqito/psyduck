@@ -1,7 +1,28 @@
+## 零、补充
+使用IPV4网络有诸多限制,需要使用IPV6
+目前网站限制很多,还需要安装relayApi,项目地址: https://github.com/xoyoxoyo/relayApi
+```如果安装了relayApi
+默认是不会开启转发服务的
+需要在脚本配置添加 relay=true
+
+如果要开启全局转发autoRelay,在config.ini修改
+[env]
+autoRelay=true
+
+如果不想全局使用,只想在某一个脚本中使用,就单独添加脚本变量
+relay=true
+
+如果开启了全局转发,但又不想某一个脚本使用,就在脚本变量添加
+relay=false
+```
 
 ## 一、快速开始 🚀
 ### 0. 一键安装(bug龙终端执行)
-```git clone https://github.com/qitoqito/onekey.git && cd onekey && sh ./psyduck.sh```
+```
+git clone https://github.com/qitoqito/onekey.git && cd onekey && sh ./psyduck.sh
+
+# 一键安装完成后,还需自行修改config.ini开启所需功能
+```
 ### 1. 订阅配置
 ```markdown
 仓库地址：https://github.com/qitoqito/psyduck.git
