@@ -230,6 +230,7 @@ class Ql {
         dir.forEach(async function(item, index) {
             let config = panelJson.script[item] || {}
             let delList = config.delete || []
+
             let stat = fs.lstatSync(`${abspath}/parse/` + item)
             if (stat.isDirectory() === true) {
                 for (let script of fs.readdirSync(`${abspath}/parse/${item}`)) {
@@ -246,6 +247,7 @@ class Ql {
         dir.forEach(async function(item, index) {
             let config = panelJson.script[item] || {}
             let delList = config.delete || []
+            let rmList=config.remove || []
             let stat = fs.lstatSync(`${abspath}/parse/` + item)
             if (stat.isDirectory() === true) {
                 if (fs.existsSync(`${iniPath}/${item}.ini`)) {
@@ -328,6 +330,28 @@ import {fileURLToPath, pathToFileURL} from 'url';
                                 await this.delCron(obj)
                             }
                         }
+                    }
+                     else if(rmList.includes(script)){
+                        for (let obj of cronData) {
+                            if (obj.command.includes(script)) {
+                                console.log(`🦊🐼 删除任务:`, script)
+                                await this.delCron(obj)
+                            }
+                        }
+                        fs.unlink(`${abspath}/parse/${item}/${script}`, (err) => {
+                            if (err) {
+                                // console.error('删除文件时发生错误:', err);
+                                return;
+                            }
+                            console.log('🐼🦊 文件删除:',script);
+                        });
+                        fs.unlink(`${abspath}/${script}`, (err) => {
+                            if (err) {
+                                // console.error('删除文件时发生错误:', err);
+                                return;
+                            }
+                            console.log('🐼🦊 文件删除:',script);
+                        });
                     }
                     else {
                         try {
