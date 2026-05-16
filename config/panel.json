@@ -15,7 +15,16 @@
                 "jd_task_pcSign.js",
                 "jd_task_pcLottery.js",
                 "jd_task_pushRedpacket.js",
-                "jd_task_smCode.js"
+                "jd_task_smCode.js",
+                "jd_task_groupHb.js",
+                "jd_task_horse.js",
+                "jd_task_joyFly.js",
+                "jd_task_laputaSign.js",
+                "jd_task_oSign.js",
+                "jd_task_suchao.js",
+                "jd_task_weGame.js",
+                "jd_task_wxFarm.js",
+                "jd_task_xiaoge.js"
             ]
         }
     }
