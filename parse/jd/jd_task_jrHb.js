@@ -5,13 +5,13 @@ export class Main extends Template {
     constructor() {
         super()
         this.profile = {
-            title: '京东金融赚京豆',
-            headers: {
-                referer: 'https://show.jd.com/m/RkO0AE9rKrYy6ZDd'
-            },
+            title: '京东金融天天领红包',
             sync: 1,
             verify: 1,
             crontab: 3,
+            headers: {
+                referer: 'https://fu.jr.jd.com'
+            },
             prompt: {
                 channelCode: '活动id'
             }
@@ -19,31 +19,31 @@ export class Main extends Template {
     }
 
     async prepare() {
+        await this.field('channelCode')
         let ua = this.userAgents().jd
         let resourceLoader = new jsdom.ResourceLoader({
             userAgent: ua,
-            "referer": "https://iu.jr.jd.com/",
+            "referer": "https://fc.jr.jd.com/",
         });
         let virtualConsole = new jsdom.VirtualConsole();
         this.jsConfig = {
-            "url": "https://iu.jr.jd.com/",
-            "referer": "https://iu.jr.jd.com/",
+            "url": "https://ms.jr.jd.com/",
+            "referer": "https://fc.jr.jd.com/",
             "userAgent": ua,
             runScripts: "dangerously",
             resources: resourceLoader,
             includeNodeLocations: true,
             storageQuota: 10000000,
             pretendToBeVisual: true,
-            virtualConsole,
-        };
+            virtualConsole
+        }
         let JSDOM = jsdom.JSDOM
-        let a = new JSDOM(`<body><script src="https://jrsecstatic.jdpay.com/jr-sec-dev-static/aar2.min.js"></script> <script src="https://m.jr.jd.com/common/jssdk/jrbridge/2.0.0/jrbridge.js"></script>   <script src="https://jrsecstatic.jdpay.com/jr-sec-dev-static/cryptico.min.js"></script>  </body>`, this.jsConfig)
-        await this.wait(3000)
+        let a = new JSDOM(`<body><script src="https://jrsecstatic.jdpay.com/jr-sec-dev-static/aar2-2.1.0.min.js"></script>`, this.jsConfig)
+        await this.wait(2000)
         if (a.window.AAR2) {
             a.window.AAR2.init();
             this.crypto = {
                 aar: new a.window.AAR2(),
-                cry: a.window.cryptico
             }
         }
         else {
@@ -56,37 +56,46 @@ export class Main extends Template {
         let user = p.data.user;
         let context = p.context;
         const aar = this.crypto.aar
+        let nonce = aar.nonce()
+        let signature = aar.sign(this.dumps({
+            "channelCode": context.channelCode,
+            "aksSignId": "WumYDnHUkh"
+        }), nonce)
         let info = await this.getInfo(user, 'jsTk') || {}
         let device = {
             deviceInfo: {
                 "jsToken": "",
                 "fp": this.md5(new Date().getTime().toString()),
-                // "sdkToken": `jdd01YG5AHZNQU4TUXDWWHFZ7G5SAAJCXWGQWUMQPTWY6BVJJMTTEDYJVZXJSSF3ZHX2UFPU26WZJWZN4GY7TS4QAKPSMUCCDJSBBUTS5AFI01234567`,
                 "eid": info.eid || `FQ7Z2DTGYZSJM5FKY${this.rand(10, 99)}JLAURRHP2UZHK2ID7554EMNWWNNSK3JBCTLTR45IOP3Z5K3YJHOG${this.rand(10, 99)}SJAOB${this.rand(10, 99)}KVS3RH7G2U`,
             },
         }
-        var nonce = aar.nonce()
-        var signature = aar.sign(this.dumps({
-            "channelCode": context.channelCode,
-            PIN: user
-        }), nonce)
-        let mile = await this.curl({
-                'url': `https://ms.jr.jd.com/gw2/generic/Mission/h5/m/queryMilePost`,
+        let
+            params = {
+                "channelCode": context.channelCode,
+                "env": "JRAPP",
+                "systemEnv": "IOS",
+                "jrAppVersion": "8.1.10",
+                nonce,
+                signature,
+                "errorCode": "00000",
+                "type": "100",
+                "aksSignId": "WumYDnHUkh"
+            }
+        let query = await this.curl({
+                'url': `https://ms.jr.jd.com/gw/generic/mission/h5/m/queryMission`,
                 json: {
-                    "reqData": {
-                        "source": "mdH5Pagedeploy",
-                        "token": "TVBaZRYGYS",
-                        "channelCode": context.channelCode,
-                        "milePostIdList": context.milePostIdList || [115],
-                        "queryMissionFlag": 2,
-                        "deviceInfo": device.deviceInfo
-                    }
+                    "reqData": this.dumps(params),
                 },
-                user
+                user,
+                algo: {
+                    expire: {
+                        "resultCode": 3,
+                    }
+                }
             }
         )
-        // console.log(mile)
-        let data = this.haskey(mile, 'resultData.data.0.missionList')
+        // console.log(query)
+        let data = this.haskey(query, 'resultData.data')
         let status = 1
         if (data) {
             for (let i of data) {
@@ -127,6 +136,7 @@ export class Main extends Template {
                                 user
                             }
                         )
+                        // console.log(jump)
                         if (this.haskey(jump, 'resultData.success')) {
                             if (i.awards[0].awardName == '京豆') {
                                 p.award(i.awards[0].awardRealNum, 'bean')
@@ -154,4 +164,3 @@ export class Main extends Template {
         }
     }
 }
-
