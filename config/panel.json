@@ -24,7 +24,14 @@
                 "jd_task_suchao.js",
                 "jd_task_weGame.js",
                 "jd_task_xiaoge.js",
-                "jd_task_jijin.js"
+                "jd_task_jijin.js",
+                "jd_task_chuxu.js",
+                "jd_task_videoHb.js",
+                "jd_task_jutou.js",
+                "jd_task_hall.js",
+                "jd_task_drainage.js",
+                "jd_task_chatReward.js",
+                "jd_task_3c.js"
             ]
         }
     }
