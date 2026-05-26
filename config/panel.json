@@ -31,7 +31,8 @@
                 "jd_task_hall.js",
                 "jd_task_drainage.js",
                 "jd_task_chatReward.js",
-                "jd_task_3c.js"
+                "jd_task_3c.js",
+                "jd_task_wanyiwan.js"
             ]
         }
     }
