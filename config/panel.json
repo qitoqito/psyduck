@@ -3,7 +3,8 @@
         "jd": {
             "delete": [
                 "jd_task_manghe.js",
-                "jd_task_guobu.js"
+                "jd_task_guobu.js",
+                "jd_task_union.js"
             ],
             "remove":[
                 "jd_task_niuniu.js",
