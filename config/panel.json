@@ -42,7 +42,6 @@
                 "jd_task_finshop.js",
                 "jd_task_manghe.js",
                 "jd_task_guobu.js",
-                "jd_task_eBean.js",
                 "jd_task_freeOrder.js",
                 "jd_task_luban.js"
             ]
