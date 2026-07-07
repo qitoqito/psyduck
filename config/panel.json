@@ -45,8 +45,7 @@
                 "jd_task_guobu.js",
                 "jd_task_freeOrder.js",
                 "jd_task_luban.js",
-                "jd_task_rightsCenter.js",
-
+                "jd_task_rightsCenter.js"
             ]
         }
     }
