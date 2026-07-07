@@ -2,6 +2,7 @@
     "script": {
         "jd": {
             "delete": [
+                "jd_task_deliverySign.js",
                 "jd_task_jiadian.js",
                 "jd_task_smAnswer.js",
                 "jd_task_smGame.js",
@@ -44,7 +45,8 @@
                 "jd_task_guobu.js",
                 "jd_task_freeOrder.js",
                 "jd_task_luban.js",
-                "jd_task_rightsCenter.js"
+                "jd_task_rightsCenter.js",
+
             ]
         }
     }
