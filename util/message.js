@@ -39,6 +39,31 @@ export class Message {
             if (this.msg.hasOwnProperty('WXAM_TOKEN')) {
                 await this.wxamNotify()
             }
+            if (this.msg.hasOwnProperty('GOTIFY_TOKEN')) {
+                await this.gotifyNotify()
+            }
+        }
+    }
+
+    async gotifyNotify() {
+        try {
+            let url = this.msg['GOTIFY_URL'] + '/message'
+            let s = await this.func.curl({
+                    url,
+                    headers: {
+                        'X-Gotify-Key': this.msg['GOTIFY_TOKEN'],
+                    },
+                    form: `title=${encodeURIComponent(this.title)}&message=${encodeURIComponent(this.message.join("\n\n"))}&priority=5`,
+                }
+            )
+            if (s.id) {
+                console.log('[Message] Gotify发送通知消息成功🎉')
+            }
+            else {
+                console.log(`[Message] Gotify发送通知消息失败`)
+            }
+        } catch (e) {
+            console.log("[Message] Gotify发送通知消息失败")
         }
     }
 
@@ -106,14 +131,16 @@ export class Message {
                         options = {
                             msgtype: 'mpnews',
                             mpnews: {
-                                articles: [{
-                                    title: `${this.title}`,
-                                    thumb_media_id: `${am[4]}`,
-                                    author: `智能助手`,
-                                    content_source_url: ``,
-                                    content: `${html}`,
-                                    digest: `${message}`
-                                }]
+                                articles: [
+                                    {
+                                        title: `${this.title}`,
+                                        thumb_media_id: `${am[4]}`,
+                                        author: `智能助手`,
+                                        content_source_url: ``,
+                                        content: `${html}`,
+                                        digest: `${message}`
+                                    }
+                                ]
                             }
                         }
                 }
