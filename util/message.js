@@ -48,12 +48,13 @@ export class Message {
     async gotifyNotify() {
         try {
             let url = this.msg['GOTIFY_URL'] + '/message'
+            let priority = this.msg['GOTIFY_PRIORITY'] || 2
             let s = await this.func.curl({
                     url,
                     headers: {
                         'X-Gotify-Key': this.msg['GOTIFY_TOKEN'],
                     },
-                    form: `title=${encodeURIComponent(this.title)}&message=${encodeURIComponent(this.message.join("\n\n"))}&priority=5`,
+                    form: `title=${encodeURIComponent(this.title)}&message=${encodeURIComponent(this.message.join("\n\n"))}&priority=${priority}`,
                 }
             )
             if (s.id) {
