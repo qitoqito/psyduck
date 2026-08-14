@@ -8,6 +8,9 @@ export default {
     psyDuck: {
         config: {
             jd: {
+                ja3:{
+                    functionId:["apStartTaskTime"]
+                },
                 userName: "pt_pin\\s*=\\s*([^;]+)",
                 configuration: {
                     'https://api.m.jd.com': {
