@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@babel/runtime": "^7.28.6",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "crypto-js": "^4.2.0",
@@ -8,6 +9,7 @@
     "happy-dom": "^17.0.0",
     "https": "^1.0.0",
     "ini": "^5.0.0",
+    "javascript-proxy-headers": "^0.2.2",
     "jsdom": "^26.0.0",
     "json5": "^2.2.3",
     "jsonic": "^2.16.0",
@@ -27,7 +29,6 @@
   "name": "psyduck",
   "version": "1.0.0",
   "main": "main.js",
-  "devDependencies": {},
   "scripts": {
     "start": "node main.js",
     "test": "node create.js"
