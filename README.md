@@ -1,20 +1,3 @@
-## 零、补充
-使用IPV4网络有诸多限制,需要使用IPV6
-目前网站限制很多,还需要安装relayApi,项目地址: https://github.com/xoyoxoyo/relayApi
-```如果安装了relayApi
-默认是不会开启转发服务的
-需要在脚本配置添加 relay=true
-
-如果要开启全局转发autoRelay,在config.ini修改
-[env]
-autoRelay=true
-
-如果不想全局使用,只想在某一个脚本中使用,就单独添加脚本变量
-relay=true
-
-如果开启了全局转发,但又不想某一个脚本使用,就在脚本变量添加
-relay=false
-```
 
 ## 一、快速开始 🚀
 ### 0. 一键安装(bug龙终端执行)
@@ -62,11 +45,6 @@ git clone https://github.com/qitoqito/onekey.git && cd onekey && sh ./psyduck.sh
    cd /ql/data/scripts/qitoqito_psyduck/
    npm install
    ```
-4. 安装LibreSSL
-    ```bash
-    cd /ql/data/scripts/qitoqito_psyduck/sh && chmod +x libressl.sh && ./libressl.sh && node ./libressl.js
-    ```
-    > 安装完成,在config.ini添加curlPath=/opt/psyduck/curl/bin/psyduck-curl
 4. 将Bug龙订阅的执行后改为
    ```
    cp -a /ql/data/repo/qitoqito_psyduck/. /ql/data/scripts/qitoqito_psyduck &&  task qitoqito_psyduck/qlCreate.js now
@@ -225,10 +203,6 @@ proxy=                           # 代理ip
 > 使用proxyUrl模式,pool,seconds参数必须同时设置
 > 
 > 在config.ini设置为全局参数,如只想作用于某个脚本,可在脚本节点单独设置
-### 5. relayApi安装
-> 项目地址: https://github.com/xoyoxoyo/relayApi
->
-> 该项目实现本地数据转发,解决部分脚本因IP引起的运行问题
 
 ### 6. 注意事项
 - 订阅时禁用自动任务管理
@@ -250,6 +224,5 @@ proxy=                           # 代理ip
    - 检查网络连接
 4. 活动火爆
    - Docker容器网络选择host
-   - 安装libressl
 
  

@@ -131,12 +131,28 @@ export default {
     psyDuck: {
         config: {
             jd: {
-                ja3: {
-                    functionId: ["apStartTaskTime"]
-                },
                 userName: "pt_pin\\s*=\\s*([^;]+)",
                 configuration: {
                     'https://api.m.jd.com': {
+                        executing: {
+                            query: {
+                                functionId: {
+                                    apStartTaskTime: {
+                                        ua: {
+                                            value: "wechat",
+                                            rule: {
+                                                match: {
+                                                    cookie: /pt_key\s*=\s*AA/
+                                                }
+                                            }
+                                        },
+                                        ja3: {
+                                            value: true
+                                        }
+                                    }
+                                }
+                            },
+                        },
                         agent: {
                             rejectUnauthorized: false,
                             ciphers: "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256",
@@ -145,7 +161,7 @@ export default {
                         referer: "https://prodev.m.jd.com/",
                         shell: true,
                         enhance: {
-                            iphone: 'platform=3&loginType=2&loginWQBiz=wegame&build=170469&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&lang=zh_CN&osVersion=15.1.1&partner=-1&ext={"appType":"jdapp","systemType":"ios","bigScreen":false,"pageUrl":"https%3A%2F%2Fpro.m.jd.com%2Fmall%2Factive%2FB2Y13x641hwWfpsoRenCzfbz4jR%2Findex.html"}&cthr=1',
+                            iphone: 'platform=3&loginType=2&loginWQBiz=wegame&build=170613&screen=390*844&networkType=wifi&d_brand=iPhone&d_model=iPhone13,3&lang=zh_CN&osVersion=15.1.1&partner=-1&ext={"appType":"jdapp","systemType":"ios","bigScreen":false,"pageUrl":"https%3A%2F%2Fpro.m.jd.com%2Fmall%2Factive%2FB2Y13x641hwWfpsoRenCzfbz4jR%2Findex.html"}&cthr=1',
                             android: 'platform=3&loginType=2&loginWQBiz=wegame&build=100987&screen=393*818&networkType=wifi&d_brand=Xiaomi&d_model=MI 8&lang=zh_CN&osVersion=10&partner=xiaomi001&&ext={"appType":"jdapp","systemType":"android","bigScreen":false,"pageUrl":"https%3A%2F%2Fpro.m.jd.com%2Fmall%2Factive%2FB2Y13x641hwWfpsoRenCzfbz4jR%2Findex.html"}&cthr=1',
                             weixin: 'osVersion=AndroidOS&screen=400*833&d_brand=Xiaomi&d_model=Xiaomi&lang=zh-CN&networkType=&openudid=&aid=&oaid=&ext=%7B%22idfa%22%3A%22%22%7D',
                             wechat: 'osVersion=IOS&screen=390*844&d_brand=iApple&d_model=iPhone&lang=zh-CN&networkType=&openudid=&aid=&oaid=&ext=%7B%22idfa%22%3A%22%22%7D'
@@ -177,6 +193,7 @@ export default {
                 referer: "https://prodev.m.jd.com/",
                 url: "https://api.m.jd.com/api",
                 clientVersion: '15.9.30',
+                build: '170613',
                 timer: {
                     params: {
                         'url':
