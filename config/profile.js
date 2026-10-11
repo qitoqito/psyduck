@@ -243,7 +243,32 @@ export default {
                     latest: '5.3',
                     encrypt: 'e968dd3ddc5cdde978dd3decec5cdde9d8dd3dfcec5cddd8a9dd485cddcc1dacdd3d28ddfc1ddc1dacdd5cdd9899dd3dddfc1ddc1dac78c978dd5cddc859dd485cddfc1ddc1dac78c978dd3d28dddc1d6c1dbcdd5cdd9899dd3ddddc1d6c1dbc78c978dd5cddc859dd485cdddc1d6c1dbc78c978dd48839ad7775d86fe6b2828dd8cb9cca98cbc99c99c99bcdcdcb9aca9b999d9ccccdca9c9bc7ce9d9d9ec9ce9dd5cddacb929dd3d28ddfcdd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28bc5cddececa8d9dd3dbcec5cddfceca8d9dd485cddc8b919a9b878a9dd3dddac1dcc1dacdd5cdd9899dd3dddac1dcc1dacdd5cddc859dd3dbc5cdd',
                     extend: {},
-                    storage: {}
+                    storage: {},
+                    platform: [
+                        {
+                            script: ['jd_task_circle'],
+                            extend: {
+                                bu1: '0.1.6',
+                            },
+                        },
+                        {
+                            script: ['jd_task_joyPark'],
+                            extend: {
+                                bu1: '0.1.7',
+                            },
+                        },
+                        {
+                            script: ['jd_task_farmNew', 'jd_task_dwapp'],
+                            extend: {
+                                bu1: '0.1.9',
+                            },
+                        }
+                    ],
+                    extra: {
+                        '0.1.9': {
+                            storages: {bu1: '0.2.0'}
+                        }
+                    }
                 }
             }
         },
