@@ -7,8 +7,7 @@
                 "jd_task_smAnswer.js",
                 "jd_task_smGame.js",
                 "jd_task_smLottery.js",
-                "jd_task_superMarket.js",
-                "jd_task_union.js"
+                "jd_task_superMarket.js"
             ],
             "remove":[
                 "jd_task_niuniu.js",
