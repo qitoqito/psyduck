@@ -204,6 +204,9 @@ export default {
                 },
                 prepare: [
                     {
+                        'eval': "_curlRouting‌"
+                    },
+                    {
                         'eval': '_inviteJson',
                         'haskey': 'inviteJson',
                     },
