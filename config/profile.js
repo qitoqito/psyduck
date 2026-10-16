@@ -244,7 +244,7 @@ export default {
                 h5st: {
                     xcx: '4.9',
                     latest: '5.3',
-                    encrypt: '5cddd8a9dd485cddcc1dacdd3d28ddfc1ddc1dacdd5cdd9899dd3dddfc1ddc1dac78c978dd5cddc859dd485cddfc1ddc1dac78c978dd3d28dddc1d6c1dbcdd5cdd9899dd3ddddc1d6c1dbc78c978dd5cddc859dd485cdddc1d6c1dbc78c978dd3d28ddfc1ddc1dbcdd5cdd9899dd3dddfc1ddc1dbc78c978dd5cddc859dd485cddfc1ddc1dbc78c978dd48746a7c8e31ab49fa2828dda9b9dc9c7cc9ec8c7ccccccce9c9dc7cfc99a9c9dcecfccc8cd98cc98ce9dcc9dd5cddacb929dd3d28ddec2ddd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28cc5cddececa8d9dd3dacec5cddfceca8d9dd485cddc8b919a9b878a9dd3ddd9c1dcc1dacdd5cdd9899dd3ddd9c1dcc1dacdd5cddc859dd3dcc5cdde968dd3dcc5cdde978dd3ddcec5cdde9d8dd3d6c',
+                    encrypt: '9d8dd3d6c5cddd8a9dd485cddcc1dacdd3d28ddfc1ddc1dacdd5cdd9899dd3dddfc1ddc1dac78c978dd5cddc859dd485cddfc1ddc1dac78c978dd3d28dddc1d6c1dbcdd5cdd9899dd3ddddc1d6c1dbc78c978dd5cddc859dd485cdddc1d6c1dbc78c978dd3d28ddfc1ddc1dbcdd5cdd9899dd3dddfc1ddc1dbc78c978dd5cddc859dd485cddfc1ddc1dbc78c978dd48388b67513e61c5b82828dd8cb9d9ec9c6cfcb999a9a98c9cfcfcac996cecfcccbcccdc7cacb99cc9ecbc99dd5cddacb929dd3d28ddec2ddd5cddbca8d9dd485cddc8a989e9d809b8c8dd3d28ec5cddaceca8d9dd3dcc5cddececa8d9dd3d8cec5cddfceca8d9dd485cddc8b919a9b878a9dd3ddd9c1dcc1dacdd5cdd9899dd3ddd9c1dcc1dacdd5cddc859dd3dcc5cdde968dd3dcc5cdde978dd3ddcec5cdde',
                     extend: {},
                     storage: {},
                     platform: [
