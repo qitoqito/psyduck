@@ -9,6 +9,8 @@ https://github.com/parseurl/relayPool
 
 https://github.com/mkr-0920/ipv6_proxy_pool_rust
 
+https://github.com/stmtc233/ipv6-proxy-pool
+
 https://github.com/XiaoMiku01/go-proxy-ipv6-pool
 ```
 
