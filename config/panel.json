@@ -2,15 +2,15 @@
     "script": {
         "jd": {
             "disabled": [
+            ],
+            "delete": [
+                "jd_task_jiadian.js",
                 "jd_task_deliverySign.js",
                 "jd_task_smAnswer.js",
                 "jd_task_smGame.js",
                 "jd_task_smLottery.js",
                 "jd_task_superMarket.js",
                 "jd_task_storeContent.js"
-            ],
-            "delete": [
-                "jd_task_jiadian.js"
             ],
             "remove": [
                 "jd_task_niuniu.js",
