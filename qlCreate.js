@@ -146,6 +146,43 @@ class Ql {
         }
     }
 
+    // 禁用定时任务
+    async disableCrons(cronIds) {
+        const token = this.token
+        console.log(cronIds)
+        try {
+            const response = await axios.put(`${this.config.baseURL}/open/crons/disable`, {
+                ids: cronIds.map(d=> parseInt(d))
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('[Error] 禁用qinglong任务失败');
+            throw error;
+        }
+    }
+
+    // 启用定时任务（可选）
+    async enableCrons(cronIds) {
+        const token = this.token
+        try {
+            const response = await axios.put(`${this.config.baseURL}/open/crons/enable`, {
+                ids: cronIds
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('[Error] 启用qinglong任务失败');
+            throw error;
+        }
+    }
+
     // 获取任务日志
     async getCronLogs(cronId) {
         const token = this.token
@@ -224,9 +261,12 @@ class Ql {
             }
         }
         let dicts = {}
+        let disabledIds = new Set()       // 已有任务的 id（用于最后禁用）
+        let disabledScripts = new Set()   // 被标记禁用的脚本名（用于创建后收集新 id）
         let dir = fs.readdirSync(`${abspath}/parse`);
         let panelJson = this.panelJson
         let fileList = []
+
         dir.forEach(async function(item, index) {
             let config = panelJson.script[item] || {}
             let delList = config.delete || []
@@ -244,10 +284,12 @@ class Ql {
         for (let filePath of fileList) {
             await decryptFile(filePath, filePath)
         }
+
         dir.forEach(async function(item, index) {
             let config = panelJson.script[item] || {}
             let delList = config.delete || []
-            let rmList=config.remove || []
+            let rmList = config.remove || []
+            let disabledList = config.disabled || []
             let stat = fs.lstatSync(`${abspath}/parse/` + item)
             if (stat.isDirectory() === true) {
                 if (fs.existsSync(`${iniPath}/${item}.ini`)) {
@@ -287,7 +329,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
             }
         }
     }
-    let jsPath = pathToFileURL(\`\${abspath}/parse/\${type}/${map}.js\`).href
+    let jsPath = pathToFileURL(\`\${abspath}/parse/\${type}/\${map}.js\`).href
     let psyDuck = await import (jsPath)
     let main = new psyDuck.Main()
     await main.init(params)
@@ -305,15 +347,28 @@ import {fileURLToPath, pathToFileURL} from 'url';
                                     }
                                     console.log(`🐯‍❄️ 写入成功: ${filename}.js`)
                                 })
+
+                                // 若该分身脚本被标记禁用
+                                if (disabledList.includes(`${filename}.js`)) {
+                                    disabledScripts.add(`${filename}.js`)
+                                    for (let obj of cronData) {
+                                        if (obj.command.includes(`${filename}.js`)) {
+                                            disabledIds.add(obj.id || obj._id)
+                                        }
+                                    }
+                                }
+
                                 if (!data[`${filename}.js`]) {
                                     dicts[`${filename}.js`] = {
                                         name: `PsyDuck_${title}`,
                                         schedule: crontab,
                                         command: `task qitoqito_psyduck/${filename}.js`,
-                                        // labels: label ? [`PsyDuck`] : ''
                                     }
                                     if (label) {
                                         dicts[`${filename}.js`].labels = [`PsyDuck`]
+                                    }
+                                    if (disabledList.includes(`${filename}.js`)) {
+                                        dicts[`${filename}.js`].status = 0
                                     }
                                 }
                             } catch (e) {
@@ -331,7 +386,7 @@ import {fileURLToPath, pathToFileURL} from 'url';
                             }
                         }
                     }
-                     else if(rmList.includes(script)){
+                    else if (rmList.includes(script)) {
                         for (let obj of cronData) {
                             if (obj.command.includes(script)) {
                                 console.log(`🦊🐼 删除任务:`, script)
@@ -340,22 +395,31 @@ import {fileURLToPath, pathToFileURL} from 'url';
                         }
                         fs.unlink(`${abspath}/parse/${item}/${script}`, (err) => {
                             if (err) {
-                                // console.error('删除文件时发生错误:', err);
                                 return;
                             }
-                            console.log('🐼🦊 文件删除:',script);
+                            console.log('🐼🦊 文件删除:', script);
                         });
                         fs.unlink(`${abspath}/${script}`, (err) => {
                             if (err) {
-                                // console.error('删除文件时发生错误:', err);
                                 return;
                             }
-                            console.log('🐼🦊 文件删除:',script);
+                            console.log('🐼🦊 文件删除:', script);
                         });
                     }
                     else {
                         try {
                             if (script.match(/\w+\_\w+\_\w/)) {
+
+                                // 若该脚本被标记禁用
+                                if (disabledList.includes(script)) {
+                                    disabledScripts.add(script)
+                                    for (let obj of cronData) {
+                                        if (obj.command.includes(script)) {
+                                            disabledIds.add(obj.id || obj._id)
+                                        }
+                                    }
+                                }
+
                                 let imp = await
                                     import (`${abspath}/parse/${item}/${script}`)
                                 let psyDuck = new imp.Main()
@@ -407,10 +471,12 @@ import {fileURLToPath, pathToFileURL} from 'url';
                                         name: `PsyDuck_${psyDuck.profile.title}`,
                                         schedule: crontab,
                                         command: `task qitoqito_psyduck/${script}`,
-                                        // labels: label ? [`PsyDuck`] : ''
                                     }
                                     if (label) {
                                         dicts[script].labels = [`PsyDuck`]
+                                    }
+                                    if (disabledList.includes(script)) {
+                                        dicts[script].status = 0
                                     }
                                 }
                             }
@@ -422,15 +488,33 @@ import {fileURLToPath, pathToFileURL} from 'url';
             }
         }.bind(this))
         await this.wait(10000)
-        let commands = Object.values(dicts)
+
+        // 创建任务：若该任务在 disabled 列表中（即新建后需要禁用），收集其返回的 id
         for (let i in dicts) {
             try {
                 let add = await this.addCron(dicts[i])
-                if (add.data.name) {
+                if (add.data && add.data.name) {
                     console.log('🐯‍❄️ 任务添加成功: ', i)
+                    if (disabledScripts.has(i)) {
+                        let newId = add.data.id || add.data._id
+                        if (newId) {
+                            disabledIds.add(newId)
+                            console.log(`🐽 新任务已加入禁用列表: ${i} (id=${newId})`)
+                        }
+                    }
                 }
             } catch (e) {
                 console.log('🐽🐽️ 任务添加失败: ', i)
+            }
+        }
+
+        // 统一禁用（覆盖：已存在的旧任务 + 刚刚新建的任务）
+        if (disabledIds.size > 0) {
+            try {
+                await this.disableCrons([...disabledIds])
+                console.log('🐯‍❄️ 任务禁用成功: ', [...disabledIds])
+            } catch (e) {
+                console.log('🐽🐽️ 任务禁用失败: ', e)
             }
         }
     }
