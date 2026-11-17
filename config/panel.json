@@ -11,7 +11,8 @@
                 "jd_task_smLottery.js",
                 "jd_task_superMarket.js",
                 "jd_task_storeContent.js",
-                "jd_task_starTeam.js"
+                "jd_task_starTeam.js",
+                "jd_task_union.js"
             ],
             "remove": [
                 "jd_task_niuniu.js",
